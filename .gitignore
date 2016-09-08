@@ -1,2 +1,5 @@
 *.pyc
-
+*/.ipynb_checkpoints/
+.ipynb_checkpoints/
+*/*.swp
+tx.tif
