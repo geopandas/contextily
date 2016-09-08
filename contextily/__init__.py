@@ -9,6 +9,8 @@ import six
 from PIL import Image
 import numpy as np
 import pandas as pd
+import rasterio as rio
+from rasterio.transform import from_origin
 
 __all__ = ['bounds2raster', 'bounds2img', 'howmany', 'll2wdw']
 
@@ -49,13 +51,12 @@ def bounds2raster(w, s, e, n, zoom, path,
     None (writes file to disk)
     '''
     # Download
-    merged = bounds2img(w, s, e, n, zoom, url)
+    Z, ext = bounds2img(w, s, e, n, zoom, url)
     # Write
     #---
-    Z = merged[0][::-1, :]
     w, h, b = Z.shape
     #--- https://mapbox.github.io/rasterio/quickstart.html#opening-a-dataset-in-writing-mode
-    ext = merged[1]
+    minX, maxX, minY, maxY = ext
     x = np.linspace(minX, maxX, w)
     y = np.linspace(minY, maxY, h)
     resX = (x[-1] - x[0]) / w
@@ -65,7 +66,7 @@ def bounds2raster(w, s, e, n, zoom, path,
     #---
     raster = rio.open(path, 'w', 
                       driver='GTiff', height=h, width=w, 
-                      count=b, dtype=merged[0].dtype,
+                      count=b, dtype=Z.dtype,
                       crs='epsg:3857', transform=transform)
     for band in range(b):
         raster.write(Z[:, :, band], band+1)
@@ -127,7 +128,7 @@ def bounds2img(w, s, e, n, zoom,
     w, s = mt.xy(minX, minY)
     e, n = mt.xy(maxX, maxY)
     extent = w, e, s, n
-    return merged, extent
+    return merged[::-1], extent
 
 def howmany(w, s, e, n, zoom, verbose=True):
     '''
@@ -158,7 +159,7 @@ def howmany(w, s, e, n, zoom, verbose=True):
 
 def ll2wdw(bb, rtr):
     '''
-    Convert lon/lat bounding box into the window of the raster
+    Convert XY bounding box into the window of the raster
     ...
     
     Arguments
