@@ -14,14 +14,20 @@ from rasterio.transform import from_origin
 
 __all__ = ['bounds2raster', 'bounds2img', 'howmany', 'll2wdw']
 
+#-------------------------------------------------------------#
+                    # Tile providers #
+
+ST_TERRAIN = 'http://tile.stamen.com/terrain/tileZ/tileX/tileY.png'
+
 sources = {
-        'ST_TERRAIN': 'http://tile.stamen.com/terrain/tileZ/tileX/tileY.png'
+        'ST_TERRAIN': ST_TERRAIN
         }
+#-------------------------------------------------------------#
 
 def bounds2raster(w, s, e, n, zoom, path,
-        url=sources['ST_TERRAIN']):
+        url=sources['ST_TERRAIN'], ll=False):
     '''
-    Take lon/lat bounding box and zoom, and write tiles into a raster file in
+    Take bounding box and zoom, and write tiles into a raster file in
     the Spherical Mercator CRS (EPSG:3857)
 
     ...
@@ -29,13 +35,13 @@ def bounds2raster(w, s, e, n, zoom, path,
     Arguments
     ---------
     w       : float
-              West edge longitude
+              West edge
     s       : float
-              South edge latitude
+              South edge
     e       : float
-              East edge longitude
+              East edge
     n       : float
-              Noth edge latitude
+              Noth edge
     zoom    : int
               Level of detail
     path    : str
@@ -45,11 +51,20 @@ def bounds2raster(w, s, e, n, zoom, path,
               'http://tile.stamen.com/terrain/tileZ/tileX/tileY.png'] URL for
               tile provider. The placeholders for the XYZ need to be `tileX`,
               `tileY`, `tileZ`, respectively.
+    ll      : Boolean
+              [Optional. Default: False] If True, `w`, `s`, `e`, `n` are
+              assumed to be lon/lat as opposed to Spherical Mercator.
 
     Returns
     -------
     None (writes file to disk)
     '''
+    if not ll:
+        # Convert w, s, e, n into lon/lat
+        w, s = _ll2sm(w, s)
+        e, n = _ll2sm(e, n)
+        print('ll==False not implemented yet')
+        return None
     # Download
     Z, ext = bounds2img(w, s, e, n, zoom, url)
     # Write
@@ -74,9 +89,9 @@ def bounds2raster(w, s, e, n, zoom, path,
     return None
 
 def bounds2img(w, s, e, n, zoom, 
-        url=sources['ST_TERRAIN']):
+        url=sources['ST_TERRAIN'], ll=False):
     '''
-    Take lon/lat bounding box and zoom and return an image with all the tiles
+    Take bounding box and zoom and return an image with all the tiles
     that compose the map and its Spherical Mercator extent.
 
     ...
@@ -84,13 +99,13 @@ def bounds2img(w, s, e, n, zoom,
     Arguments
     ---------
     w       : float
-              West edge longitude
+              West edge
     s       : float
-              South edge latitude
+              South edge
     e       : float
-              East edge longitude
+              East edge
     n       : float
-              Noth edge latitude
+              Noth edge
     zoom    : int
               Level of detail
     url     : str
@@ -98,6 +113,9 @@ def bounds2img(w, s, e, n, zoom,
               URL for tile provider. The placeholders for the XYZ need to be 
               `tileX`, `tileY`, `tileZ`, respectively. IMPORTANT: tiles are 
               assumed to be in the Spherical Mercator projection (EPSG:3857).
+    ll      : Boolean
+              [Optional. Default: False] If True, `w`, `s`, `e`, `n` are
+              assumed to be lon/lat as opposed to Spherical Mercator.
 
     Returns
     -------
@@ -106,6 +124,12 @@ def bounds2img(w, s, e, n, zoom,
     extent  : tuple
               Bounding box [minX, maxX, minY, maxY] of the returned image
     '''
+    if not ll:
+        # Convert w, s, e, n into lon/lat
+        w, s = _ll2sm(w, s)
+        e, n = _ll2sm(e, n)
+        print('ll==False not implemented yet')
+        return None
     tiles = []
     for t in mt.tiles(w, s, e, n, [zoom]):
         x, y, z = t.x, t.y, t.z
@@ -130,7 +154,7 @@ def bounds2img(w, s, e, n, zoom,
     extent = w, e, s, n
     return merged[::-1], extent
 
-def howmany(w, s, e, n, zoom, verbose=True):
+def howmany(w, s, e, n, zoom, verbose=True, ll=False):
     '''
     Number of tiles required for a given bounding box and a zoom level
     ...
@@ -150,22 +174,31 @@ def howmany(w, s, e, n, zoom, verbose=True):
     verbose : Boolean
               [Optional. Default=True] If True, print short message with
               number of tiles and zoom.
+    ll      : Boolean
+              [Optional. Default: False] If True, `w`, `s`, `e`, `n` are
+              assumed to be lon/lat as opposed to Spherical Mercator.
     '''
+    if not ll:
+        # Convert w, s, e, n into lon/lat
+        w, s = _ll2sm(w, s)
+        e, n = _ll2sm(e, n)
+        print('ll==False not implemented yet')
+        return None
     tiles = len(list(mt.tiles(w, s, e, n, [zoom])))
     if verbose:
         print("Using zoom level %i, this will download %i tiles"%(zoom,
             tiles))
     return tiles
 
-def ll2wdw(bb, rtr):
+def bb2wdw(bb, rtr):
     '''
-    Convert XY bounding box into the window of the raster
+    Convert XY bounding box into the window of the tile raster
     ...
     
     Arguments
     ---------
     bb      : tuple
-              (left, bottom, right, top)
+              (left, bottom, right, top) in the CRS of `rtr`
     rtr     : RasterReader
               Open rasterio raster from which the window will be extracted
     
@@ -184,4 +217,22 @@ def ll2wdw(bb, rtr):
                xi.searchsorted(bb[2])[0])
              )
     return window
+
+def _ll2sm(x, y):
+    '''
+    Transform lon/lat point into Spherical Mercator coordinates
+
+    Arguments
+    ---------
+    x       : float
+              Longitude
+    y       : float
+              Latitude
+
+    Returns
+    -------
+    pt      : tuple
+              Spherical Mercator coordinates
+    '''
+    return None
 
