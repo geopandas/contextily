@@ -12,6 +12,7 @@ the internet into geospatial raster files. See the notebook
 * `numpy`
 * `pandas`
 * `PIL`
+* `rasterio`
 * `six`
 * `urllib2`
 
