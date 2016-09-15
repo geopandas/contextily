@@ -57,16 +57,17 @@ def bounds2raster(w, s, e, n, zoom, path,
 
     Returns
     -------
-    None (writes file to disk)
+    img     : ndarray
+              Image as a 3D array of RGB values
+    extent  : tuple
+              Bounding box [minX, maxX, minY, maxY] of the returned image
     '''
     if not ll:
         # Convert w, s, e, n into lon/lat
-        w, s = _ll2sm(w, s)
-        e, n = _ll2sm(e, n)
-        print('ll==False not implemented yet')
-        return None
+        w, s = _sm2ll(w, s)
+        e, n = _sm2ll(e, n)
     # Download
-    Z, ext = bounds2img(w, s, e, n, zoom, url)
+    Z, ext = bounds2img(w, s, e, n, zoom, url, ll=True)
     # Write
     #---
     w, h, b = Z.shape
@@ -86,7 +87,7 @@ def bounds2raster(w, s, e, n, zoom, path,
     for band in range(b):
         raster.write(Z[:, :, band], band+1)
     raster.close()
-    return None
+    return Z, ext
 
 def bounds2img(w, s, e, n, zoom, 
         url=sources['ST_TERRAIN'], ll=False):
@@ -126,10 +127,8 @@ def bounds2img(w, s, e, n, zoom,
     '''
     if not ll:
         # Convert w, s, e, n into lon/lat
-        w, s = _ll2sm(w, s)
-        e, n = _ll2sm(e, n)
-        print('ll==False not implemented yet')
-        return None
+        w, s = _sm2ll(w, s)
+        e, n = _sm2ll(e, n)
     tiles = []
     for t in mt.tiles(w, s, e, n, [zoom]):
         x, y, z = t.x, t.y, t.z
@@ -180,10 +179,8 @@ def howmany(w, s, e, n, zoom, verbose=True, ll=False):
     '''
     if not ll:
         # Convert w, s, e, n into lon/lat
-        w, s = _ll2sm(w, s)
-        e, n = _ll2sm(e, n)
-        print('ll==False not implemented yet')
-        return None
+        w, s = _sm2ll(w, s)
+        e, n = _sm2ll(e, n)
     tiles = len(list(mt.tiles(w, s, e, n, [zoom])))
     if verbose:
         print("Using zoom level %i, this will download %i tiles"%(zoom,
@@ -218,21 +215,31 @@ def bb2wdw(bb, rtr):
              )
     return window
 
-def _ll2sm(x, y):
+def _sm2ll(x, y):
     '''
-    Transform lon/lat point into Spherical Mercator coordinates
+    Transform Spherical Mercator coordinates point into lon/lat
+
+    NOTE: Translated from the JS implementation in
+    http://dotnetfollower.com/wordpress/2011/07/javascript-how-to-convert-mercator-sphere-coordinates-to-latitude-and-longitude/
+    ...
 
     Arguments
     ---------
     x       : float
-              Longitude
+              Easting
     y       : float
-              Latitude
+              Northing
 
     Returns
     -------
-    pt      : tuple
-              Spherical Mercator coordinates
+    ll      : tuple
+              lon/lat coordinates
     '''
-    return None
+    rMajor = 6378137. # Equatorial Radius, QGS84
+    shift = np.pi * rMajor
+    lon = x / shift * 180.
+    lat = y / shift * 180.
+    lat = 180. / np.pi * (2. * np.arctan( np.exp( lat * np.pi / 180.) ) - \
+            np.pi / 2.)
+    return lon, lat
 
