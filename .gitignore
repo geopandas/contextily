@@ -3,4 +3,6 @@
 .ipynb_checkpoints/
 */*.swp
 tx.tif
+test.tif
 .DS_Store
+.cache
