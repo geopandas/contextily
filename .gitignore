@@ -7,3 +7,6 @@ tx.tif
 test.tif
 .DS_Store
 .cache
+build/
+*.egg-info/
+dist/
