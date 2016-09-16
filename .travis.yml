@@ -1,11 +1,15 @@
-language: c
+language: python
 sudo: false
 branches:
 only:
   - master
 os:
   - linux
-  - osx
+    #- osx
+python:
+  - 2.7
+    #- 3.4
+    #- 3.5
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then wget https://repo.continuum.io/miniconda/Miniconda2-latest-MacOSX-x86_64.sh -O miniconda.sh; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh; fi
@@ -18,10 +22,12 @@ before_install:
   - pip install mercantile
 
 install:
-  - "python setup.py install"
+  - python setup.py install
 
 script: 
-  - "python -m pytest -v"
+  - python -c 'import contextily; print(contextily)'
+  - python setup.py sdist > /dev/null
+  - python -m pytest -v
 
 notifications:
     email:
