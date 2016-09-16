@@ -10,6 +10,15 @@ the internet into geospatial raster files. See the notebook
 
 ![Tiles](tiles.png)
 
+* Toner and Terrain map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a
+  href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a
+  href="http://openstreetmap.org">OpenStreetMap</a>, under <a
+  href="http://www.openstreetmap.org/copyright">ODbL</a>.
+* Watercolor map tiles by <a href="http://stamen.com">Stamen Design</a>, under
+  <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by
+  <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a
+  href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.
+
 ## Dependencies
 
 * `cartopy`
