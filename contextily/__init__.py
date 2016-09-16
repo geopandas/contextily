@@ -11,21 +11,12 @@ import numpy as np
 import pandas as pd
 import rasterio as rio
 from rasterio.transform import from_origin
+import tile_providers as sources
 
 __all__ = ['bounds2raster', 'bounds2img', 'howmany', 'll2wdw']
 
-#-------------------------------------------------------------#
-                    # Tile providers #
-
-ST_TERRAIN = 'http://tile.stamen.com/terrain/tileZ/tileX/tileY.png'
-
-sources = {
-        'ST_TERRAIN': ST_TERRAIN
-        }
-#-------------------------------------------------------------#
-
 def bounds2raster(w, s, e, n, zoom, path,
-        url=sources['ST_TERRAIN'], ll=False):
+        url=sources.ST_TERRAIN, ll=False):
     '''
     Take bounding box and zoom, and write tiles into a raster file in
     the Spherical Mercator CRS (EPSG:3857)
@@ -90,7 +81,7 @@ def bounds2raster(w, s, e, n, zoom, path,
     return Z, ext
 
 def bounds2img(w, s, e, n, zoom, 
-        url=sources['ST_TERRAIN'], ll=False):
+        url=sources.ST_TERRAIN, ll=False):
     '''
     Take bounding box and zoom and return an image with all the tiles
     that compose the map and its Spherical Mercator extent.
