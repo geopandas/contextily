@@ -1,7 +1,9 @@
 [run]
 omit =
     */tests/*
+    */miniconda/*
 [report]
 omit = 
     */tests/*
+    */miniconda/*
 
