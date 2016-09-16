@@ -54,7 +54,6 @@ def test_ll2wdw():
     rtr = rio.open('test.tif')
     wdw = ctx.bb2wdw(hou, rtr)
     assert wdw == ((152, 161), (189, 199))
-'''
 
 def test__sm2ll():
     w, s, e, n = (-106.6495132446289, 25.845197677612305, 
@@ -67,3 +66,4 @@ def test__sm2ll():
     assert round(ns - s, TOL) == 0
     assert round(ne - e, TOL) == 0
     assert round(nn - n, TOL) == 0
+'''
