@@ -5,6 +5,8 @@
 the internet into geospatial raster files. See the notebook
 `contextily_guide.ipynb` for usage.
 
+[![Build Status](https://travis-ci.org/darribas/contextily.svg?branch=master)](https://travis-ci.org/darribas/contextily)
+
 ## Dependencies
 
 * `cartopy`
