@@ -27,6 +27,7 @@ install:
 script: 
   - python -c 'import contextily; print(contextily)'
   - python -c 'import mercantile; print(mercantile)'
+  - python -c 'import os; print(os.listdir(".")'
   - python setup.py sdist >/dev/null
   - python -m pytest -v
 

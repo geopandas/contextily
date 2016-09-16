@@ -1,5 +1,3 @@
-import pytest
-
 import contextily as ctx
 import mercantile as mt
 import rasterio as rio
