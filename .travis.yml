@@ -25,7 +25,7 @@ install:
 
 script: 
   - python setup.py sdist >/dev/null
-  - python -m pytest -v tests/
+  - python -m pytest -v tests/ --cov coveralls --cov-report term-missing
 
 notifications:
     email:

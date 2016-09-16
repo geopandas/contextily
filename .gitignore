@@ -10,3 +10,4 @@ test.tif
 build/
 *.egg-info/
 dist/
+.coverage
