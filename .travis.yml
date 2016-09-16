@@ -14,8 +14,11 @@ before_install:
   - export PATH=`pwd`/miniconda/bin:$PATH
   - conda update --yes conda
   - conda install --yes psutil
-  - conda install --yes -c conda-forge cartopy numpy pandas PIL rasterio six pytest
+  - conda install --yes -c conda-forge cartopy pandas PIL rasterio six pytest
   - pip install mercantile
+
+install:
+  - "python setup.py install"
 
 script: 
   - "python -m pytest -v"
