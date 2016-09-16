@@ -1,0 +1,27 @@
+language: c
+sudo: false
+branches:
+only:
+  - master
+os:
+  - linux
+  - osx
+before_install:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then wget https://repo.continuum.io/miniconda/Miniconda2-latest-MacOSX-x86_64.sh -O miniconda.sh; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh; fi
+  - chmod +x miniconda.sh
+  - ./miniconda.sh -b -p ./miniconda
+  - export PATH=`pwd`/miniconda/bin:$PATH
+  - conda update --yes conda
+  - conda install --yes psutil
+  - conda install --yes -c conda-forge cartopy, mercantile, numpy, pandas, PIL, rasterio, six, urllib2, pytest
+
+script: 
+  - "python -m pytest"
+
+notifications:
+    email:
+        recipients:
+            - daniel.arribas.bel@gmail.com
+        on_failure: always
+
