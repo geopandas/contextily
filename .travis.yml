@@ -26,7 +26,7 @@ install:
 
 script: 
   - python -c 'import contextily; print(contextily)'
-  - python setup.py sdist > /dev/null
+  - python setup.py sdist >/dev/null
   - python -m pytest -v
 
 notifications:
