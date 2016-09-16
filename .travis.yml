@@ -26,3 +26,6 @@ notifications:
             - daniel.arribas.bel@gmail.com
         on_failure: always
 
+after_success:
+    - coveralls
+    
