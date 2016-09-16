@@ -18,7 +18,7 @@ before_install:
   - conda update --yes conda
   - conda install --yes psutil
   - conda install --yes -c conda-forge cartopy pandas PIL rasterio six pytest
-  - pip install mercantile
+  - pip install mercantile python-coveralls
 
 install:
   - python setup.py install
