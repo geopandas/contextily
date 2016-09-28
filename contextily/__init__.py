@@ -2,16 +2,18 @@
 `contextily`: create context with tiles in Python
 '''
 
+from __future__ import (absolute_import, division, print_function)
+
 import mercantile as mt
 from cartopy.io.img_tiles import _merge_tiles as merge_tiles
-from urllib2 import urlopen
+from six.moves.urllib.request import urlopen
 import six
 from PIL import Image
 import numpy as np
 import pandas as pd
 import rasterio as rio
 from rasterio.transform import from_origin
-import tile_providers as sources
+from . import tile_providers as sources
 
 __all__ = ['bounds2raster', 'bounds2img', 'howmany', 'll2wdw']
 
@@ -68,11 +70,11 @@ def bounds2raster(w, s, e, n, zoom, path,
     y = np.linspace(minY, maxY, h)
     resX = (x[-1] - x[0]) / w
     resY = (y[-1] - y[0]) / h
-    transform = from_origin(x[0] - resX / 2, 
+    transform = from_origin(x[0] - resX / 2,
                             y[-1] + resY / 2, resX, resY)
     #---
-    raster = rio.open(path, 'w', 
-                      driver='GTiff', height=h, width=w, 
+    raster = rio.open(path, 'w',
+                      driver='GTiff', height=h, width=w,
                       count=b, dtype=Z.dtype,
                       crs='epsg:3857', transform=transform)
     for band in range(b):
@@ -80,7 +82,7 @@ def bounds2raster(w, s, e, n, zoom, path,
     raster.close()
     return Z, ext
 
-def bounds2img(w, s, e, n, zoom, 
+def bounds2img(w, s, e, n, zoom,
         url=sources.ST_TERRAIN, ll=False):
     '''
     Take bounding box and zoom and return an image with all the tiles
@@ -101,9 +103,9 @@ def bounds2img(w, s, e, n, zoom,
     zoom    : int
               Level of detail
     url     : str
-              [Optional. Default: 'http://tile.stamen.com/terrain/tileZ/tileX/tileY.png'] 
-              URL for tile provider. The placeholders for the XYZ need to be 
-              `tileX`, `tileY`, `tileZ`, respectively. IMPORTANT: tiles are 
+              [Optional. Default: 'http://tile.stamen.com/terrain/tileZ/tileX/tileY.png']
+              URL for tile provider. The placeholders for the XYZ need to be
+              `tileX`, `tileY`, `tileZ`, respectively. IMPORTANT: tiles are
               assumed to be in the Spherical Mercator projection (EPSG:3857).
     ll      : Boolean
               [Optional. Default: False] If True, `w`, `s`, `e`, `n` are
@@ -182,14 +184,14 @@ def bb2wdw(bb, rtr):
     '''
     Convert XY bounding box into the window of the tile raster
     ...
-    
+
     Arguments
     ---------
     bb      : tuple
               (left, bottom, right, top) in the CRS of `rtr`
     rtr     : RasterReader
               Open rasterio raster from which the window will be extracted
-    
+
     Returns
     -------
     window  : tuple
@@ -199,9 +201,9 @@ def bb2wdw(bb, rtr):
     xi = pd.Series(np.linspace(rbb.left, rbb.right, rtr.shape[1]))
     yi = pd.Series(np.linspace(rbb.bottom, rbb.top, rtr.shape[0]))
 
-    window = ((rtr.shape[0] - yi.searchsorted(bb[3])[0], 
+    window = ((rtr.shape[0] - yi.searchsorted(bb[3])[0],
               rtr.shape[0] - yi.searchsorted(bb[1])[0]),
-             (xi.searchsorted(bb[0])[0], 
+             (xi.searchsorted(bb[0])[0],
                xi.searchsorted(bb[2])[0])
              )
     return window
