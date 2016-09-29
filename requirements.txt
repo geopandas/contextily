@@ -1,0 +1,7 @@
+cartopy
+mercantile
+pandas
+pillow
+pytest
+rasterio
+six
