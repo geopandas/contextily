@@ -6,7 +6,7 @@ with open('requirements.txt') as f:
 install_requires = [t.strip() for t in tests_require]
 
 setup(name='contextily',
-      version='0.9.0',
+      version='0.9.1',
       description='Context geo-tiles in Python',
       url='https://github.com/darribas/contextily',
       author='Dani Arribas-Bel',
