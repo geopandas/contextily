@@ -25,7 +25,7 @@ the internet into geospatial raster files. Bounding boxes can be passed in both 
 * `mercantile`
 * `numpy`
 * `pandas`
-* `PIL`
+* `pillow`
 * `rasterio`
 * `six`
 * `urllib2`
