@@ -14,5 +14,4 @@ setup(name='contextily',
       license='3-Clause BSD',
       packages=['contextily'],
       install_requires=install_requires,
-      package_data={'cenpy': ['stfipstable.csv']},
       zip_safe=False)
