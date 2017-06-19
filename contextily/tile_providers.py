@@ -1,3 +1,5 @@
+"""Common tile provider URLs."""
+
 ### Tile provider sources ###
 
 ST_TONER = 'http://tile.stamen.com/toner/tileZ/tileX/tileY.png'

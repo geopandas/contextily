@@ -1,7 +1,8 @@
+"""Tools for generating maps from a text search."""
 import geopy as gp
 import numpy as np
 import matplotlib.pyplot as plt
-from .tile import howmany, bounds2raster, bounds2img
+from .tile import howmany, bounds2raster, bounds2img, _sm2ll
 
 class Place(object):
     """Geocode a place by name and get its map.
@@ -17,7 +18,7 @@ class Place(object):
         The level of detail to include in the map. Higher levels mean more
         tiles and thus longer download time. If None, the zoom level will be
         automatically determined.
-    file : string | None
+    path : string | None
         Path to a raster file that will be created after getting the place map.
         If None, no raster file will be downloaded.
     zoom_adjust : int | None
@@ -44,9 +45,8 @@ class Place(object):
         The bounding box of the returned image.
     """
 
-    def __init__(self, place, zoom=None, file=None, zoom_adjust=None, url=None):
-        self.place = place
-        self.file = file
+    def __init__(self, place, zoom=None, path=None, zoom_adjust=None, url=None):
+        self.path = path
         self.url = url
         self.zoom_adjust = zoom_adjust
 
@@ -54,8 +54,19 @@ class Place(object):
         resp = gp.geocoders.Nominatim().geocode(place)
         bbox = np.array([float(ii) for ii in resp.raw['boundingbox']])
 
-        self.geocode = resp
+        if 'display_name' in resp.raw.keys():
+            new_place = resp.raw['display_name']
+        elif 'address' in resp.raw.keys():
+            new_place = resp.raw['address']
+        else:
+            new_place = place
+        self.place = new_place
+        self.search = place
         self.s, self.n, self.w, self.e = bbox
+        self.bbox = [self.w, self.s, self.e, self.n]  # So bbox is standard
+        self.latitude = resp.latitude
+        self.longitude = resp.longitude
+        self.geocode = resp
 
         # Get map params
         self.zoom = calculate_zoom(self.w, self.s, self.e, self.n) if zoom is None else zoom
@@ -74,8 +85,8 @@ class Place(object):
             kwargs['url'] = self.url
 
         try:
-            if isinstance(self.file, str):
-                im, bbox = bounds2raster(self.w, self.s, self.e, self.n, self.zoom, **kwargs)
+            if isinstance(self.path, str):
+                im, bbox = bounds2raster(self.w, self.s, self.e, self.n, self.zoom, self.path, **kwargs)
             else:
                 im, bbox = bounds2img(self.w, self.s, self.e, self.n, self.zoom, **kwargs)
         except:
@@ -83,7 +94,7 @@ class Place(object):
                 self.w, self.s, self.e, self.n, self.zoom, kwargs))
 
         self.im = im
-        self.bbox = bbox
+        self.bbox_map = bbox
         return im, bbox
 
     def __repr__(self):
@@ -91,7 +102,7 @@ class Place(object):
             self.place, self.n_tiles, self.zoom, self.im.shape[:2])
         return s
 
-def plot_map(place, ax=None, axis_off=True):
+def plot_map(place, bbox=None, title=None, ax=None, axis_off=True, latlon=True):
     """Plot a map of the given place.
 
     Parameters
@@ -112,19 +123,27 @@ def plot_map(place, ax=None, axis_off=True):
     """
     if not isinstance(place, Place):
         im = place
-        bbox = None
-        title = None
+        bbox = bbox
+        title = title
     else:
         im = place.im
-        bbox = place.bbox
-        title = place.place
+        if bbox is None:
+            bbox = place.bbox_map
+            if latlon is True:
+                # Convert w, s, e, n into lon/lat
+                w, e, s, n = bbox
+                w, s = _sm2ll(w, s)
+                e, n = _sm2ll(e, n)
+                bbox = [w, e, s, n]
+
+        title = place.place if title is None else title
 
     if ax is None:
         fig, ax = plt.subplots(figsize=(15, 15))
     ax.imshow(im, extent=bbox)
     ax.set(xlabel="Longitude", ylabel="Latitude")
     if title is not None:
-        ax.set(title=place.place)
+        ax.set(title=title)
 
     if axis_off is True:
         ax.set_axis_off()
@@ -134,16 +153,18 @@ def plot_map(place, ax=None, axis_off=True):
 def calculate_zoom(w, s, e, n):
     """Automatically choose a zoom level given a desired number of tiles.
 
+    .. note:: all values are interpreted as latitude / longitutde.
+
     Parameters
     ----------
-    s : float
-        The southern bbox edge.
-    n : float
-        The northern bbox edge.
-    e : float
-        The eastern bbox edge.
     w : float
         The western bbox edge.
+    s : float
+        The southern bbox edge.
+    e : float
+        The eastern bbox edge.
+    n : float
+        The northern bbox edge.
 
     Returns
     -------

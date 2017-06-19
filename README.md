@@ -29,6 +29,7 @@ the internet into geospatial raster files. Bounding boxes can be passed in both 
 * `rasterio`
 * `six`
 * `urllib2`
+* `geopy`
 
 ## Installation
 
@@ -40,4 +41,3 @@ the internet into geospatial raster files. Bounding boxes can be passed in both 
 ## License
 
 BSD compatible. See `LICENSE.txt`
-

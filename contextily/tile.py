@@ -1,3 +1,4 @@
+"""Tools for downloading map tiles from coordinates."""
 from __future__ import (absolute_import, division, print_function)
 
 import mercantile as mt
@@ -40,7 +41,7 @@ def bounds2raster(w, s, e, n, zoom, path,
               [Optional. Default:
               'http://tile.stamen.com/terrain/tileZ/tileX/tileY.png'] URL for
               tile provider. The placeholders for the XYZ need to be `tileX`,
-              `tileY`, `tileZ`, respectively.
+              `tileY`, `tileZ`, respectively. See `cx.sources`.
     ll      : Boolean
               [Optional. Default: False] If True, `w`, `s`, `e`, `n` are
               assumed to be lon/lat as opposed to Spherical Mercator.
