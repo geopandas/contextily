@@ -48,6 +48,6 @@ ctx.plot_map(loc2, ax=axs[1])
 
 zoom = ctx.calculate_zoom(loc.w, loc.s, loc.e, loc.n)
 im2, bbox = ctx.bounds2img(loc.w, loc.s, loc.e, loc.n, zoom=zoom, ll=True)
-ctx.plot_map(im2, bbox, ax=axs[2], title='boulder')
+ctx.plot_map(im2, bbox, ax=axs[2], title='Boulder, CO')
 
 plt.show()

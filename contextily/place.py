@@ -12,7 +12,7 @@ class Place(object):
 
     Parameters
     ----------
-    place : string
+    search : string
         The location to be searched.
     zoom : int | None
         The level of detail to include in the map. Higher levels mean more
@@ -30,7 +30,7 @@ class Place(object):
     Attributes
     ----------
     geocode : geopy object
-        The result of calling ``geopy.geocoders.Nominatim`` with ``place`` as input.
+        The result of calling ``geopy.geocoders.Nominatim`` with ``search`` as input.
     s : float
         The southern bbox edge.
     n : float
@@ -40,28 +40,28 @@ class Place(object):
     w : float
         The western bbox edge.
     im : ndarray
-        The image corresponding to the map of ``place``.
+        The image corresponding to the map of ``search``.
     bbox : array, shape (4,)
         The bounding box of the returned image.
     """
 
-    def __init__(self, place, zoom=None, path=None, zoom_adjust=None, url=None):
+    def __init__(self, search, zoom=None, path=None, zoom_adjust=None, url=None):
         self.path = path
         self.url = url
         self.zoom_adjust = zoom_adjust
 
         # Get geocoded values
-        resp = gp.geocoders.Nominatim().geocode(place)
+        resp = gp.geocoders.Nominatim().geocode(search)
         bbox = np.array([float(ii) for ii in resp.raw['boundingbox']])
 
         if 'display_name' in resp.raw.keys():
-            new_place = resp.raw['display_name']
+            place = resp.raw['display_name']
         elif 'address' in resp.raw.keys():
-            new_place = resp.raw['address']
+            place = resp.raw['address']
         else:
-            new_place = place
-        self.place = new_place
-        self.search = place
+            place = search
+        self.place = place
+        self.search = search
         self.s, self.n, self.w, self.e = bbox
         self.bbox = [self.w, self.s, self.e, self.n]  # So bbox is standard
         self.latitude = resp.latitude
@@ -89,9 +89,9 @@ class Place(object):
                 im, bbox = bounds2raster(self.w, self.s, self.e, self.n, self.zoom, self.path, **kwargs)
             else:
                 im, bbox = bounds2img(self.w, self.s, self.e, self.n, self.zoom, **kwargs)
-        except:
-            raise ValueError('Could not retrieve map with parameters: {}, {}, {}, {}, zoom={}\n{}'.format(
-                self.w, self.s, self.e, self.n, self.zoom, kwargs))
+        except Exception as err:
+            raise ValueError('Could not retrieve map with parameters: {}, {}, {}, {}, zoom={}\n{}\nError: {}'.format(
+                self.w, self.s, self.e, self.n, self.zoom, kwargs, err))
 
         self.im = im
         self.bbox_map = bbox

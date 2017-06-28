@@ -78,28 +78,28 @@ def test_autozoom():
     assert zoom == expected_zoom
 
 def test_place():
-    place = 'boulder'
+    search = 'boulder'
     adjust = -3  # To save download size / time
     expected_bbox = [-105.3014509, 39.9643513,
                      -105.1780988, 40.094409]
     expected_bbox_map = [-11740727.544603072, -11701591.786121061,
                          4852834.0517692715, 4891969.810251278]
     expected_zoom = 10
-    loc = ctx.Place(place, zoom_adjust=adjust)
+    loc = ctx.Place(search, zoom_adjust=adjust)
     loc  # Make sure repr works
 
     # Check auto picks are correct
-    assert loc.place == place
+    assert loc.search == search
     assert_array_almost_equal([loc.w, loc.s, loc.e, loc.n], expected_bbox)
     assert_array_almost_equal(loc.bbox_map, expected_bbox_map)
     assert loc.zoom == expected_zoom
 
-    loc = ctx.Place(place, path="./test2.tif", zoom_adjust=adjust)
+    loc = ctx.Place(search, path="./test2.tif", zoom_adjust=adjust)
     assert os.path.exists("./test2.tif")
 
 def test_plot_map():
-    place = 'boulder'
-    loc = ctx.Place(place, zoom_adjust=-3)
+    search = 'boulder'
+    loc = ctx.Place(search, zoom_adjust=-3)
     ax = ctx.plot_map(loc)
     assert ax.get_title() == loc.place
 
