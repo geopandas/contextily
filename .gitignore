@@ -5,6 +5,7 @@
 *.swp
 tx.tif
 test.tif
+test2.tif
 .DS_Store
 .cache
 build/

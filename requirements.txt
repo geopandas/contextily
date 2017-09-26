@@ -1,4 +1,5 @@
 cartopy
+geopy
 mercantile
 pandas
 pillow
