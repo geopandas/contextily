@@ -73,7 +73,7 @@ def bounds2raster(w, s, e, n, zoom, path,
     #---
     raster = rio.open(path, 'w',
                       driver='GTiff', height=h, width=w,
-                      count=b, dtype=Z.dtype.name,
+                      count=b, dtype=str(Z.dtype.name),
                       crs='epsg:3857', transform=transform)
     for band in range(b):
         raster.write(Z[:, :, band], band+1)
