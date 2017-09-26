@@ -36,6 +36,7 @@ the internet into geospatial raster files. Bounding boxes can be passed in both 
 ## Contributors
 
 * [Dani Arribas-Bel](http://darribas.org/) ([@darribas](http://twitter.com/darribas))
+* [Chris Holdgraf](http://chrisholdgraf.com/) ([@choldgraf](http://twitter.com/choldgraf))
 * [Filipe Fernandes](https://ocefpaf.github.io/python4oceanographers/) ([@ocefpaf](http://twitter.com/ocefpaf))
 
 ## License
