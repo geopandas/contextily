@@ -26,6 +26,14 @@ def test_bounds2raster():
     assert img[100, 200, :].tolist() == [156, 180, 131]
     assert img[200, 100, :].tolist() == [230, 225, 189]
 
+    # multiple tiles for which result is not square
+    w, s, e, n = (2.5135730322461427, 49.529483547557504,
+                  6.15665815595878, 51.47502370869813)
+    raster, _ = ctx.bounds2raster(w, s, e, n, 7, 'test.tif', ll=True)
+    rtr = rio.open('test.tif')
+    img = np.array([ band for band in rtr.read() ]).transpose(1, 2, 0)
+    assert raster.shape == img.shape
+
 def test_bounds2img():
     w, s, e, n = (-106.6495132446289, 25.845197677612305,
             -93.50721740722656, 36.49387741088867)
