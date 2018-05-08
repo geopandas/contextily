@@ -61,7 +61,7 @@ def bounds2raster(w, s, e, n, zoom, path,
     Z, ext = bounds2img(w, s, e, n, zoom, url, ll=True)
     # Write
     #---
-    w, h, b = Z.shape
+    h, w, b = Z.shape
     #--- https://mapbox.github.io/rasterio/quickstart.html#opening-a-dataset-in-writing-mode
     minX, maxX, minY, maxY = ext
     x = np.linspace(minX, maxX, w)
