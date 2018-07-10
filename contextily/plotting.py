@@ -1,8 +1,9 @@
 from . import sources
+from .place import calculate_zoom
 from .tile import bounds2img
 from warnings import warn
 
-def add_basemap_to_axis(ax, zoom, url=sources.ST_TERRAIN,
+def add_basemap_to_axis(ax, zoom=None, url=sources.ST_TERRAIN,
                         interpolation='sinc', **imshow_kws):
         """
         Tool to add basemap to an axis where a geopandas dataframe has already been plotted. 
@@ -31,6 +32,8 @@ def add_basemap_to_axis(ax, zoom, url=sources.ST_TERRAIN,
         further keyword arguments supported by this function are documented by matplotlib.pyplot.imshow
         """
         left, right, bottom, top = ax.axis()
+        if zoom is None:
+            calculate_zoom(left, bottom, right, top)
         basemap, bounds = bounds2img(left, bottom, right, top, zoom=zoom, url=url)
         ax.imshow(basemap, extent=bounds, interpolation=interpolation, **imshow_kws)
         ax.axis((left, right, bottom, top))
