@@ -15,7 +15,7 @@ from . import tile_providers as sources
 
 __all__ = ['bounds2raster', 'bounds2img', 'howmany']
 
-def bounds2raster(w, s, e, n, zoom='auto', path,
+def bounds2raster(w, s, e, n, path, zoom='auto', 
                   url=sources.ST_TERRAIN, ll=False):
     '''
     Take bounding box and zoom, and write tiles into a raster file in
