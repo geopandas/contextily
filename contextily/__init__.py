@@ -3,5 +3,5 @@
 '''
 
 from . import tile_providers as sources
-from .place import Place, plot_map, calculate_zoom
+from .place import Place
 from .tile import *
