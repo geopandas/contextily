@@ -5,7 +5,7 @@ import numpy as np
 import os
 import mercantile as mt
 import rasterio as rio
-from contextily.place import calculate_zoom
+from contextily.tile import _calculate_zoom
 from numpy.testing import assert_array_almost_equal
 
 TOL = 7
@@ -82,7 +82,7 @@ def test__sm2ll():
 def test_autozoom():
     w, s, e, n = (-105.3014509, 39.9643513, -105.1780988, 40.094409)
     expected_zoom = 13
-    zoom = calculate_zoom(w, s, e, n)
+    zoom = _calculate_zoom(w, s, e, n)
     assert zoom == expected_zoom
 
 def test_place():
