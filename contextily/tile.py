@@ -176,6 +176,8 @@ def howmany(w, s, e, n, zoom, verbose=True, ll=False):
         # Convert w, s, e, n into lon/lat
         w, s = _sm2ll(w, s)
         e, n = _sm2ll(e, n)
+    if zoom == 'auto':
+        zoom = _calculate_zoom(w, s, e, n)
     tiles = len(list(mt.tiles(w, s, e, n, [zoom])))
     if verbose:
         print("Using zoom level %i, this will download %i tiles"%(zoom,
