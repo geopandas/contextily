@@ -145,7 +145,7 @@ def plot_map(place, bbox=None, title=None, ax=None, axis_off=True, latlon=True):
     if ax is None:
         fig, ax = plt.subplots(figsize=(15, 15))
     ax.imshow(im, extent=bbox)
-    ax.set(xlabel="Longitude", ylabel="Latitude")
+    ax.set(xlabel="X", ylabel="Y")
     if title is not None:
         ax.set(title=title)
 
