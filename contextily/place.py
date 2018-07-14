@@ -41,8 +41,12 @@ class Place(object):
         The western bbox edge.
     im : ndarray
         The image corresponding to the map of ``search``.
-    bbox : array, shape (4,)
-        The bounding box of the returned image.
+    bbox : list
+        The bounding box of the returned image, expressed in lon/lat, with the
+        following order: [minX, minY, maxX, maxY]
+    bbox_map : tuple
+        The bounding box of the returned image, expressed in Web Mercator, with the
+        following order: [minX, minY, maxX, maxY]
     """
 
     def __init__(self, search, zoom=None, path=None, zoom_adjust=None, url=None):
@@ -141,7 +145,7 @@ def plot_map(place, bbox=None, title=None, ax=None, axis_off=True, latlon=True):
     if ax is None:
         fig, ax = plt.subplots(figsize=(15, 15))
     ax.imshow(im, extent=bbox)
-    ax.set(xlabel="Longitude", ylabel="Latitude")
+    ax.set(xlabel="X", ylabel="Y")
     if title is not None:
         ax.set(title=title)
 
