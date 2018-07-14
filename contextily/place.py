@@ -41,8 +41,12 @@ class Place(object):
         The western bbox edge.
     im : ndarray
         The image corresponding to the map of ``search``.
-    bbox : array, shape (4,)
-        The bounding box of the returned image.
+    bbox : list
+        The bounding box of the returned image, expressed in lon/lat, with the
+        following order: [minX, minY, maxX, maxY]
+    bbox_map : tuple
+        The bounding box of the returned image, expressed in Web Mercator, with the
+        following order: [minX, minY, maxX, maxY]
     """
 
     def __init__(self, search, zoom=None, path=None, zoom_adjust=None, url=None):
