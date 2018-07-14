@@ -86,7 +86,7 @@ class Place(object):
 
         try:
             if isinstance(self.path, str):
-                im, bbox = bounds2raster(self.w, self.s, self.e, self.n, self.zoom, self.path, **kwargs)
+                im, bbox = bounds2raster(self.w, self.s, self.e, self.n, self.path, zoom=self.zoom, **kwargs)
             else:
                 im, bbox = bounds2img(self.w, self.s, self.e, self.n, self.zoom, **kwargs)
         except Exception as err:
