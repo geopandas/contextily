@@ -15,8 +15,8 @@ from . import tile_providers as sources
 
 __all__ = ['bounds2raster', 'bounds2img', 'howmany']
 
-def bounds2raster(w, s, e, n, zoom, path,
-        url=sources.ST_TERRAIN, ll=False):
+def bounds2raster(w, s, e, n, path, zoom='auto', 
+                  url=sources.ST_TERRAIN, ll=False):
     '''
     Take bounding box and zoom, and write tiles into a raster file in
     the Spherical Mercator CRS (EPSG:3857)
@@ -57,8 +57,10 @@ def bounds2raster(w, s, e, n, zoom, path,
         # Convert w, s, e, n into lon/lat
         w, s = _sm2ll(w, s)
         e, n = _sm2ll(e, n)
+    if zoom == 'auto':
+        zoom = _calculate_zoom(w, e, s, n)
     # Download
-    Z, ext = bounds2img(w, s, e, n, zoom, url, ll=True)
+    Z, ext = bounds2img(w, s, e, n, zoom=zoom, url=url, ll=True)
     # Write
     #---
     h, w, b = Z.shape
@@ -80,7 +82,7 @@ def bounds2raster(w, s, e, n, zoom, path,
     raster.close()
     return Z, ext
 
-def bounds2img(w, s, e, n, zoom,
+def bounds2img(w, s, e, n, zoom='auto',
         url=sources.ST_TERRAIN, ll=False):
     '''
     Take bounding box and zoom and return an image with all the tiles
@@ -120,6 +122,8 @@ def bounds2img(w, s, e, n, zoom,
         # Convert w, s, e, n into lon/lat
         w, s = _sm2ll(w, s)
         e, n = _sm2ll(e, n)
+    if zoom == 'auto':
+        zoom = _calculate_zoom(w, e, s, n)
     tiles = []
     for t in mt.tiles(w, s, e, n, [zoom]):
         x, y, z = t.x, t.y, t.z
@@ -172,6 +176,8 @@ def howmany(w, s, e, n, zoom, verbose=True, ll=False):
         # Convert w, s, e, n into lon/lat
         w, s = _sm2ll(w, s)
         e, n = _sm2ll(e, n)
+    if zoom == 'auto':
+        zoom = _calculate_zoom(w, s, e, n)
     tiles = len(list(mt.tiles(w, s, e, n, [zoom])))
     if verbose:
         print("Using zoom level %i, this will download %i tiles"%(zoom,
@@ -233,3 +239,37 @@ def _sm2ll(x, y):
     lat = 180. / np.pi * (2. * np.arctan( np.exp( lat * np.pi / 180.) ) - \
             np.pi / 2.)
     return lon, lat
+
+def _calculate_zoom(w, s, e, n):
+    """Automatically choose a zoom level given a desired number of tiles.
+
+    .. note:: all values are interpreted as latitude / longitutde.
+
+    Parameters
+    ----------
+    w : float
+        The western bbox edge.
+    s : float
+        The southern bbox edge.
+    e : float
+        The eastern bbox edge.
+    n : float
+        The northern bbox edge.
+
+    Returns
+    -------
+    zoom : int
+        The zoom level to use in order to download this number of tiles.
+    """
+    # Calculate bounds of the bbox
+    lon_range = np.sort([e, w])[::-1]
+    lat_range = np.sort([s, n])[::-1]
+
+    lon_length = np.subtract(*lon_range)
+    lat_length = np.subtract(*lat_range)
+
+    # Calculate the zoom
+    zoom_lon = np.ceil(np.log2(360 * 2. / lon_length))
+    zoom_lat = np.ceil(np.log2(360 * 2. / lat_length))
+    zoom = np.max([zoom_lon, zoom_lat])
+    return int(zoom)

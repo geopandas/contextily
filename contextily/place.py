@@ -2,7 +2,7 @@
 import geopy as gp
 import numpy as np
 import matplotlib.pyplot as plt
-from .tile import howmany, bounds2raster, bounds2img, _sm2ll
+from .tile import howmany, bounds2raster, bounds2img, _sm2ll, _calculate_zoom
 
 class Place(object):
     """Geocode a place by name and get its map.
@@ -69,7 +69,7 @@ class Place(object):
         self.geocode = resp
 
         # Get map params
-        self.zoom = calculate_zoom(self.w, self.s, self.e, self.n) if zoom is None else zoom
+        self.zoom = _calculate_zoom(self.w, self.s, self.e, self.n) if zoom is None else zoom
         self.zoom = int(self.zoom)
         if self.zoom_adjust is not None:
             self.zoom += zoom_adjust
@@ -86,7 +86,7 @@ class Place(object):
 
         try:
             if isinstance(self.path, str):
-                im, bbox = bounds2raster(self.w, self.s, self.e, self.n, self.zoom, self.path, **kwargs)
+                im, bbox = bounds2raster(self.w, self.s, self.e, self.n, self.path, zoom=self.zoom, **kwargs)
             else:
                 im, bbox = bounds2img(self.w, self.s, self.e, self.n, self.zoom, **kwargs)
         except Exception as err:
@@ -148,38 +148,3 @@ def plot_map(place, bbox=None, title=None, ax=None, axis_off=True, latlon=True):
     if axis_off is True:
         ax.set_axis_off()
     return ax
-
-
-def calculate_zoom(w, s, e, n):
-    """Automatically choose a zoom level given a desired number of tiles.
-
-    .. note:: all values are interpreted as latitude / longitutde.
-
-    Parameters
-    ----------
-    w : float
-        The western bbox edge.
-    s : float
-        The southern bbox edge.
-    e : float
-        The eastern bbox edge.
-    n : float
-        The northern bbox edge.
-
-    Returns
-    -------
-    zoom : int
-        The zoom level to use in order to download this number of tiles.
-    """
-    # Calculate bounds of the bbox
-    lon_range = np.sort([e, w])[::-1]
-    lat_range = np.sort([s, n])[::-1]
-
-    lon_length = np.subtract(*lon_range)
-    lat_length = np.subtract(*lat_range)
-
-    # Calculate the zoom
-    zoom_lon = np.ceil(np.log2(360 * 2. / lon_length))
-    zoom_lat = np.ceil(np.log2(360 * 2. / lat_length))
-    zoom = np.max([zoom_lon, zoom_lat])
-    return int(zoom)
