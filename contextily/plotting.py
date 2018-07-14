@@ -4,8 +4,12 @@ import numpy as np
 from . import tile_providers as sources
 from .tile import _calculate_zoom, bounds2img, _sm2ll
 
-def add_basemap(ax, zoom='auto', url=sources.ST_TERRAIN, 
-		interpolation='bilinear', attribution_text = '', 
+ATTRIBUTION = ''
+INTERPOLATION = 'bilinear'
+ZOOM = 'auto'
+
+def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN, 
+		interpolation=INTERPOLATION, attribution_text = ATTRIBUTION, 
                 **extra_imshow_args):
     '''
     Add a (web/local) basemap to `ax`
