@@ -9,6 +9,8 @@ from contextily.tile import _calculate_zoom
 from numpy.testing import assert_array_almost_equal
 
 TOL = 7
+SEARCH = 'boulder'
+ADJUST = -3 # To save download size / time
 
 # Tile
 
@@ -35,6 +37,7 @@ def test_bounds2raster():
     rtr = rio.open('test.tif')
     img = np.array([ band for band in rtr.read() ]).transpose(1, 2, 0)
     assert raster.shape == img.shape
+    _ = os.system('rm test.tif')
 
 def test_bounds2img():
     w, s, e, n = (-106.6495132446289, 25.845197677612305,
@@ -67,6 +70,7 @@ def test_ll2wdw():
     rtr = rio.open('test.tif')
     wdw = ctx.tile.bb2wdw(hou, rtr)
     assert wdw == ((152, 161), (189, 199))
+    _ = os.system('rm test.tif')
 
 def test__sm2ll():
     w, s, e, n = (-106.6495132446289, 25.845197677612305,
@@ -89,24 +93,22 @@ def test_autozoom():
 # Place
 
 def test_place():
-    search = 'boulder'
-    adjust = -3  # To save download size / time
     expected_bbox = [-105.3014509, 39.9643513,
                      -105.1780988, 40.094409]
     expected_bbox_map = [-11740727.544603072, -11701591.786121061,
                          4852834.0517692715, 4891969.810251278]
     expected_zoom = 10
-    loc = ctx.Place(search, zoom_adjust=adjust)
+    loc = ctx.Place(SEARCH, zoom_adjust=ADJUST)
     assert loc.im.shape == (256, 256, 3)
     loc  # Make sure repr works
 
     # Check auto picks are correct
-    assert loc.search == search
+    assert loc.search == SEARCH
     assert_array_almost_equal([loc.w, loc.s, loc.e, loc.n], expected_bbox)
     assert_array_almost_equal(loc.bbox_map, expected_bbox_map)
     assert loc.zoom == expected_zoom
 
-    loc = ctx.Place(search, path="./test2.tif", zoom_adjust=adjust)
+    loc = ctx.Place(SEARCH, path="./test2.tif", zoom_adjust=ADJUST)
     assert os.path.exists("./test2.tif")
 
     # .plot() method
@@ -116,11 +118,11 @@ def test_place():
     f, ax = matplotlib.pyplot.subplots(1)
     ax = loc.plot(ax=ax)
     assert_array_almost_equal(loc.bbox_map, ax.images[0].get_extent())
+    _ = os.system('rm test.tif')
 
 def test_plot_map():
     # Place as a search
-    search = 'boulder'
-    loc = ctx.Place(search, zoom_adjust=-3)
+    loc = ctx.Place(SEARCH, zoom_adjust=ADJUST)
     w, e, s, n = loc.bbox_map
     ax = ctx.plot_map(loc)
 
@@ -158,6 +160,7 @@ def test_add_basemap():
     f, ax = matplotlib.pyplot.subplots(1)
     ax.set_xlim(x1, x2)
     ax.set_ylim(y1, y2)
+    loc = ctx.Place(SEARCH, path="./test2.tif", zoom_adjust=ADJUST)
     ax = ctx.add_basemap(ax, url="./test2.tif")
 
     raster_extent = (-11740803.981631357, -11701668.223149346,
@@ -181,4 +184,5 @@ def test_add_basemap():
     assert ax.images[0].get_array().shape == (1021, 1276, 3)
     assert_array_almost_equal(ax.images[0].get_array().mean(),
                               184.10237852536648)
+    _ = os.system('rm test.tif')
 
