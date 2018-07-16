@@ -10,6 +10,8 @@ from numpy.testing import assert_array_almost_equal
 
 TOL = 7
 
+# Tile
+
 def test_bounds2raster():
     w, s, e, n = (-106.6495132446289, 25.845197677612305,
             -93.50721740722656, 36.49387741088867)
@@ -78,12 +80,13 @@ def test__sm2ll():
     assert round(ne - e, TOL) == 0
     assert round(nn - n, TOL) == 0
 
-
 def test_autozoom():
     w, s, e, n = (-105.3014509, 39.9643513, -105.1780988, 40.094409)
     expected_zoom = 13
     zoom = _calculate_zoom(w, s, e, n)
     assert zoom == expected_zoom
+
+# Place
 
 def test_place():
     search = 'boulder'
@@ -94,6 +97,7 @@ def test_place():
                          4852834.0517692715, 4891969.810251278]
     expected_zoom = 10
     loc = ctx.Place(search, zoom_adjust=adjust)
+    assert loc.im.shape == (256, 256, 3)
     loc  # Make sure repr works
 
     # Check auto picks are correct
@@ -105,11 +109,76 @@ def test_place():
     loc = ctx.Place(search, path="./test2.tif", zoom_adjust=adjust)
     assert os.path.exists("./test2.tif")
 
+    # .plot() method
+    ax = loc.plot()
+    assert_array_almost_equal(loc.bbox_map, ax.images[0].get_extent())
+
+    f, ax = matplotlib.pyplot.subplots(1)
+    ax = loc.plot(ax=ax)
+    assert_array_almost_equal(loc.bbox_map, ax.images[0].get_extent())
+
 def test_plot_map():
+    # Place as a search
     search = 'boulder'
     loc = ctx.Place(search, zoom_adjust=-3)
+    w, e, s, n = loc.bbox_map
     ax = ctx.plot_map(loc)
-    assert ax.get_title() == loc.place
 
+    assert ax.get_title() == loc.place
     ax = ctx.plot_map(loc.im, loc.bbox)
     assert_array_almost_equal(loc.bbox, ax.images[0].get_extent())
+
+    # Place as an image
+    img, ext = ctx.bounds2img(w, s, e, n, zoom=10)
+    ax = ctx.plot_map(img, ext)
+    assert_array_almost_equal(ext, ax.images[0].get_extent())
+
+# Plotting
+
+def test_add_basemap():
+    # Plot boulder bbox as in test_place
+    x1, x2, y1, y2 = [-11740727.544603072, -11701591.786121061,
+                       4852834.0517692715, 4891969.810251278]
+
+    # Test web basemap
+    f, ax = matplotlib.pyplot.subplots(1)
+    ax.set_xlim(x1, x2)
+    ax.set_ylim(y1, y2)
+    ax = ctx.add_basemap(ax, zoom=10)
+
+    ax_extent = (-11740727.544603072, -11662456.027639052,
+                  4852834.0517692715, 4891969.810251278)
+    assert_array_almost_equal(ax_extent, ax.images[0].get_extent())
+    assert ax.images[0].get_array().sum() == 75687792
+    assert ax.images[0].get_array().shape == (256, 511, 3)
+    assert_array_almost_equal(ax.images[0].get_array().mean(),
+                              192.86068982387476)
+
+    # Test local source
+    f, ax = matplotlib.pyplot.subplots(1)
+    ax.set_xlim(x1, x2)
+    ax.set_ylim(y1, y2)
+    ax = ctx.add_basemap(ax, url="./test2.tif")
+
+    raster_extent = (-11740803.981631357, -11701668.223149346,
+                      4852910.488797557, 4892046.247279563)
+    assert_array_almost_equal(raster_extent, ax.images[0].get_extent())
+    assert ax.images[0].get_array().sum() == 34840247
+    assert ax.images[0].get_array().shape == (256, 256, 3)
+    assert_array_almost_equal(ax.images[0].get_array().mean(),
+                              177.20665995279947)
+
+    # Test with auto-zoom
+    f, ax = matplotlib.pyplot.subplots(1)
+    ax.set_xlim(x1, x2)
+    ax.set_ylim(y1, y2)
+    ax = ctx.add_basemap(ax, zoom='auto')
+
+    ax_extent = (-11740727.544603072, -11691807.846500559,
+                  4852834.0517692715, 4891969.810251278)
+    assert_array_almost_equal(ax_extent, ax.images[0].get_extent())
+    assert ax.images[0].get_array().sum() == 719543527
+    assert ax.images[0].get_array().shape == (1021, 1276, 3)
+    assert_array_almost_equal(ax.images[0].get_array().mean(),
+                              184.10237852536648)
+
