@@ -66,11 +66,11 @@ def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN,
     >>> plt.show()
 
     '''
+    xmin, xmax, ymin, ymax = ax.axis()
     # If web source
     if url[:4] == 'http':
         # Extent
-        left, right = ax.get_xlim()
-        bottom, top = ax.get_ylim()
+        left, right, bottom, top = xmin, xmax, ymin, ymax
         # Zoom
         if isinstance(zoom, str) and (zoom.lower() == 'auto'):
             min_ll = _sm2ll(left, bottom)
@@ -90,5 +90,6 @@ def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN,
     # Plotting
     ax.imshow(image, extent=extent, 
               interpolation=interpolation, **extra_imshow_args)
+    ax.axis((xmin, xmax, ymin, ymax))
     return ax
 
