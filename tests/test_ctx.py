@@ -149,14 +149,15 @@ def test_add_basemap():
                        4852834.0517692715, 4891969.810251278]
 
     # Test web basemap
-    f, ax = matplotlib.pyplot.subplots(1)
+    fig, ax = matplotlib.pyplot.subplots(1)
     ax.set_xlim(x1, x2)
     ax.set_ylim(y1, y2)
     ax = ctx.add_basemap(ax, zoom=10)
 
-    ax_extent = (-11740727.544603072, -11662456.027639052,
-                  4852834.0517692715, 4891969.810251278)
-    assert_array_almost_equal(ax_extent, ax.images[0].get_extent())
+    # ensure add_basemap did not change the axis limits of ax
+    ax_extent = (x1, x2, y1, y2)
+    assert ax.axis() == ax_extent
+
     assert ax.images[0].get_array().sum() == 75853866
     assert ax.images[0].get_array().shape == (256, 512, 3)
     assert_array_almost_equal(ax.images[0].get_array().mean(),
