@@ -72,7 +72,7 @@ def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN,
         left, right = ax.get_xlim()
         bottom, top = ax.get_ylim()
         # Zoom
-        if (type(zoom) == str) and (zoom.lower() == 'auto'):
+        if isinstance(zoom, str) and (zoom.lower() == 'auto'):
             min_ll = _sm2ll(left, bottom)
             max_ll = _sm2ll(right, top)
             zoom = _calculate_zoom(*min_ll, *max_ll)
