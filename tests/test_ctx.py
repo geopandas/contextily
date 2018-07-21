@@ -1,8 +1,8 @@
 import matplotlib
 matplotlib.use('agg')  # To prevent plots from using display
 import contextily as ctx
-import numpy as np
 import os
+import numpy as np
 import mercantile as mt
 import rasterio as rio
 from contextily.tile import _calculate_zoom
@@ -29,15 +29,18 @@ def test_bounds2raster():
     assert img[100, 100, :].tolist() == [230, 229, 188]
     assert img[100, 200, :].tolist() == [156, 180, 131]
     assert img[200, 100, :].tolist() == [230, 225, 189]
+    assert img.sum() == 36926856
+    assert_array_almost_equal(img.mean(), 187.8197021484375)
 
     # multiple tiles for which result is not square
     w, s, e, n = (2.5135730322461427, 49.529483547557504,
                   6.15665815595878, 51.47502370869813)
-    raster, _ = ctx.bounds2raster(w, s, e, n, 'test.tif', zoom=7, ll=True)
-    rtr = rio.open('test.tif')
-    img = np.array([ band for band in rtr.read() ]).transpose(1, 2, 0)
-    assert raster.shape == img.shape
-    _ = os.system('rm test.tif')
+    img, ext = ctx.bounds2raster(w, s, e, n, 'test2.tif', zoom=7, ll=True)
+    rtr = rio.open('test2.tif')
+    rimg = np.array([ band for band in rtr.read() ]).transpose(1, 2, 0)
+    assert rimg.shape == img.shape
+    assert rimg.sum() == img.sum()
+    assert_array_almost_equal(rimg.mean(), img.mean())
 
 def test_bounds2img():
     w, s, e, n = (-106.6495132446289, 25.845197677612305,
@@ -70,7 +73,6 @@ def test_ll2wdw():
     rtr = rio.open('test.tif')
     wdw = ctx.tile.bb2wdw(hou, rtr)
     assert wdw == ((152, 161), (189, 199))
-    _ = os.system('rm test.tif')
 
 def test__sm2ll():
     w, s, e, n = (-106.6495132446289, 25.845197677612305,
@@ -118,7 +120,6 @@ def test_place():
     f, ax = matplotlib.pyplot.subplots(1)
     ax = loc.plot(ax=ax)
     assert_array_almost_equal(loc.bbox_map, ax.images[0].get_extent())
-    _ = os.system('rm test.tif')
 
 def test_plot_map():
     # Place as a search
@@ -184,5 +185,4 @@ def test_add_basemap():
     assert ax.images[0].get_array().shape == (1021, 1276, 3)
     assert_array_almost_equal(ax.images[0].get_array().mean(),
                               184.10237852536648)
-    _ = os.system('rm test.tif')
 
