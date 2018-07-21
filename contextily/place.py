@@ -2,7 +2,9 @@
 import geopy as gp
 import numpy as np
 import matplotlib.pyplot as plt
+from warnings import warn
 from .tile import howmany, bounds2raster, bounds2img, _sm2ll, _calculate_zoom
+from .plotting import ATTRIBUTION, INTERPOLATION, ZOOM
 
 class Place(object):
     """Geocode a place by name and get its map.
@@ -101,6 +103,61 @@ class Place(object):
         self.bbox_map = bbox
         return im, bbox
 
+    def plot(self, ax=None, zoom=ZOOM, interpolation=INTERPOLATION, 
+             attribution_text = ATTRIBUTION):
+        '''
+        Plot a `Place` object
+        ...
+
+        Arguments
+        ---------
+        ax                  : AxesSubplot
+                              Matplotlib axis with `x_lim` and `y_lim` set in Web
+                              Mercator (EPSG=3857). If not provided, a new
+                              12x12 figure will be set and the name of the place
+                              will be added as title
+        zoom                : int/'auto'
+                              [Optional. Default='auto'] Level of detail for the
+                              basemap. If 'auto', if calculates it automatically.
+                              Ignored if `url` is a local file.
+        interpolation       : str
+                              [Optional. Default='bilinear'] Interpolation
+                              algorithm to be passed to `imshow`. See
+                              `matplotlib.pyplot.imshow` for further details.
+        attribution_text    : str
+                              [Optional. Default=''] Text to be added at the
+                              bottom of the axis.
+
+        Returns
+        -------
+        ax                  : AxesSubplot
+                              Matplotlib axis with `x_lim` and `y_lim` set in Web
+                              Mercator (EPSG=3857) containing the basemap
+
+        Example
+        -------
+
+        >>> lvl = ctx.Place('Liverpool')
+        >>> lvl.plot()
+
+        '''
+        im = self.im
+        bbox = self.bbox_map
+
+        title = None
+        axisoff = False
+        if ax is None:
+            fig, ax = plt.subplots(figsize=(12, 12))
+            title = self.place 
+            axisoff = True
+        ax.imshow(im, extent=bbox, interpolation=interpolation)
+        ax.set(xlabel="X", ylabel="Y")
+        if title is not None:
+            ax.set(title=title)
+        if axisoff:
+            ax.set_axis_off()
+        return ax
+
     def __repr__(self):
         s = 'Place : {} | n_tiles: {} | zoom : {} | im : {}'.format(
             self.place, self.n_tiles, self.zoom, self.im.shape[:2])
@@ -125,6 +182,9 @@ def plot_map(place, bbox=None, title=None, ax=None, axis_off=True, latlon=True):
     ax : instance of matplotlib Axes object | None
         The axis on the map is plotted.
     """
+    warn( ("The method `plot_map` is deprecated and will be removed from the"\
+            " library in future versions. Please use either `add_basemap` or"\
+            " the internal method `Place.plot`"), DeprecationWarning)
     if not isinstance(place, Place):
         im = place
         bbox = bbox
