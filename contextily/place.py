@@ -105,7 +105,7 @@ class Place(object):
 
     def plot(self, ax=None, zoom=ZOOM, interpolation=INTERPOLATION, 
              attribution_text = ATTRIBUTION):
-        '''
+        """
         Plot a `Place` object
         ...
 
@@ -140,7 +140,7 @@ class Place(object):
         >>> lvl = ctx.Place('Liverpool')
         >>> lvl.plot()
 
-        '''
+        """
         im = self.im
         bbox = self.bbox_map
 
