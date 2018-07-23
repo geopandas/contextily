@@ -236,8 +236,8 @@ def _sm2ll(x, y):
     shift = np.pi * rMajor
     lon = x / shift * 180.
     lat = y / shift * 180.
-    lat = 180. / np.pi * (2. * np.arctan( np.exp( lat * np.pi / 180.) ) - \
-            np.pi / 2.)
+    lat = 180. / np.pi * (2. * np.arctan( np.exp( lat * np.pi / 180.) ) -
+                          np.pi / 2.)
     return lon, lat
 
 def _calculate_zoom(w, s, e, n):

@@ -182,9 +182,9 @@ def plot_map(place, bbox=None, title=None, ax=None, axis_off=True, latlon=True):
     ax : instance of matplotlib Axes object | None
         The axis on the map is plotted.
     """
-    warn( ("The method `plot_map` is deprecated and will be removed from the"\
-            " library in future versions. Please use either `add_basemap` or"\
-            " the internal method `Place.plot`"), DeprecationWarning)
+    warn( ("The method `plot_map` is deprecated and will be removed from the"
+           " library in future versions. Please use either `add_basemap` or"
+           " the internal method `Place.plot`"), DeprecationWarning)
     if not isinstance(place, Place):
         im = place
         bbox = bbox
