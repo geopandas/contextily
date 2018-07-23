@@ -1,6 +1,4 @@
 """Tools for downloading map tiles from coordinates."""
-from __future__ import (absolute_import, division, print_function)
-
 import mercantile as mt
 from cartopy.io.img_tiles import _merge_tiles as merge_tiles
 from six.moves.urllib.request import urlopen
