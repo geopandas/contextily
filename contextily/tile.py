@@ -1,15 +1,17 @@
 """Tools for downloading map tiles from coordinates."""
-import mercantile as mt
-from cartopy.io.img_tiles import _merge_tiles as merge_tiles
-from six.moves.urllib.request import urlopen
-import six
-from PIL import Image
+import io
+from urllib.request import urlopen
+
 import numpy as np
+
+import mercantile as mt
 import pandas as pd
 import rasterio as rio
+from cartopy.io.img_tiles import _merge_tiles as merge_tiles
+from PIL import Image
 from rasterio.transform import from_origin
-from . import tile_providers as sources
 
+from . import tile_providers as sources
 
 __all__ = ['bounds2raster', 'bounds2img', 'howmany']
 
@@ -128,7 +130,7 @@ def bounds2img(w, s, e, n, zoom='auto',
         tile_url = url.replace('tileX', str(x)).replace('tileY', str(y)).replace('tileZ', str(z))
         #---
         fh = urlopen(tile_url)
-        im_data = six.BytesIO(fh.read())
+        im_data = io.BytesIO(fh.read())
         fh.close()
         imgr = Image.open(im_data)
         imgr = imgr.convert('RGB')
