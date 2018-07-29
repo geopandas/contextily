@@ -5,9 +5,14 @@ with open('requirements.txt') as f:
     tests_require = f.readlines()
 install_requires = [t.strip() for t in tests_require]
 
+with open('README.md') as f:
+    long_description = f.read()
+
 setup(name='contextily',
       version='0.99.0',
       description='Context geo-tiles in Python',
+      long_description=long_description,
+      long_description_content_type='text/markdown',
       url='https://github.com/darribas/contextily',
       author='Dani Arribas-Bel',
       author_email='daniel.arribas.bel@gmail.com',
