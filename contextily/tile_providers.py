@@ -4,7 +4,7 @@
 
 ST_TONER = 'http://tile.stamen.com/toner/tileZ/tileX/tileY.png'
 ST_TONER_HYBRID = 'http://tile.stamen.com/toner-hybrid/tileZ/tileX/tileY.png'
-ST_TONER_HYBRID = 'http://tile.stamen.com/toner-labels/tileZ/tileX/tileY.png'
+ST_TONER_LABELS = 'http://tile.stamen.com/toner-labels/tileZ/tileX/tileY.png'
 ST_TONER_LINES = 'http://tile.stamen.com/toner-lines/tileZ/tileX/tileY.png'
 ST_TONER_BACKGROUND = 'http://tile.stamen.com/toner-background/tileZ/tileX/tileY.png'
 ST_TONER_LITE = 'http://tile.stamen.com/toner-lite/tileZ/tileX/tileY.png'

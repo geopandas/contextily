@@ -1,23 +1,23 @@
 """Tools for downloading map tiles from coordinates."""
-from __future__ import (absolute_import, division, print_function)
+import io
+from urllib.request import urlopen
+
+import numpy as np
 
 import mercantile as mt
-from cartopy.io.img_tiles import _merge_tiles as merge_tiles
-from six.moves.urllib.request import urlopen
-import six
-from PIL import Image
-import numpy as np
 import pandas as pd
 import rasterio as rio
+from cartopy.io.img_tiles import _merge_tiles as merge_tiles
+from PIL import Image
 from rasterio.transform import from_origin
-from . import tile_providers as sources
 
+from . import tile_providers as sources
 
 __all__ = ['bounds2raster', 'bounds2img', 'howmany']
 
 def bounds2raster(w, s, e, n, path, zoom='auto', 
                   url=sources.ST_TERRAIN, ll=False):
-    '''
+    """
     Take bounding box and zoom, and write tiles into a raster file in
     the Spherical Mercator CRS (EPSG:3857)
 
@@ -52,7 +52,7 @@ def bounds2raster(w, s, e, n, path, zoom='auto',
               Image as a 3D array of RGB values
     extent  : tuple
               Bounding box [minX, maxX, minY, maxY] of the returned image
-    '''
+    """
     if not ll:
         # Convert w, s, e, n into lon/lat
         w, s = _sm2ll(w, s)
@@ -84,7 +84,7 @@ def bounds2raster(w, s, e, n, path, zoom='auto',
 
 def bounds2img(w, s, e, n, zoom='auto',
         url=sources.ST_TERRAIN, ll=False):
-    '''
+    """
     Take bounding box and zoom and return an image with all the tiles
     that compose the map and its Spherical Mercator extent.
 
@@ -117,7 +117,7 @@ def bounds2img(w, s, e, n, zoom='auto',
               Image as a 3D array of RGB values
     extent  : tuple
               Bounding box [minX, maxX, minY, maxY] of the returned image
-    '''
+    """
     if not ll:
         # Convert w, s, e, n into lon/lat
         w, s = _sm2ll(w, s)
@@ -130,7 +130,7 @@ def bounds2img(w, s, e, n, zoom='auto',
         tile_url = url.replace('tileX', str(x)).replace('tileY', str(y)).replace('tileZ', str(z))
         #---
         fh = urlopen(tile_url)
-        im_data = six.BytesIO(fh.read())
+        im_data = io.BytesIO(fh.read())
         fh.close()
         imgr = Image.open(im_data)
         imgr = imgr.convert('RGB')
@@ -149,7 +149,7 @@ def bounds2img(w, s, e, n, zoom='auto',
     return merged[::-1], extent
 
 def howmany(w, s, e, n, zoom, verbose=True, ll=False):
-    '''
+    """
     Number of tiles required for a given bounding box and a zoom level
     ...
 
@@ -171,7 +171,7 @@ def howmany(w, s, e, n, zoom, verbose=True, ll=False):
     ll      : Boolean
               [Optional. Default: False] If True, `w`, `s`, `e`, `n` are
               assumed to be lon/lat as opposed to Spherical Mercator.
-    '''
+    """
     if not ll:
         # Convert w, s, e, n into lon/lat
         w, s = _sm2ll(w, s)
@@ -185,7 +185,7 @@ def howmany(w, s, e, n, zoom, verbose=True, ll=False):
     return tiles
 
 def bb2wdw(bb, rtr):
-    '''
+    """
     Convert XY bounding box into the window of the tile raster
     ...
 
@@ -200,7 +200,7 @@ def bb2wdw(bb, rtr):
     -------
     window  : tuple
               ((row_start, row_stop), (col_start, col_stop))
-    '''
+    """
     rbb = rtr.bounds
     xi = pd.Series(np.linspace(rbb.left, rbb.right, rtr.shape[1]))
     yi = pd.Series(np.linspace(rbb.bottom, rbb.top, rtr.shape[0]))
@@ -213,7 +213,7 @@ def bb2wdw(bb, rtr):
     return window
 
 def _sm2ll(x, y):
-    '''
+    """
     Transform Spherical Mercator coordinates point into lon/lat
 
     NOTE: Translated from the JS implementation in
@@ -231,13 +231,13 @@ def _sm2ll(x, y):
     -------
     ll      : tuple
               lon/lat coordinates
-    '''
+    """
     rMajor = 6378137. # Equatorial Radius, QGS84
     shift = np.pi * rMajor
     lon = x / shift * 180.
     lat = y / shift * 180.
-    lat = 180. / np.pi * (2. * np.arctan( np.exp( lat * np.pi / 180.) ) - \
-            np.pi / 2.)
+    lat = 180. / np.pi * (2. * np.arctan( np.exp( lat * np.pi / 180.) ) -
+                          np.pi / 2.)
     return lon, lat
 
 def _calculate_zoom(w, s, e, n):
