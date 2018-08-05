@@ -120,7 +120,7 @@ def add_attribution(ax, att=ATTRIBUTION):
     minY, maxY = ax.get_ylim()
     ax.text(minX + (maxX - minX) * 0.005, 
             minY + (maxY - minY) * 0.005, 
-            lic, size=8, 
+            att, size=8, 
             path_effects=[patheffects.withStroke(linewidth=2,
                                                  foreground="w")])
     return ax
