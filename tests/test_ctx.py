@@ -193,3 +193,7 @@ def test_add_basemap():
     assert_array_almost_equal(ax.images[0].get_array().mean(),
                               184.10237852536648)
 
+def test_attribution():
+    f, ax = matplotlib.pyplot.subplots(1)
+    ax = ctx.add_attribution(ax, 'Test')
+
