@@ -11,7 +11,7 @@ ZOOM = 'auto'
 def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN, 
 		interpolation=INTERPOLATION, attribution_text = ATTRIBUTION, 
                 **extra_imshow_args):
-    '''
+    """
     Add a (web/local) basemap to `ax`
     ...
 
@@ -65,7 +65,7 @@ def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN,
     >>> ax = ctx.add_basemap(ax, url=url)
     >>> plt.show()
 
-    '''
+    """
     # If web source
     if url[:4] == 'http':
         # Extent

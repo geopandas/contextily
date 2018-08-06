@@ -6,7 +6,6 @@ only:
 os:
   - linux
 python:
-  - 2.7
   - 3.5
   - 3.6
 before_install:
