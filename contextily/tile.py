@@ -1,23 +1,26 @@
 """Tools for downloading map tiles from coordinates."""
-import io
-from urllib.request import urlopen
-
-import numpy as np
+from __future__ import (absolute_import, division, print_function)
 
 import mercantile as mt
+import requests
+import io
+import os
+import numpy as np
 import pandas as pd
 import rasterio as rio
-from cartopy.io.img_tiles import _merge_tiles as merge_tiles
 from PIL import Image
+from cartopy.io.img_tiles import _merge_tiles as merge_tiles
 from rasterio.transform import from_origin
-
 from . import tile_providers as sources
+
 
 __all__ = ['bounds2raster', 'bounds2img', 'howmany']
 
-def bounds2raster(w, s, e, n, path, zoom='auto', 
-                  url=sources.ST_TERRAIN, ll=False):
-    """
+
+def bounds2raster(w, s, e, n, path, zoom='auto',
+                  url=sources.ST_TERRAIN, ll=False,
+                  wait=0, max_retries=2):
+    '''
     Take bounding box and zoom, and write tiles into a raster file in
     the Spherical Mercator CRS (EPSG:3857)
 
@@ -45,6 +48,14 @@ def bounds2raster(w, s, e, n, path, zoom='auto',
     ll      : Boolean
               [Optional. Default: False] If True, `w`, `s`, `e`, `n` are
               assumed to be lon/lat as opposed to Spherical Mercator.
+    wait    : int
+              [Optional. Default: 0]
+              if the tile API is rate-limited, the number of seconds to wait
+              between a failed request and the next try
+    max_retries: int
+                 [Optional. Default: 2]
+                 total number of rejected requests allowed before contextily
+                 will stop trying to fetch more tiles from a rate-limited API.
 
     Returns
     -------
@@ -52,7 +63,7 @@ def bounds2raster(w, s, e, n, path, zoom='auto',
               Image as a 3D array of RGB values
     extent  : tuple
               Bounding box [minX, maxX, minY, maxY] of the returned image
-    """
+    '''
     if not ll:
         # Convert w, s, e, n into lon/lat
         w, s = _sm2ll(w, s)
@@ -62,9 +73,9 @@ def bounds2raster(w, s, e, n, path, zoom='auto',
     # Download
     Z, ext = bounds2img(w, s, e, n, zoom=zoom, url=url, ll=True)
     # Write
-    #---
+    # ---
     h, w, b = Z.shape
-    #--- https://mapbox.github.io/rasterio/quickstart.html#opening-a-dataset-in-writing-mode
+    # --- https://mapbox.github.io/rasterio/quickstart.html#opening-a-dataset-in-writing-mode
     minX, maxX, minY, maxY = ext
     x = np.linspace(minX, maxX, w)
     y = np.linspace(minY, maxY, h)
@@ -72,19 +83,21 @@ def bounds2raster(w, s, e, n, path, zoom='auto',
     resY = (y[-1] - y[0]) / h
     transform = from_origin(x[0] - resX / 2,
                             y[-1] + resY / 2, resX, resY)
-    #---
+    # ---
     raster = rio.open(path, 'w',
                       driver='GTiff', height=h, width=w,
                       count=b, dtype=str(Z.dtype.name),
                       crs='epsg:3857', transform=transform)
     for band in range(b):
-        raster.write(Z[:, :, band], band+1)
+        raster.write(Z[:, :, band], band + 1)
     raster.close()
     return Z, ext
 
+
 def bounds2img(w, s, e, n, zoom='auto',
-        url=sources.ST_TERRAIN, ll=False):
-    """
+               url=sources.ST_TERRAIN, ll=False,
+               wait=0, max_retries=2):
+    '''
     Take bounding box and zoom and return an image with all the tiles
     that compose the map and its Spherical Mercator extent.
 
@@ -110,6 +123,14 @@ def bounds2img(w, s, e, n, zoom='auto',
     ll      : Boolean
               [Optional. Default: False] If True, `w`, `s`, `e`, `n` are
               assumed to be lon/lat as opposed to Spherical Mercator.
+    wait    : int
+              [Optional. Default: 0]
+              if the tile API is rate-limited, the number of seconds to wait
+              between a failed request and the next try
+    max_retries: int
+                 [Optional. Default: 2]
+                 total number of rejected requests allowed before contextily
+                 will stop trying to fetch more tiles from a rate-limited API.
 
     Returns
     -------
@@ -117,7 +138,7 @@ def bounds2img(w, s, e, n, zoom='auto',
               Image as a 3D array of RGB values
     extent  : tuple
               Bounding box [minX, maxX, minY, maxY] of the returned image
-    """
+    '''
     if not ll:
         # Convert w, s, e, n into lon/lat
         w, s = _sm2ll(w, s)
@@ -128,18 +149,16 @@ def bounds2img(w, s, e, n, zoom='auto',
     for t in mt.tiles(w, s, e, n, [zoom]):
         x, y, z = t.x, t.y, t.z
         tile_url = url.replace('tileX', str(x)).replace('tileY', str(y)).replace('tileZ', str(z))
-        #---
-        fh = urlopen(tile_url)
-        im_data = io.BytesIO(fh.read())
-        fh.close()
-        imgr = Image.open(im_data)
-        imgr = imgr.convert('RGB')
-        #---
-        img = np.array(imgr)
+        # ---
+        request = _retryer(tile_url, wait, max_retries)
+        with io.BytesIO(request.content) as image_stream:
+            image = Image.open(image_stream).convert('RGB')
+            image = np.asarray(image)
+        # ---
         wt, st, et, nt = mt.bounds(t)
-        xr = np.linspace(wt, et, img.shape[0])
-        yr = np.linspace(st, nt, img.shape[1])
-        tiles.append([img, xr, yr, 'lower'])
+        xr = np.linspace(wt, et, image.shape[0])
+        yr = np.linspace(st, nt, image.shape[1])
+        tiles.append([image, xr, yr, 'lower'])
     merged, extent = merge_tiles(tiles)[:2]
     # lon/lat extent --> Spheric Mercator
     minX, maxX, minY, maxY = extent
@@ -148,8 +167,46 @@ def bounds2img(w, s, e, n, zoom='auto',
     extent = w, e, s, n
     return merged[::-1], extent
 
-def howmany(w, s, e, n, zoom, verbose=True, ll=False):
+
+def _retryer(tile_url, wait, max_retries):
     """
+    Retry a url many times in attempt to get a tile
+
+    Arguments
+    ---------
+    tile_url: str
+              string that is the target of the web request. Should be
+              a properly-formatted url for a tile provider.
+    wait    : int
+              if the tile API is rate-limited, the number of seconds to wait
+              between a failed request and the next try
+    max_retries: int
+                 total number of rejected requests allowed before contextily
+                 will stop trying to fetch more tiles from a rate-limited API.
+
+    Returns
+    -------
+    request object containing the web response.
+    """
+    try:
+        request = requests.get(tile_url)
+        request.raise_for_status()
+    except requests.HTTPError:
+        if request.status_code == 404:
+            raise requests.HTTPError('Tile URL resulted in a 404 error. '
+                                     'Double-check your tile url:\n{}'.format(tile_url))
+        elif request.status_code == 104:
+            if max_retries > 0:
+                os.wait(wait)
+                max_retries -= 1
+                request = _retryer(tile_url, wait, max_retries)
+            else:
+                raise requests.HTTPError('Connection reset by peer too many times.')
+    return request
+
+
+def howmany(w, s, e, n, zoom, verbose=True, ll=False):
+    '''
     Number of tiles required for a given bounding box and a zoom level
     ...
 
@@ -171,7 +228,7 @@ def howmany(w, s, e, n, zoom, verbose=True, ll=False):
     ll      : Boolean
               [Optional. Default: False] If True, `w`, `s`, `e`, `n` are
               assumed to be lon/lat as opposed to Spherical Mercator.
-    """
+    '''
     if not ll:
         # Convert w, s, e, n into lon/lat
         w, s = _sm2ll(w, s)
@@ -180,12 +237,13 @@ def howmany(w, s, e, n, zoom, verbose=True, ll=False):
         zoom = _calculate_zoom(w, s, e, n)
     tiles = len(list(mt.tiles(w, s, e, n, [zoom])))
     if verbose:
-        print("Using zoom level %i, this will download %i tiles"%(zoom,
-            tiles))
+        print("Using zoom level %i, this will download %i tiles" % (zoom,
+              tiles))
     return tiles
 
+
 def bb2wdw(bb, rtr):
-    """
+    '''
     Convert XY bounding box into the window of the tile raster
     ...
 
@@ -200,20 +258,21 @@ def bb2wdw(bb, rtr):
     -------
     window  : tuple
               ((row_start, row_stop), (col_start, col_stop))
-    """
+    '''
     rbb = rtr.bounds
     xi = pd.Series(np.linspace(rbb.left, rbb.right, rtr.shape[1]))
     yi = pd.Series(np.linspace(rbb.bottom, rbb.top, rtr.shape[0]))
 
     window = ((rtr.shape[0] - yi.searchsorted(bb[3])[0],
               rtr.shape[0] - yi.searchsorted(bb[1])[0]),
-             (xi.searchsorted(bb[0])[0],
+              (xi.searchsorted(bb[0])[0],
                xi.searchsorted(bb[2])[0])
-             )
+              )
     return window
 
+
 def _sm2ll(x, y):
-    """
+    '''
     Transform Spherical Mercator coordinates point into lon/lat
 
     NOTE: Translated from the JS implementation in
@@ -231,14 +290,14 @@ def _sm2ll(x, y):
     -------
     ll      : tuple
               lon/lat coordinates
-    """
-    rMajor = 6378137. # Equatorial Radius, QGS84
+    '''
+    rMajor = 6378137.  # Equatorial Radius, QGS84
     shift = np.pi * rMajor
     lon = x / shift * 180.
     lat = y / shift * 180.
-    lat = 180. / np.pi * (2. * np.arctan( np.exp( lat * np.pi / 180.) ) -
-                          np.pi / 2.)
+    lat = 180. / np.pi * (2. * np.arctan(np.exp(lat * np.pi / 180.)) - np.pi / 2.)
     return lon, lat
+
 
 def _calculate_zoom(w, s, e, n):
     """Automatically choose a zoom level given a desired number of tiles.
