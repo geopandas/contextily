@@ -9,7 +9,7 @@ with open('README.md') as f:
     long_description = f.read()
 
 setup(name='contextily',
-      version='0.99.0',
+      version='1.0.rc1',
       description='Context geo-tiles in Python',
       long_description=long_description,
       long_description_content_type='text/markdown',
