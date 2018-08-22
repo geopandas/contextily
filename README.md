@@ -27,7 +27,7 @@ the internet into geospatial raster files. Bounding boxes can be passed in both 
 * `pandas`
 * `pillow`
 * `rasterio`
-* `urllib2`
+* `requests`
 * `geopy`
 
 ## Installation
