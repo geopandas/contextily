@@ -45,8 +45,8 @@ def test_bounds2raster():
                                     6261721.35712164, 6887893.492833804))
     assert_array_almost_equal(ext, (0.0, 939258.2035682457, 
                                     6261721.35712164, 6887893.492833804))
-    rtr_bounds = [-613.0928221724841, 6262334.050013727, \
-                   938645.1107460733, 6888506.185725891]
+    rtr_bounds = [-613.0928221724841, 6262334.050013727,
+                  938645.1107460733, 6888506.185725891]
     assert_array_almost_equal(list(rtr.bounds), rtr_bounds)
 
 def test_bounds2img():
@@ -192,4 +192,8 @@ def test_add_basemap():
     assert ax.images[0].get_array().shape == (1021, 1276, 3)
     assert_array_almost_equal(ax.images[0].get_array().mean(),
                               184.10237852536648)
+
+def test_attribution():
+    f, ax = matplotlib.pyplot.subplots(1)
+    ax = ctx.add_attribution(ax, 'Test')
 

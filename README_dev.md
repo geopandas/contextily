@@ -12,12 +12,15 @@ This assumes you also have installed `pytest-cov`.
 
 ## Releasing
 
-Cutting a release and updating to `pypi` requires the following steps:
+Cutting a release and updating to `pypi` requires the following steps (from
+[here](https://packaging.python.org/tutorials/packaging-projects/)]):
 
+* Make sure you have installed the following libraries:
+    * `twine`
+    * `setuptools`
+    * `wheel`
 * Make sure tests pass locally and on CI.
 * Update the version on `setup.py`
-* Run `python setup.py sdist`.
-* When connected to the internet, run `python setup.py register` to login on
-  PyPi.
-* When ready to push up, run `python setup.py sdist upload`.
+* Run `python setup.py sdist bdist_wheel`.
+* When ready to push up, run `twine upload dist/*`.
 

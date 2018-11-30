@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from warnings import warn
 from .tile import howmany, bounds2raster, bounds2img, _sm2ll, _calculate_zoom
-from .plotting import ATTRIBUTION, INTERPOLATION, ZOOM
+from .plotting import ATTRIBUTION, INTERPOLATION, ZOOM, add_attribution
 
 class Place(object):
     """Geocode a place by name and get its map.
@@ -104,8 +104,8 @@ class Place(object):
         return im, bbox
 
     def plot(self, ax=None, zoom=ZOOM, interpolation=INTERPOLATION, 
-             attribution_text = ATTRIBUTION):
-        '''
+             attribution = ATTRIBUTION):
+        """
         Plot a `Place` object
         ...
 
@@ -124,8 +124,8 @@ class Place(object):
                               [Optional. Default='bilinear'] Interpolation
                               algorithm to be passed to `imshow`. See
                               `matplotlib.pyplot.imshow` for further details.
-        attribution_text    : str
-                              [Optional. Default=''] Text to be added at the
+        attribution         : str
+                              [Optional. Defaults to standard `ATTRIBUTION`] Text to be added at the
                               bottom of the axis.
 
         Returns
@@ -140,7 +140,7 @@ class Place(object):
         >>> lvl = ctx.Place('Liverpool')
         >>> lvl.plot()
 
-        '''
+        """
         im = self.im
         bbox = self.bbox_map
 
@@ -152,6 +152,8 @@ class Place(object):
             axisoff = True
         ax.imshow(im, extent=bbox, interpolation=interpolation)
         ax.set(xlabel="X", ylabel="Y")
+        if attribution:
+            add_attribution(ax, attribution)
         if title is not None:
             ax.set(title=title)
         if axisoff:
@@ -163,7 +165,8 @@ class Place(object):
             self.place, self.n_tiles, self.zoom, self.im.shape[:2])
         return s
 
-def plot_map(place, bbox=None, title=None, ax=None, axis_off=True, latlon=True):
+def plot_map(place, bbox=None, title=None, ax=None, axis_off=True,
+        latlon=True, attribution = ATTRIBUTION):
     """Plot a map of the given place.
 
     Parameters
@@ -176,15 +179,18 @@ def plot_map(place, bbox=None, title=None, ax=None, axis_off=True, latlon=True):
         The axis on which to plot. If None, one will be created.
     axis_off : bool
         Whether to turn off the axis border and ticks before plotting.
+    attribution : str
+                  [Optional. Default to standard `ATTRIBUTION`] Text to be added at the
+                  bottom of the axis.
 
     Returns
     -------
     ax : instance of matplotlib Axes object | None
         The axis on the map is plotted.
     """
-    warn( ("The method `plot_map` is deprecated and will be removed from the"\
-            " library in future versions. Please use either `add_basemap` or"\
-            " the internal method `Place.plot`"), DeprecationWarning)
+    warn( ("The method `plot_map` is deprecated and will be removed from the"
+           " library in future versions. Please use either `add_basemap` or"
+           " the internal method `Place.plot`"), DeprecationWarning)
     if not isinstance(place, Place):
         im = place
         bbox = bbox
@@ -208,7 +214,8 @@ def plot_map(place, bbox=None, title=None, ax=None, axis_off=True, latlon=True):
     ax.set(xlabel="X", ylabel="Y")
     if title is not None:
         ax.set(title=title)
-
+    if attribution:
+        add_attribution(ax, attribution)
     if axis_off is True:
         ax.set_axis_off()
     return ax

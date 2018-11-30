@@ -3,15 +3,17 @@
 import numpy as np
 from . import tile_providers as sources
 from .tile import _calculate_zoom, bounds2img, _sm2ll
+from matplotlib import patheffects
 
-ATTRIBUTION = ''
 INTERPOLATION = 'bilinear'
 ZOOM = 'auto'
+ATTRIBUTION = ("Map tiles by Stamen Design, under CC BY 3.0. "\
+               "Data by OpenStreetMap, under ODbL.")
 
 def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN, 
-		interpolation=INTERPOLATION, attribution_text = ATTRIBUTION, 
+		interpolation=INTERPOLATION, attribution = ATTRIBUTION, 
                 **extra_imshow_args):
-    '''
+    """
     Add a (web/local) basemap to `ax`
     ...
 
@@ -33,8 +35,8 @@ def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN,
                           [Optional. Default='bilinear'] Interpolation
                           algorithm to be passed to `imshow`. See
                           `matplotlib.pyplot.imshow` for further details.
-    attribution_text    : str
-                          [Optional. Default=''] Text to be added at the
+    attribution         : str
+                          [Optional. Defaults to standard `ATTRIBUTION`] Text to be added at the
                           bottom of the axis.
     **extra_imshow_args : dict
                           Other parameters to be passed to `imshow`.
@@ -65,8 +67,9 @@ def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN,
     >>> ax = ctx.add_basemap(ax, url=url)
     >>> plt.show()
 
-    '''
+    """
     xmin, xmax, ymin, ymax = ax.axis()
+    
     # If web source
     if url[:4] == 'http':
         # Extent
@@ -90,6 +93,39 @@ def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN,
     # Plotting
     ax.imshow(image, extent=extent, 
               interpolation=interpolation, **extra_imshow_args)
+
     ax.axis((xmin, xmax, ymin, ymax))
+
+    if attribution:
+        add_attribution(ax, attribution)
+
     return ax
 
+def add_attribution(ax, att=ATTRIBUTION):
+    '''
+    Utility to add attribution text
+    ...
+
+    Arguments
+    ---------
+    ax                  : AxesSubplot
+                          Matplotlib axis with `x_lim` and `y_lim` set in Web
+                          Mercator (EPSG=3857)
+    att                 : str
+                          [Optional. Defaults to standard `ATTRIBUTION`] Text to be added at the
+                          bottom of the axis.
+
+    Returns
+    -------
+    ax                  : AxesSubplot
+                          Matplotlib axis with `x_lim` and `y_lim` set in Web
+                          Mercator (EPSG=3857) and attribution text added
+    '''
+    minX, maxX = ax.get_xlim()
+    minY, maxY = ax.get_ylim()
+    ax.text(minX + (maxX - minX) * 0.005, 
+            minY + (maxY - minY) * 0.005, 
+            att, size=8, 
+            path_effects=[patheffects.withStroke(linewidth=2,
+                                                 foreground="w")])
+    return ax

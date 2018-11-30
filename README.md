@@ -1,7 +1,7 @@
 `contextily`: context geo tiles in Python
 -----------------------------------------
 
-`contextily` is a small package to retrieve and write to disk tile maps from
+`contextily` is a small Python 3 package to retrieve and write to disk tile maps from
 the internet into geospatial raster files. Bounding boxes can be passed in both WGS84 (`EPSG:4326`) and Spheric Mercator (`EPSG:3857`). See the notebook
 `contextily_guide.ipynb` for usage.
 
@@ -27,11 +27,16 @@ the internet into geospatial raster files. Bounding boxes can be passed in both 
 * `pandas`
 * `pillow`
 * `rasterio`
-* `six`
-* `urllib2`
+* `requests`
 * `geopy`
 
 ## Installation
+
+Python 3 only:
+
+```sh
+pip3 install contextily
+```
 
 ## Contributors
 
