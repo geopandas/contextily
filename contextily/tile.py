@@ -168,6 +168,62 @@ def bounds2img(w, s, e, n, zoom='auto',
     return merged[::-1], extent
 
 
+def warp_tiles(img, ext, 
+               t_crs='EPSG:4326',
+               resampling=Resampling.bilinear):
+    '''
+    Reproject (warp) a Web Mercator basemap into any CRS on-the-fly
+    ...
+    
+    Arguments
+    ---------
+    img         : ndarray
+                  Image as a 3D array of RGB values (e.g. as returned from
+                  `contextily.bounds2img`)
+    ext         : tuple
+                  Bounding box [minX, maxX, minY, maxY] of the returned image,
+                  expressed in Web Mercator (`EPSG:3857`)
+    t_crs       : str/CRS
+                  [Optional. Default='EPSG:4326'] Target CRS, expressed in any
+                  format permitted by rasterio. Defaults to WGS84 (lon/lat)
+    resampling  : <enum 'Resampling'>
+                  [Optional. Default=Resampling.bilinear] Resampling method for
+                  executing warping, expressed as a `rasterio.enums.Resampling
+                  method
+    
+    Returns
+    -------
+    img         : ndarray
+                  Warped Image as a 3D array of RGB values
+    ext         : tuple
+                  Bounding box [minX, maxX, minY, maxY] of the returned (warped)
+                  image
+    '''
+    h, w, b = img.shape
+    # --- https://mapbox.github.io/rasterio/quickstart.html#opening-a-dataset-in-writing-mode
+    minX, maxX, minY, maxY = ext
+    x = np.linspace(minX, maxX, w)
+    y = np.linspace(minY, maxY, h)
+    resX = (x[-1] - x[0]) / w
+    resY = (y[-1] - y[0]) / h
+    transform = from_origin(x[0] - resX / 2,
+                            y[-1] + resY / 2, resX, resY)
+    # --- Write basemap into memory file
+    with MemoryFile() as memfile:
+        with memfile.open(driver='GTiff', height=h, width=w, \
+                          count=b, dtype=str(img.dtype.name), \
+                          crs='epsg:3857', transform=transform) as mraster:
+            for band in range(b):
+                mraster.write(img[:, :, band], band+1)
+            # --- Virtual Warp
+            with WarpedVRT(mraster, crs=t_crs,
+                           resampling=resampling) as vrt:
+                src_wm = vrt.read().transpose(1, 2, 0)
+    bb = vrt.bounds
+    extent = bb.left, bb.right, bb.bottom, bb.top
+    return src_wm, extent
+
+
 def _retryer(tile_url, wait, max_retries):
     """
     Retry a url many times in attempt to get a tile
