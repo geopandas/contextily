@@ -2,7 +2,8 @@
 
 import numpy as np
 from . import tile_providers as sources
-from .tile import _calculate_zoom, bounds2img, _sm2ll
+from .tile import _calculate_zoom, bounds2img, _sm2ll, warp_tiles
+from rasterio.enums import Resampling
 from matplotlib import patheffects
 
 INTERPOLATION = 'bilinear'
@@ -11,7 +12,8 @@ ATTRIBUTION = ("Map tiles by Stamen Design, under CC BY 3.0. "\
                "Data by OpenStreetMap, under ODbL.")
 
 def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN, 
-		interpolation=INTERPOLATION, attribution = ATTRIBUTION, 
+		interpolation=INTERPOLATION, attribution=ATTRIBUTION, 
+                crs=None, resampling=Resampling.bilinear,
                 **extra_imshow_args):
     """
     Add a (web/local) basemap to `ax`
@@ -38,6 +40,15 @@ def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN,
     attribution         : str
                           [Optional. Defaults to standard `ATTRIBUTION`] Text to be added at the
                           bottom of the axis.
+    crs                 : None/str/CRS
+                          [Optional. Default=None] CRS, expressed
+                          in any format permitted by rasterio, to use for the
+                          resulting basemap. If None, the original Web
+                          Mercator (`EPSG:3857`) is used.
+    resampling          : <enum 'Resampling'>
+                          [Optional. Default=Resampling.bilinear] Resampling 
+                          method for executing warping, expressed as a 
+                          `rasterio.enums.Resampling method
     **extra_imshow_args : dict
                           Other parameters to be passed to `imshow`.
 
@@ -89,6 +100,10 @@ def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN,
                   .transpose(1, 2, 0)
         bb = raster.bounds
         extent = bb.left, bb.right, bb.bottom, bb.top
+    # Warping
+    if crs is not None:
+        image, extent = warp_tiles(image, extent, t_crs=crs,
+                                   resampling=resampling)
     # Plotting
     ax.imshow(image, extent=extent, 
               interpolation=interpolation, **extra_imshow_args)
