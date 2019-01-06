@@ -11,6 +11,9 @@ import rasterio as rio
 from PIL import Image
 from cartopy.io.img_tiles import _merge_tiles as merge_tiles
 from rasterio.transform import from_origin
+from rasterio.io import MemoryFile
+from rasterio.vrt import WarpedVRT
+from rasterio.enums import Resampling
 from . import tile_providers as sources
 
 
