@@ -9,7 +9,6 @@ import numpy as np
 import pandas as pd
 import rasterio as rio
 from PIL import Image
-from cartopy.io.img_tiles import _merge_tiles as merge_tiles
 from rasterio.transform import from_origin
 from . import tile_providers as sources
 
@@ -146,6 +145,7 @@ def bounds2img(w, s, e, n, zoom='auto',
     if zoom == 'auto':
         zoom = _calculate_zoom(w, e, s, n)
     tiles = []
+    arrays = []
     for t in mt.tiles(w, s, e, n, [zoom]):
         x, y, z = t.x, t.y, t.z
         tile_url = url.replace('tileX', str(x)).replace('tileY', str(y)).replace('tileZ', str(z))
@@ -155,17 +155,15 @@ def bounds2img(w, s, e, n, zoom='auto',
             image = Image.open(image_stream).convert('RGB')
             image = np.asarray(image)
         # ---
-        wt, st, et, nt = mt.bounds(t)
-        xr = np.linspace(wt, et, image.shape[0])
-        yr = np.linspace(st, nt, image.shape[1])
-        tiles.append([image, xr, yr, 'lower'])
-    merged, extent = merge_tiles(tiles)[:2]
+        tiles.append(t)
+        arrays.append(image)
+    merged, extent = _merge_tiles(tiles, arrays)
     # lon/lat extent --> Spheric Mercator
-    minX, maxX, minY, maxY = extent
-    w, s = mt.xy(minX, minY)
-    e, n = mt.xy(maxX, maxY)
-    extent = w, e, s, n
-    return merged[::-1], extent
+    west, south, east, north = extent
+    left, bottom = mt.xy(west, south)
+    right, top = mt.xy(east, north)
+    extent = left, right, bottom, top
+    return merged, extent
 
 
 def _retryer(tile_url, wait, max_retries):
@@ -332,3 +330,31 @@ def _calculate_zoom(w, s, e, n):
     zoom_lat = np.ceil(np.log2(360 * 2. / lat_length))
     zoom = np.max([zoom_lon, zoom_lat])
     return int(zoom)
+
+
+def _merge_tiles(tiles, arrays):
+    # create n_tilesx2 array with column of x and y coordinates
+    tile_xys = np.array([(t.x, t.y) for t in tiles])
+    
+    # get indices starting at zero
+    indices = tile_xys - tile_xys.min(axis=0)
+
+    # the shape of individual tile images
+    h, w, d = arrays[0].shape
+    
+    # number of rows and columns in the merged tile
+    n0, n1 = (indices+1).max(axis=0)
+
+    # empty merged tiles array to be filled in
+    img = np.zeros((h*n0, w*n1, d), dtype=np.uint8)
+
+    for ind, arr in zip(indices, arrays):
+        x, y = ind
+        img[y*h:(y+1)*h, x*w:(x+1)*w, :] = arr
+
+    bounds = np.array([mt.bounds(t) for t in tiles])
+    west, south, east, north = (
+        min(bounds[:, 0]), min(bounds[:, 1]),
+        max(bounds[:, 2]), max(bounds[:, 3]))
+    
+    return img, (west, south, east, north)
