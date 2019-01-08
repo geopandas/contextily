@@ -335,18 +335,18 @@ def _calculate_zoom(w, s, e, n):
 def _merge_tiles(tiles, arrays):
     # create n_tilesx2 array with column of x and y coordinates
     tile_xys = np.array([(t.x, t.y) for t in tiles])
-    
+
     # get indices starting at zero
     indices = tile_xys - tile_xys.min(axis=0)
 
     # the shape of individual tile images
     h, w, d = arrays[0].shape
-    
+
     # number of rows and columns in the merged tile
-    n0, n1 = (indices+1).max(axis=0)
+    n_x, n_y = (indices+1).max(axis=0)
 
     # empty merged tiles array to be filled in
-    img = np.zeros((h*n0, w*n1, d), dtype=np.uint8)
+    img = np.zeros((h * n_y, w * n_x, d), dtype=np.uint8)
 
     for ind, arr in zip(indices, arrays):
         x, y = ind
@@ -356,5 +356,5 @@ def _merge_tiles(tiles, arrays):
     west, south, east, north = (
         min(bounds[:, 0]), min(bounds[:, 1]),
         max(bounds[:, 2]), max(bounds[:, 3]))
-    
+
     return img, (west, south, east, north)
