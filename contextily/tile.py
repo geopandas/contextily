@@ -260,13 +260,13 @@ def bb2wdw(bb, rtr):
               ((row_start, row_stop), (col_start, col_stop))
     '''
     rbb = rtr.bounds
-    xi = pd.Series(np.linspace(rbb.left, rbb.right, rtr.shape[1]))
-    yi = pd.Series(np.linspace(rbb.bottom, rbb.top, rtr.shape[0]))
+    xi = np.linspace(rbb.left, rbb.right, rtr.shape[1])
+    yi = np.linspace(rbb.bottom, rbb.top, rtr.shape[0])
 
-    window = ((rtr.shape[0] - yi.searchsorted(bb[3])[0],
-              rtr.shape[0] - yi.searchsorted(bb[1])[0]),
-              (xi.searchsorted(bb[0])[0],
-               xi.searchsorted(bb[2])[0])
+    window = ((rtr.shape[0] - yi.searchsorted(bb[3]),
+              rtr.shape[0] - yi.searchsorted(bb[1])),
+              (xi.searchsorted(bb[0]),
+               xi.searchsorted(bb[2]))
               )
     return window
 
