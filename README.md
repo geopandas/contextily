@@ -24,6 +24,7 @@ the internet into geospatial raster files. Bounding boxes can be passed in both 
 * `mercantile`
 * `numpy`
 * `pandas`
+- `matplotlib`
 * `pillow`
 * `rasterio`
 * `requests`

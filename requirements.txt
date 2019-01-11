@@ -1,4 +1,5 @@
 geopy
+matplotlib
 mercantile
 pandas
 pillow
