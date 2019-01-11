@@ -43,8 +43,8 @@ def test_bounds2raster():
     assert_array_almost_equal(rimg.mean(), img.mean())
     assert_array_almost_equal(ext, (0.0, 939258.2035682457, 
                                     6261721.35712164, 6887893.492833804))
-    rtr_bounds = [-613.0928221724841, 6262334.050013727,
-                  938645.1107460733, 6888506.185725891]
+    rtr_bounds = [-611.49622628141, 6262332.853347922,
+                  938646.7073419644, 6888504.989060086]
     assert_array_almost_equal(list(rtr.bounds), rtr_bounds)
 
 def test_bounds2img():
