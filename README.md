@@ -27,6 +27,7 @@ the internet into geospatial raster files. Bounding boxes can be passed in both 
 * `pillow`
 * `rasterio`
 * `requests`
+* `CacheControl`
 * `geopy`
 
 ## Installation

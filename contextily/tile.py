@@ -3,6 +3,7 @@ from __future__ import (absolute_import, division, print_function)
 
 import mercantile as mt
 import requests
+from cachecontrol import CacheControl
 import io
 import os
 import numpy as np
@@ -13,6 +14,9 @@ from . import tile_providers as sources
 
 
 __all__ = ['bounds2raster', 'bounds2img', 'howmany']
+
+
+cached_session = CacheControl(requests.session())
 
 
 def bounds2raster(w, s, e, n, path, zoom='auto',
@@ -186,7 +190,7 @@ def _retryer(tile_url, wait, max_retries):
     request object containing the web response.
     """
     try:
-        request = requests.get(tile_url)
+        request = cached_session.get(tile_url)
         request.raise_for_status()
     except requests.HTTPError:
         if request.status_code == 404:
