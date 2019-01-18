@@ -3,6 +3,5 @@ matplotlib
 mercantile
 pandas
 pillow
-pytest
 rasterio
 requests
