@@ -6,7 +6,6 @@ import requests
 import io
 import os
 import numpy as np
-import pandas as pd
 import rasterio as rio
 from PIL import Image
 from rasterio.transform import from_origin
