@@ -2,6 +2,5 @@ geopy
 matplotlib
 mercantile
 pillow
-pytest
 rasterio
 requests

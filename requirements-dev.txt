@@ -1,2 +1,3 @@
 pip
+pytest
 pytest-cov
