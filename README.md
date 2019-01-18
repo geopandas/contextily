@@ -21,10 +21,10 @@ the internet into geospatial raster files. Bounding boxes can be passed in both 
 
 ## Dependencies
 
-* `cartopy`
 * `mercantile`
 * `numpy`
 * `pandas`
+- `matplotlib`
 * `pillow`
 * `rasterio`
 * `requests`

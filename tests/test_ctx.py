@@ -43,10 +43,8 @@ def test_bounds2raster():
     assert_array_almost_equal(rimg.mean(), img.mean())
     assert_array_almost_equal(ext, (0.0, 939258.2035682457, 
                                     6261721.35712164, 6887893.492833804))
-    assert_array_almost_equal(ext, (0.0, 939258.2035682457, 
-                                    6261721.35712164, 6887893.492833804))
-    rtr_bounds = [-613.0928221724841, 6262334.050013727,
-                  938645.1107460733, 6888506.185725891]
+    rtr_bounds = [-611.49622628141, 6262332.853347922,
+                  938646.7073419644, 6888504.989060086]
     assert_array_almost_equal(list(rtr.bounds), rtr_bounds)
 
 def test_bounds2img():
@@ -159,10 +157,10 @@ def test_add_basemap():
     ax_extent = (-11740727.544603072, -11662456.027639052,
                   4852834.0517692715, 4891969.810251278)
     assert_array_almost_equal(ax_extent, ax.images[0].get_extent())
-    assert ax.images[0].get_array().sum() == 75687792
-    assert ax.images[0].get_array().shape == (256, 511, 3)
+    assert ax.images[0].get_array().sum() == 75853866
+    assert ax.images[0].get_array().shape == (256, 512, 3)
     assert_array_almost_equal(ax.images[0].get_array().mean(),
-                              192.86068982387476)
+                              192.90635681152344)
 
     # Test local source
     f, ax = matplotlib.pyplot.subplots(1)
@@ -188,10 +186,10 @@ def test_add_basemap():
     ax_extent = (-11740727.544603072, -11691807.846500559,
                   4852834.0517692715, 4891969.810251278)
     assert_array_almost_equal(ax_extent, ax.images[0].get_extent())
-    assert ax.images[0].get_array().sum() == 719543527
-    assert ax.images[0].get_array().shape == (1021, 1276, 3)
+    assert ax.images[0].get_array().sum() == 723918764
+    assert ax.images[0].get_array().shape == (1024, 1280, 3)
     assert_array_almost_equal(ax.images[0].get_array().mean(),
-                              184.10237852536648)
+                              184.10206197102863)
 
 def test_attribution():
     f, ax = matplotlib.pyplot.subplots(1)
