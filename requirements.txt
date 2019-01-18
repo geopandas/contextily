@@ -1,7 +1,6 @@
 geopy
 matplotlib
 mercantile
-pandas
 pillow
 pytest
 rasterio
