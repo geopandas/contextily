@@ -333,7 +333,26 @@ def _calculate_zoom(w, s, e, n):
 
 
 def _merge_tiles(tiles, arrays):
-    # create n_tilesx2 array with column of x and y coordinates
+    """
+    Merge a set of tiles into a single array.
+
+    Parameters
+    ---------
+    tiles  : list of mercantile.Tile objects
+             The tiles to merge.
+    arrays : list of numpy arrays
+             The corresponding arrays (image pixels) of the tiles. This list
+             has the same length and order as the `tiles` argument.
+
+    Returns
+    -------
+    img : np.ndarray
+        Merged arrays.
+    extent : tuple
+         Bounding box [west, south, east, north] of the returned image
+         in long/lat.
+    """
+    # create (n_tiles x 2) array with column for x and y coordinates
     tile_xys = np.array([(t.x, t.y) for t in tiles])
 
     # get indices starting at zero
