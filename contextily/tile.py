@@ -149,10 +149,7 @@ def bounds2img(w, s, e, n, zoom='auto',
         x, y, z = t.x, t.y, t.z
         tile_url = url.replace('tileX', str(x)).replace('tileY', str(y)).replace('tileZ', str(z))
         # ---
-        request = _retryer(tile_url, wait, max_retries)
-        with io.BytesIO(request.content) as image_stream:
-            image = Image.open(image_stream).convert('RGB')
-            image = np.asarray(image)
+        image = _fetch_tile(tile_url, wait, max_retries)
         # ---
         tiles.append(t)
         arrays.append(image)
@@ -163,6 +160,14 @@ def bounds2img(w, s, e, n, zoom='auto',
     right, top = mt.xy(east, north)
     extent = left, right, bottom, top
     return merged, extent
+
+
+def _fetch_tile(tile_url, wait, max_retries):
+    request = _retryer(tile_url, wait, max_retries)
+    with io.BytesIO(request.content) as image_stream:
+        image = Image.open(image_stream).convert('RGB')
+        image = np.asarray(image)
+    return image
 
 
 def _retryer(tile_url, wait, max_retries):
