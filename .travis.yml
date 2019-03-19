@@ -18,8 +18,8 @@ before_install:
   - conda config --add channels conda-forge #--force
   - conda config --set channel_priority strict
   - conda create --yes -n TEST python=$TRAVIS_PYTHON_VERSION --file requirements.txt --file requirements-dev.txt
-  - conda install --yes rasterio 
   - source activate TEST
+  - conda install --yes rasterio 
   - pip install coveralls
 
 install:
