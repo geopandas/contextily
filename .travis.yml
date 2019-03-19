@@ -15,11 +15,10 @@ before_install:
   - ./miniconda.sh -b -p ./miniconda
   - export PATH=`pwd`/miniconda/bin:$PATH
   - conda update --yes conda
-  - conda config --add channels conda-forge #--force
+  - conda config --add channels conda-forge --force
   - conda config --set channel_priority strict
   - conda create --yes -n TEST python=$TRAVIS_PYTHON_VERSION --file requirements.txt --file requirements-dev.txt
   - source activate TEST
-  - conda install --yes rasterio 
   - pip install coveralls
 
 install:
