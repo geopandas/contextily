@@ -2,5 +2,4 @@ geopy
 matplotlib
 mercantile
 pillow
-rasterio
 requests
