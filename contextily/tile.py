@@ -6,10 +6,8 @@ import requests
 import io
 import os
 import numpy as np
-import pandas as pd
 import rasterio as rio
 from PIL import Image
-from cartopy.io.img_tiles import _merge_tiles as merge_tiles
 from rasterio.transform import from_origin
 from rasterio.io import MemoryFile
 from rasterio.vrt import WarpedVRT
@@ -149,26 +147,30 @@ def bounds2img(w, s, e, n, zoom='auto',
     if zoom == 'auto':
         zoom = _calculate_zoom(w, e, s, n)
     tiles = []
+    arrays = []
     for t in mt.tiles(w, s, e, n, [zoom]):
         x, y, z = t.x, t.y, t.z
         tile_url = url.replace('tileX', str(x)).replace('tileY', str(y)).replace('tileZ', str(z))
         # ---
-        request = _retryer(tile_url, wait, max_retries)
-        with io.BytesIO(request.content) as image_stream:
-            image = Image.open(image_stream).convert('RGB')
-            image = np.asarray(image)
+        image = _fetch_tile(tile_url, wait, max_retries)
         # ---
-        wt, st, et, nt = mt.bounds(t)
-        xr = np.linspace(wt, et, image.shape[0])
-        yr = np.linspace(st, nt, image.shape[1])
-        tiles.append([image, xr, yr, 'lower'])
-    merged, extent = merge_tiles(tiles)[:2]
+        tiles.append(t)
+        arrays.append(image)
+    merged, extent = _merge_tiles(tiles, arrays)
     # lon/lat extent --> Spheric Mercator
-    minX, maxX, minY, maxY = extent
-    w, s = mt.xy(minX, minY)
-    e, n = mt.xy(maxX, maxY)
-    extent = w, e, s, n
-    return merged[::-1], extent
+    west, south, east, north = extent
+    left, bottom = mt.xy(west, south)
+    right, top = mt.xy(east, north)
+    extent = left, right, bottom, top
+    return merged, extent
+
+
+def _fetch_tile(tile_url, wait, max_retries):
+    request = _retryer(tile_url, wait, max_retries)
+    with io.BytesIO(request.content) as image_stream:
+        image = Image.open(image_stream).convert('RGB')
+        image = np.asarray(image)
+    return image
 
 
 def warp_tiles(img, ext, 
@@ -319,13 +321,13 @@ def bb2wdw(bb, rtr):
               ((row_start, row_stop), (col_start, col_stop))
     '''
     rbb = rtr.bounds
-    xi = pd.Series(np.linspace(rbb.left, rbb.right, rtr.shape[1]))
-    yi = pd.Series(np.linspace(rbb.bottom, rbb.top, rtr.shape[0]))
+    xi = np.linspace(rbb.left, rbb.right, rtr.shape[1])
+    yi = np.linspace(rbb.bottom, rbb.top, rtr.shape[0])
 
-    window = ((rtr.shape[0] - yi.searchsorted(bb[3])[0],
-              rtr.shape[0] - yi.searchsorted(bb[1])[0]),
-              (xi.searchsorted(bb[0])[0],
-               xi.searchsorted(bb[2])[0])
+    window = ((rtr.shape[0] - yi.searchsorted(bb[3]),
+              rtr.shape[0] - yi.searchsorted(bb[1])),
+              (xi.searchsorted(bb[0]),
+               xi.searchsorted(bb[2]))
               )
     return window
 
@@ -391,3 +393,50 @@ def _calculate_zoom(w, s, e, n):
     zoom_lat = np.ceil(np.log2(360 * 2. / lat_length))
     zoom = np.max([zoom_lon, zoom_lat])
     return int(zoom)
+
+
+def _merge_tiles(tiles, arrays):
+    """
+    Merge a set of tiles into a single array.
+
+    Parameters
+    ---------
+    tiles  : list of mercantile.Tile objects
+             The tiles to merge.
+    arrays : list of numpy arrays
+             The corresponding arrays (image pixels) of the tiles. This list
+             has the same length and order as the `tiles` argument.
+
+    Returns
+    -------
+    img : np.ndarray
+        Merged arrays.
+    extent : tuple
+         Bounding box [west, south, east, north] of the returned image
+         in long/lat.
+    """
+    # create (n_tiles x 2) array with column for x and y coordinates
+    tile_xys = np.array([(t.x, t.y) for t in tiles])
+
+    # get indices starting at zero
+    indices = tile_xys - tile_xys.min(axis=0)
+
+    # the shape of individual tile images
+    h, w, d = arrays[0].shape
+
+    # number of rows and columns in the merged tile
+    n_x, n_y = (indices+1).max(axis=0)
+
+    # empty merged tiles array to be filled in
+    img = np.zeros((h * n_y, w * n_x, d), dtype=np.uint8)
+
+    for ind, arr in zip(indices, arrays):
+        x, y = ind
+        img[y*h:(y+1)*h, x*w:(x+1)*w, :] = arr
+
+    bounds = np.array([mt.bounds(t) for t in tiles])
+    west, south, east, north = (
+        min(bounds[:, 0]), min(bounds[:, 1]),
+        max(bounds[:, 2]), max(bounds[:, 3]))
+
+    return img, (west, south, east, north)
