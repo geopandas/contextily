@@ -12,7 +12,7 @@ ATTRIBUTION = ("Map tiles by Stamen Design, under CC BY 3.0. "\
 
 def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN, 
 		interpolation=INTERPOLATION, attribution = ATTRIBUTION, 
-                **extra_imshow_args):
+                reset_extent=True, **extra_imshow_args):
     """
     Add a (web/local) basemap to `ax`
     ...
@@ -38,6 +38,10 @@ def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN,
     attribution         : str
                           [Optional. Defaults to standard `ATTRIBUTION`] Text to be added at the
                           bottom of the axis.
+    reset_extent        : Boolean
+                          [Optiona. Default=True] If True, the extent of the
+                          basemap added is reset to the original extent (xlim,
+                          ylim) of `ax`
     **extra_imshow_args : dict
                           Other parameters to be passed to `imshow`.
 
@@ -94,7 +98,8 @@ def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN,
     ax.imshow(image, extent=extent, 
               interpolation=interpolation, **extra_imshow_args)
 
-    ax.axis((xmin, xmax, ymin, ymax))
+    if reset_extent is True:
+        ax.axis((xmin, xmax, ymin, ymax))
 
     if attribution:
         add_attribution(ax, attribution)
