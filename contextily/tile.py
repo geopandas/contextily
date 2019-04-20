@@ -67,7 +67,7 @@ def bounds2raster(w, s, e, n, path, zoom='auto',
         w, s = _sm2ll(w, s)
         e, n = _sm2ll(e, n)
     if zoom == 'auto':
-        zoom = _calculate_zoom(w, e, s, n)
+        zoom = _calculate_zoom(w, s, e, n)
     # Download
     Z, ext = bounds2img(w, s, e, n, zoom=zoom, url=url, ll=True)
     # Write
@@ -142,7 +142,7 @@ def bounds2img(w, s, e, n, zoom='auto',
         w, s = _sm2ll(w, s)
         e, n = _sm2ll(e, n)
     if zoom == 'auto':
-        zoom = _calculate_zoom(w, e, s, n)
+        zoom = _calculate_zoom(w, s, e, n)
     tiles = []
     arrays = []
     for t in mt.tiles(w, s, e, n, [zoom]):
