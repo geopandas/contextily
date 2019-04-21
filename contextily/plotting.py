@@ -2,7 +2,7 @@
 
 import numpy as np
 from . import tile_providers as sources
-from .tile import _calculate_zoom, bounds2img, _sm2ll, warp_tiles
+from .tile import _calculate_zoom, bounds2img, _sm2ll, warp_tiles, _warper
 from rasterio.enums import Resampling
 from matplotlib import patheffects
 
@@ -13,7 +13,7 @@ ATTRIBUTION = ("Map tiles by Stamen Design, under CC BY 3.0. "\
 
 def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN, 
 		interpolation=INTERPOLATION, attribution=ATTRIBUTION, 
-                crs=None, resampling=Resampling.bilinear,
+                crs={'init' :'epsg:4326'}, resampling=Resampling.bilinear,
                 **extra_imshow_args):
     """
     Add a (web/local) basemap to `ax`
@@ -41,14 +41,16 @@ def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN,
                           [Optional. Defaults to standard `ATTRIBUTION`] Text to be added at the
                           bottom of the axis.
     crs                 : None/str/CRS
-                          [Optional. Default=None] CRS, expressed
-                          in any format permitted by rasterio, to use for the
-                          resulting basemap. If None, the original Web
-                          Mercator (`EPSG:3857`) is used.
+                          [Optional. Default={'init' :'epsg:4326'}] CRS,
+                          expressed in any format permitted by rasterio and
+                          geopandas, to use for the resulting basemap. If
+                          None, no warping is performed and the original Web
+                          Mercator (`EPSG:3857`) is used. Defaults to WGS84
+                          (lon/lat).
     resampling          : <enum 'Resampling'>
                           [Optional. Default=Resampling.bilinear] Resampling 
                           method for executing warping, expressed as a 
-                          `rasterio.enums.Resampling method
+                          `rasterio.enums.Resampling` method
     **extra_imshow_args : dict
                           Other parameters to be passed to `imshow`.
 
@@ -84,6 +86,10 @@ def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN,
         # Extent
         left, right = ax.get_xlim()
         bottom, top = ax.get_ylim()
+        # Convert extent from `crs` into WM for tile query
+        if crs is not None:
+            left, right, bottom, top = _reproj_bb(left, right, bottom, top,
+                                                  crs, {'init' :'epsg:3857'})
         # Zoom
         if isinstance(zoom, str) and (zoom.lower() == 'auto'):
             min_ll = _sm2ll(left, bottom)
@@ -91,25 +97,47 @@ def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN,
             zoom = _calculate_zoom(*min_ll, *max_ll)
         image, extent = bounds2img(left, bottom, right, top,
                                    zoom=zoom, url=url, ll=False)
+        # Warping
+        if crs is not None:
+            image, extent = warp_tiles(image, extent, t_crs=crs,
+                                       resampling=resampling)
     # If local source
     else:
         import rasterio as rio
-        # Read extent
+        # Read file
         raster = rio.open(url)
-        image = np.array([ band for band in raster.read() ])\
-                  .transpose(1, 2, 0)
+        image = np.array([ band for band in raster.read() ])
+        # Warp
+        if (crs is not None) and (raster.crs != crs):
+            image, raster = _warper(image, 
+                                    raster.transform,
+                                    raster.crs, crs,
+                                    resampling)
+        image = image.transpose(1, 2, 0)
         bb = raster.bounds
         extent = bb.left, bb.right, bb.bottom, bb.top
-    # Warping
-    if crs is not None:
-        image, extent = warp_tiles(image, extent, t_crs=crs,
-                                   resampling=resampling)
     # Plotting
     ax.imshow(image, extent=extent, 
               interpolation=interpolation, **extra_imshow_args)
     if attribution:
         add_attribution(ax, attribution)
     return ax
+
+
+def _reproj_bb(left, right, bottom, top,
+               s_crs, t_crs):
+    import geopandas
+    from shapely.geometry import Point
+    left_top = Point(left, top)
+    right_bottom = Point(right, bottom)
+    in_bb = geopandas.GeoSeries({'lt': left_top,
+                                 'rb': right_bottom}, 
+                                 crs=s_crs)
+    out_bb = in_bb.to_crs(t_crs)
+    left, top = list(out_bb['lt'].coords)[0]
+    right, bottom = list(out_bb['rb'].coords)[0]
+    return left, right, bottom, top
+
 
 def add_attribution(ax, att=ATTRIBUTION):
     '''
