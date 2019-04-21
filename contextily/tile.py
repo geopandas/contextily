@@ -178,13 +178,16 @@ def warp_tiles(img, ext,
                resampling=Resampling.bilinear):
     '''
     Reproject (warp) a Web Mercator basemap into any CRS on-the-fly
+
+    NOTE: this method works well with contextily's `bounds2img` approach to
+          raster dimensions (h, w, b)
     ...
     
     Arguments
     ---------
     img         : ndarray
-                  Image as a 3D array of RGB values (e.g. as returned from
-                  `contextily.bounds2img`)
+                  Image as a 3D array (h, w, b) of RGB values (e.g. as
+                  returned from `contextily.bounds2img`)
     ext         : tuple
                   Bounding box [minX, maxX, minY, maxY] of the returned image,
                   expressed in Web Mercator (`EPSG:3857`)
@@ -199,7 +202,8 @@ def warp_tiles(img, ext,
     Returns
     -------
     img         : ndarray
-                  Warped Image as a 3D array of RGB values
+                  Image as a 3D array (h, w, b) of RGB values (e.g. as
+                  returned from `contextily.bounds2img`)
     ext         : tuple
                   Bounding box [minX, maxX, minY, maxY] of the returned (warped)
                   image
@@ -213,20 +217,79 @@ def warp_tiles(img, ext,
     resY = (y[-1] - y[0]) / h
     transform = from_origin(x[0] - resX / 2,
                             y[-1] + resY / 2, resX, resY)
-    # --- Write basemap into memory file
+    # --- 
+    w_img, vrt = _warper(img.transpose(2, 0, 1), 
+                         transform, 
+                         'EPSG:3857', t_crs,
+                         resampling)
+    # --- 
+    extent = vrt.bounds.left, vrt.bounds.right, \
+             vrt.bounds.bottom, vrt.bounds.top
+    return w_img.transpose(1, 2, 0), extent
+
+
+def warp_img_transform(img, transform, 
+                       s_crs, t_crs,
+                       resampling=Resampling.bilinear):
+    '''
+    Reproject (warp) an `img` with a given `transform` and `s_crs` into a
+    different `t_crs`
+
+    NOTE: this method works well with rasterio's `.read()` approach to
+          raster's dimensions (b, h, w)
+    ...
+
+    Arguments
+    ---------
+    img         : ndarray
+                  Image as a 3D array (b, h, w) of RGB values (e.g. as
+                  returned from rasterio's `.read()` method)
+    transform   : affine.Affine
+                  Transform of the input image as expressed by `rasterio` and
+                  the `affine` package
+    s_crs       : str/CRS
+                  Source CRS in which `img` is passed, expressed in any format
+                  permitted by rasterio.
+    t_crs       : str/CRS
+                  Target CRS, expressed in any format permitted by rasterio.
+    resampling  : <enum 'Resampling'>
+                  [Optional. Default=Resampling.bilinear] Resampling method for
+                  executing warping, expressed as a `rasterio.enums.Resampling
+                  method
+
+    Returns
+    -------
+    w_img       : ndarray
+                  Warped image as a 3D array (b, h, w) of RGB values (e.g. as
+                  returned from rasterio's `.read()` method)
+    w_transform : affine.Affine
+                  Transform of the input image as expressed by `rasterio` and
+                  the `affine` package
+    '''
+    w_img, vrt = _warper(img, transform, 
+                         s_crs, t_crs,
+                         resampling)
+    return w_img, vrt.transform
+
+
+def _warper(img, transform, 
+            s_crs, t_crs,
+            resampling):
+    '''
+    Warp an image returning it as a virtual file
+    '''
+    b, h, w = img.shape
     with MemoryFile() as memfile:
         with memfile.open(driver='GTiff', height=h, width=w, \
                           count=b, dtype=str(img.dtype.name), \
-                          crs='epsg:3857', transform=transform) as mraster:
+                          crs=s_crs, transform=transform) as mraster:
             for band in range(b):
-                mraster.write(img[:, :, band], band+1)
+                mraster.write(img[band, :, :], band+1)
             # --- Virtual Warp
-            with WarpedVRT(mraster, crs=t_crs,
-                           resampling=resampling) as vrt:
-                src_wm = vrt.read().transpose(1, 2, 0)
-    bb = vrt.bounds
-    extent = bb.left, bb.right, bb.bottom, bb.top
-    return src_wm, extent
+            vrt = WarpedVRT(mraster, crs=t_crs,
+                            resampling=resampling)
+            img = vrt.read()
+    return img, vrt
 
 
 def _retryer(tile_url, wait, max_retries):
