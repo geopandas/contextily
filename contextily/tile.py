@@ -7,13 +7,20 @@ import io
 import os
 import numpy as np
 import rasterio as rio
-from PIL import Image
+import math
+from functools import reduce
+from PIL import Image, ImageDraw, ImageFont
 from rasterio.transform import from_origin
 from . import tile_providers as sources
 
 
 __all__ = ['bounds2raster', 'bounds2img', 'howmany']
 
+DEFAULT_TILE_SIZE = (256,256) # Default tile size in pixels
+TILE_SIZES = {}
+for url in dir(sources):
+    TILE_SIZES[url] = DEFAULT_TILE_SIZE
+# TODO: Overwrite tile sizes for alternative endpoints here
 
 def bounds2raster(w, s, e, n, path, zoom='auto',
                   url=sources.ST_TERRAIN, ll=False,
@@ -91,10 +98,50 @@ def bounds2raster(w, s, e, n, path, zoom='auto',
     raster.close()
     return Z, ext
 
+def _make_error_tile(url=sources.ST_TERRAIN, status_code=404):
+    '''
+        Produces an error tile image with the provided status code.
+        ...
+        Arguments
+        ---------
+        url         : str
+                      [Optional, default sources.ST_TERRAIN]
+                      Used only to determine the size of the tile.
+        status_code : int
+                      [Optional, default 404]
+                      HTTP response code; printed in the centre of the image
+        Returns
+        -------
+        img     : ndarray
+                  RGB array of the error tile
+    '''
+    _make_error_tile.cache = getattr(_make_error_tile, "cache", {})
+    _make_error_tile.cache[status_code] = _make_error_tile.cache.get(status_code, {})
+
+    cache = _make_error_tile.cache[status_code]
+    size = TILE_SIZES.get(url, DEFAULT_TILE_SIZE)
+
+    if size not in cache:
+        image = Image.new(mode="RGB", size=size,color="pink")
+        try:
+            draw = ImageDraw.Draw(image)
+            draw.rectangle((0,0)+size, outline="red", fill="gray")
+            xy = tuple(map(lambda c : c/2.0, size))
+            fontsize = int(min(32, max(4, (math.log(reduce(lambda x,y: x*y, size)**0.5, 2)-7)*8 + 4)))
+            try:
+                font = ImageFont.truetype("arial.ttf", fontsize) # Windows
+            except (OSError, IOError):
+                font = ImageFont.truetype("/usr/share/fonts/truetype/freefont/FreeMono.ttf", fontsize) # Best guess on *nix
+            draw.text(xy, str(status_code), "red", font=font)
+        except Exception as e:
+            pass
+        cache[size] = image
+    return np.asarray(cache[size])
+
 
 def bounds2img(w, s, e, n, zoom='auto',
                url=sources.ST_TERRAIN, ll=False,
-               wait=0, max_retries=2):
+               wait=0, max_retries=2, handle_missing_tiles=False):
     '''
     Take bounding box and zoom and return an image with all the tiles
     that compose the map and its Spherical Mercator extent.
@@ -129,6 +176,10 @@ def bounds2img(w, s, e, n, zoom='auto',
                  [Optional. Default: 2]
                  total number of rejected requests allowed before contextily
                  will stop trying to fetch more tiles from a rate-limited API.
+    handle_missing_tiles: boolean
+              [Optional. Default: False]
+              Fill in missing tiles with a placeholder image, 
+              when the tile API returns a 404, instead of re-raising
 
     Returns
     -------
@@ -149,7 +200,12 @@ def bounds2img(w, s, e, n, zoom='auto',
         x, y, z = t.x, t.y, t.z
         tile_url = url.replace('tileX', str(x)).replace('tileY', str(y)).replace('tileZ', str(z))
         # ---
-        image = _fetch_tile(tile_url, wait, max_retries)
+        try:
+            image = _fetch_tile(tile_url, wait, max_retries)
+        except requests.exceptions.HTTPError as e:
+            if not handle_missing_tiles or e.response.status_code != 404:
+                raise
+            image = _make_error_tile(url, e.response.status_code)
         # ---
         tiles.append(t)
         arrays.append(image)
@@ -193,17 +249,23 @@ def _retryer(tile_url, wait, max_retries):
     try:
         request = requests.get(tile_url)
         request.raise_for_status()
-    except requests.HTTPError:
+    except requests.HTTPError as original_error:
         if request.status_code == 404:
-            raise requests.HTTPError('Tile URL resulted in a 404 error. '
+            new_error = requests.HTTPError('Tile URL resulted in a 404 error. '
                                      'Double-check your tile url:\n{}'.format(tile_url))
+            new_error.response = original_error.response # Preserve the response attribute
+            raise new_error
         elif request.status_code == 104:
             if max_retries > 0:
                 os.wait(wait)
                 max_retries -= 1
                 request = _retryer(tile_url, wait, max_retries)
             else:
-                raise requests.HTTPError('Connection reset by peer too many times.')
+                new_error = requests.HTTPError('Connection reset by peer too many times.')
+                new_error.response = original_error.response # Preserve the response attribute
+                raise new_error
+        else:
+            raise # Raise other errors normally
     return request
 
 
