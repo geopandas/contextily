@@ -2,7 +2,7 @@
 
 import numpy as np
 from . import tile_providers as sources
-from .tile import _calculate_zoom, bounds2img, _sm2ll
+from .tile import _calculate_zoom, bounds2img, _sm2ll, TILE_CACHE_DIR
 from matplotlib import patheffects
 
 INTERPOLATION = 'bilinear'
@@ -12,7 +12,7 @@ ATTRIBUTION = ("Map tiles by Stamen Design, under CC BY 3.0. "\
 
 def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN, 
 		interpolation=INTERPOLATION, attribution = ATTRIBUTION, 
-                **extra_imshow_args):
+        cachedir=TILE_CACHE_DIR, **extra_imshow_args):
     """
     Add a (web/local) basemap to `ax`
     ...
@@ -38,6 +38,13 @@ def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN,
     attribution         : str
                           [Optional. Defaults to standard `ATTRIBUTION`] Text to be added at the
                           bottom of the axis.
+    cachedir            : str
+                          [Optional. Defaults to `TILE_CACHE_DIR`]
+                          Directory to cache tiles under.
+                          The directory is created if it doesn't exist.
+                          Set to None to disable the cache.
+                          (passed through to bounds2img)
+                          
     **extra_imshow_args : dict
                           Other parameters to be passed to `imshow`.
 
@@ -79,7 +86,7 @@ def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN,
             max_ll = _sm2ll(right, top)
             zoom = _calculate_zoom(*min_ll, *max_ll)
         image, extent = bounds2img(left, bottom, right, top,
-                                   zoom=zoom, url=url, ll=False)
+                                   zoom=zoom, url=url, ll=False, cachedir=cachedir)
     # If local source
     else:
         import rasterio as rio
