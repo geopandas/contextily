@@ -7,6 +7,7 @@ import io
 import os
 import numpy as np
 import rasterio as rio
+import tempfile
 import math
 from functools import reduce
 from PIL import Image, ImageDraw, ImageFont
@@ -21,6 +22,9 @@ TILE_SIZES = {}
 for url in dir(sources):
     TILE_SIZES[url] = DEFAULT_TILE_SIZE
 # TODO: Overwrite tile sizes for alternative endpoints here
+
+# Note: Using a permanent storage location may violate the tile server's terms and conditions
+TILE_CACHE_DIR = os.path.join(tempfile.gettempdir(), "contextily", "tiles")
 
 def bounds2raster(w, s, e, n, path, zoom='auto',
                   url=sources.ST_TERRAIN, ll=False,
@@ -141,7 +145,8 @@ def _make_error_tile(url=sources.ST_TERRAIN, status_code=404):
 
 def bounds2img(w, s, e, n, zoom='auto',
                url=sources.ST_TERRAIN, ll=False,
-               wait=0, max_retries=2, handle_missing_tiles=False):
+               wait=0, max_retries=2, handle_missing_tiles=False,
+               cachedir=TILE_CACHE_DIR):
     '''
     Take bounding box and zoom and return an image with all the tiles
     that compose the map and its Spherical Mercator extent.
@@ -181,6 +186,13 @@ def bounds2img(w, s, e, n, zoom='auto',
               Fill in missing tiles with a placeholder image, 
               when the tile API returns a 404, instead of re-raising
 
+    cachedir: string
+              [Optional. Default: TILE_CACHE_DIR]
+              Cache downloaded tiles images into a local directory.
+              The directory is created if it doesn't exist.
+              Set to None to disable the cache.
+
+
     Returns
     -------
     img     : ndarray
@@ -201,7 +213,7 @@ def bounds2img(w, s, e, n, zoom='auto',
         tile_url = url.replace('tileX', str(x)).replace('tileY', str(y)).replace('tileZ', str(z))
         # ---
         try:
-            image = _fetch_tile(tile_url, wait, max_retries)
+            image = _fetch_tile(tile_url, wait, max_retries, cachedir)
         except requests.exceptions.HTTPError as e:
             if not handle_missing_tiles or e.response.status_code != 404:
                 raise
@@ -218,10 +230,30 @@ def bounds2img(w, s, e, n, zoom='auto',
     return merged, extent
 
 
-def _fetch_tile(tile_url, wait, max_retries):
+def _fetch_tile(tile_url, wait, max_retries, cachedir=TILE_CACHE_DIR):
+    cached_path = None
+    if cachedir is not None:
+        if not os.path.exists(cachedir):
+            os.makedirs(cachedir)
+        
+        
+        try:
+            # Split of URL header and make sure path is directorified
+            cached_path = os.path.join(cachedir, 
+                os.path.sep.join(tile_url.split("://")[1:]).replace("/", os.path.sep))
+            image = Image.open(cached_path).convert('RGB')
+            image = np.asarray(image)
+            return image
+        except (IOError, OSError, FileNotFoundError) as e:
+            pass
+
     request = _retryer(tile_url, wait, max_retries)
     with io.BytesIO(request.content) as image_stream:
         image = Image.open(image_stream).convert('RGB')
+        if cached_path:
+            if not os.path.exists(os.path.dirname(cached_path)):
+                os.makedirs(os.path.dirname(cached_path))
+            image.save(cached_path)
         image = np.asarray(image)
     return image
 
