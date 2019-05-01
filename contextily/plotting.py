@@ -2,7 +2,7 @@
 
 import numpy as np
 from . import tile_providers as sources
-from .tile import _calculate_zoom, bounds2img, _sm2ll, TILE_CACHE_DIR
+from .tile import _calculate_zoom, bounds2img, _sm2ll
 from matplotlib import patheffects
 
 INTERPOLATION = 'bilinear'
@@ -12,7 +12,7 @@ ATTRIBUTION = ("Map tiles by Stamen Design, under CC BY 3.0. "\
 
 def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN, 
 		interpolation=INTERPOLATION, attribution = ATTRIBUTION, 
-        cachedir=TILE_CACHE_DIR, **extra_imshow_args):
+        ll=False, cachedir=TILE_CACHE_DIR, **extra_imshow_args):
     """
     Add a (web/local) basemap to `ax`
     ...
@@ -44,6 +44,11 @@ def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN,
                           The directory is created if it doesn't exist.
                           Set to None to disable the cache.
                           (passed through to bounds2img)
+
+    ll                  : boolean
+                          [Optional. Defaults to False]
+                          Whether axis bounds are lat/lon or mercator projection.
+                          Passed through to bounds2img.
                           
     **extra_imshow_args : dict
                           Other parameters to be passed to `imshow`.
@@ -76,17 +81,21 @@ def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN,
 
     """
     # If web source
-    if url[:4] == 'http':
+    if url.startswith('http'):
         # Extent
         left, right = ax.get_xlim()
         bottom, top = ax.get_ylim()
         # Zoom
         if isinstance(zoom, str) and (zoom.lower() == 'auto'):
-            min_ll = _sm2ll(left, bottom)
-            max_ll = _sm2ll(right, top)
+            if ll:
+                min_ll = (left, bottom)
+                max_ll = (right, top)
+            else:
+                min_ll = _sm2ll(left, bottom)
+                max_ll = _sm2ll(right, top)
             zoom = _calculate_zoom(*min_ll, *max_ll)
         image, extent = bounds2img(left, bottom, right, top,
-                                   zoom=zoom, url=url, ll=False, cachedir=cachedir)
+                                   zoom=zoom, url=url, ll=ll, cachedir=cachedir)
     # If local source
     else:
         import rasterio as rio
