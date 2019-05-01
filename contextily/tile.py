@@ -7,6 +7,7 @@ import io
 import os
 import numpy as np
 import rasterio as rio
+import tempfile
 from PIL import Image
 from rasterio.transform import from_origin
 from . import tile_providers as sources
@@ -14,6 +15,8 @@ from . import tile_providers as sources
 
 __all__ = ['bounds2raster', 'bounds2img', 'howmany']
 
+# Note: Using a permanent storage location may violate the tile server's terms and conditions
+TILE_CACHE_DIR = os.path.join(tempfile.gettempdir(), "contextily", "tiles")
 
 def bounds2raster(w, s, e, n, path, zoom='auto',
                   url=sources.ST_TERRAIN, ll=False,
@@ -94,7 +97,7 @@ def bounds2raster(w, s, e, n, path, zoom='auto',
 
 def bounds2img(w, s, e, n, zoom='auto',
                url=sources.ST_TERRAIN, ll=False,
-               wait=0, max_retries=2):
+               wait=0, max_retries=2, cachedir=TILE_CACHE_DIR):
     '''
     Take bounding box and zoom and return an image with all the tiles
     that compose the map and its Spherical Mercator extent.
@@ -129,6 +132,11 @@ def bounds2img(w, s, e, n, zoom='auto',
                  [Optional. Default: 2]
                  total number of rejected requests allowed before contextily
                  will stop trying to fetch more tiles from a rate-limited API.
+    cachedir: string
+              [Optional. Default: TILE_CACHE_DIR]
+              Cache downloaded tiles images into a local directory.
+              The directory is created if it doesn't exist.
+              Set to None to disable the cache.
 
     Returns
     -------
@@ -143,13 +151,14 @@ def bounds2img(w, s, e, n, zoom='auto',
         e, n = _sm2ll(e, n)
     if zoom == 'auto':
         zoom = _calculate_zoom(w, s, e, n)
+
     tiles = []
     arrays = []
     for t in mt.tiles(w, s, e, n, [zoom]):
         x, y, z = t.x, t.y, t.z
         tile_url = url.replace('tileX', str(x)).replace('tileY', str(y)).replace('tileZ', str(z))
         # ---
-        image = _fetch_tile(tile_url, wait, max_retries)
+        image = _fetch_tile(tile_url, wait, max_retries, cachedir)
         # ---
         tiles.append(t)
         arrays.append(image)
@@ -162,10 +171,30 @@ def bounds2img(w, s, e, n, zoom='auto',
     return merged, extent
 
 
-def _fetch_tile(tile_url, wait, max_retries):
+def _fetch_tile(tile_url, wait, max_retries, cachedir=TILE_CACHE_DIR):
+    cached_path = None
+    if cachedir is not None:
+        if not os.path.exists(cachedir):
+            os.makedirs(cachedir)
+        
+        
+        try:
+            # Split of URL header and make sure path is directorified
+            cached_path = os.path.join(cachedir, 
+                os.path.sep.join(tile_url.split("://")[1:]).replace("/", os.path.sep))
+            image = Image.open(cached_path).convert('RGB')
+            image = np.asarray(image)
+            return image
+        except (IOError, OSError, FileNotFoundError) as e:
+            pass
+
     request = _retryer(tile_url, wait, max_retries)
     with io.BytesIO(request.content) as image_stream:
         image = Image.open(image_stream).convert('RGB')
+        if cached_path:
+            if not os.path.exists(os.path.dirname(cached_path)):
+                os.makedirs(os.path.dirname(cached_path))
+            image.save(cached_path)
         image = np.asarray(image)
     return image
 
