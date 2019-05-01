@@ -264,6 +264,8 @@ def _retryer(tile_url, wait, max_retries):
                 new_error = requests.HTTPError('Connection reset by peer too many times.')
                 new_error.response = original_error.response # Preserve the response attribute
                 raise new_error
+        else:
+            raise # Raise other errors normally
     return request
 
 
