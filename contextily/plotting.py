@@ -11,8 +11,8 @@ ATTRIBUTION = ("Map tiles by Stamen Design, under CC BY 3.0. "\
                "Data by OpenStreetMap, under ODbL.")
 
 def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN, 
-		interpolation=INTERPOLATION, attribution = ATTRIBUTION, 
-                **extra_imshow_args):
+        interpolation=INTERPOLATION, attribution = ATTRIBUTION, 
+        ll=False, **extra_imshow_args):
     """
     Add a (web/local) basemap to `ax`
     ...
@@ -38,6 +38,10 @@ def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN,
     attribution         : str
                           [Optional. Defaults to standard `ATTRIBUTION`] Text to be added at the
                           bottom of the axis.
+    ll                  : boolean
+                          [Optional. Defaults to False]
+                          Whether axis bounds are lat/lon or mercator projection.
+                          Passed through to bounds2img.
     **extra_imshow_args : dict
                           Other parameters to be passed to `imshow`.
 
@@ -69,17 +73,21 @@ def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN,
 
     """
     # If web source
-    if url[:4] == 'http':
+    if url.startswith('http'):
         # Extent
         left, right = ax.get_xlim()
         bottom, top = ax.get_ylim()
         # Zoom
         if isinstance(zoom, str) and (zoom.lower() == 'auto'):
-            min_ll = _sm2ll(left, bottom)
-            max_ll = _sm2ll(right, top)
+            if ll:
+                min_ll = (left, bottom)
+                max_ll = (right, top)
+            else:
+                min_ll = _sm2ll(left, bottom)
+                max_ll = _sm2ll(right, top)
             zoom = _calculate_zoom(*min_ll, *max_ll)
         image, extent = bounds2img(left, bottom, right, top,
-                                   zoom=zoom, url=url, ll=False)
+                                   zoom=zoom, url=url, ll=ll)
     # If local source
     else:
         import rasterio as rio
