@@ -156,8 +156,14 @@ def bounds2img(w, s, e, n, zoom='auto',
     merged, extent = _merge_tiles(tiles, arrays)
     # lon/lat extent --> Spheric Mercator
     west, south, east, north = extent
-    left, bottom = mt.xy(west, south)
-    right, top = mt.xy(east, north)
+    if not ll:
+        left, bottom = mt.xy(west, south)
+        right, top = mt.xy(east, north)
+    else:
+        
+        left, bottom = (west, south)
+        right, top = (east, north)
+    # Note change in ordering of extent (from w,s,e,n to l,r,b,t)
     extent = left, right, bottom, top
     return merged, extent
 
