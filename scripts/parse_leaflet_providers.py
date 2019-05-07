@@ -39,6 +39,21 @@ def get_json_data():
     return data, description
 
 
+def process_data(data):
+    # extract attributions from rawa data that later need to be substituted
+    global ATTRIBUTIONS
+    ATTRIBUTIONS = {
+        '{attribution.OpenStreetMap}':
+            data['OpenStreetMap']['options']['attribution'],
+        '{attribution.Esri}': data['Esri']['options']['attribution']
+    }
+
+    result = {}
+    for provider in data:
+        result[provider] = process_provider(data, provider)
+    return result
+
+
 def process_provider(data, name='OpenStreetMap'):
     provider = data[name].copy()
     variants = provider.pop('variants', None)
@@ -47,6 +62,7 @@ def process_provider(data, name='OpenStreetMap'):
 
     if variants is None:
         provider_keys['name'] = name
+        provider_keys = pythonize_data(provider_keys)
         return provider_keys
 
     result = {}
@@ -62,20 +78,45 @@ def process_provider(data, name='OpenStreetMap'):
         variant_keys = {**provider_keys, **variant_keys}
         variant_keys['name'] = "{provider}.{variant}".format(
             provider=name, variant=variant)
+        variant_keys = pythonize_data(variant_keys)
         result[variant] = variant_keys
 
     return result
 
 
-def process_data(data):
-    result = {}
-    for provider in data:
-        result[provider] = process_provider(data, provider)
-    return result
+def pythonize_data(data):
+    """
+    Clean-up the javascript based dictionary:
+    - rename mixedCase keys
+    - substitute the attribution placeholders
+
+    """
+    rename_keys = {'maxZoom': 'max_zoom', 'minZoom': 'min_zoom'}
+    attributions = ATTRIBUTIONS
+
+    items = data.items()
+
+    new_data = []
+    for key, value in items:
+        if (key == 'attribution') and ('{attribution.' in value):
+            for placeholder, attr in attributions.items():
+                if placeholder in value:
+                    value = value.replace(placeholder, attr)
+                    break
+            else:
+                raise ValueError("Attribution not known: {}".format(value))
+        elif key in rename_keys:
+            key = rename_keys[key]
+        new_data.append((key, value))
+
+    return dict(new_data)
 
 
 if __name__ == "__main__":
     data, description = get_json_data()
+    with open("leaflet-providers-raw.json", "w") as f:
+        json.dump(data, f)
+
     result = process_data(data)
     with open("leaflet-providers-parsed.json", "w") as f:
         # wanted to add this as header to the file, but JSON does not support
