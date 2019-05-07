@@ -5,6 +5,7 @@ import mercantile as mt
 import requests
 import io
 import os
+import warnings
 import numpy as np
 import rasterio as rio
 from PIL import Image
@@ -164,7 +165,13 @@ def _construct_tile_url(url, x, y, z):
     """
     Generate actual tile url from tile provider definition or template url.
     """
-    tile_url = url.replace('tileX', str(x)).replace('tileY', str(y)).replace('tileZ', str(z))
+    if 'tileX' in url and 'tileY' in url:
+        warnings.warn(
+            "The url format using 'tileX', 'tileY', 'tileZ' as placeholders "
+            "is deprecated. Please use '{x}', '{y}', '{z}' instead.",
+            FutureWarning)
+        url = url.replace('tileX', '{x}').replace('tileY', '{y}').replace('tileZ', '{z}')
+    tile_url = url.format(x=x, y=y, z=z)
     return tile_url
 
 
