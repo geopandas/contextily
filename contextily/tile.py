@@ -93,7 +93,7 @@ def bounds2raster(w, s, e, n, path, zoom='auto',
 
 
 def bounds2img(w, s, e, n, zoom='auto',
-               url=sources.ST_TERRAIN, ll=False,
+               url=sources.ST_TERRAIN, path=None, ll=False,
                wait=0, max_retries=2):
     '''
     Take bounding box and zoom and return an image with all the tiles
@@ -121,6 +121,11 @@ def bounds2img(w, s, e, n, zoom='auto',
     ll      : Boolean
               [Optional. Default: False] If True, `w`, `s`, `e`, `n` are
               assumed to be lon/lat as opposed to Spherical Mercator.
+    path    : str
+              [Optional. Default: None] If a path is given the tiles will be
+              downloaded to this location. If the tile can be found in the
+              given path the local tile will be used instead of the server
+              tile. This is faster and will reduce server usage.
     wait    : int
               [Optional. Default: 0]
               if the tile API is rate-limited, the number of seconds to wait
@@ -145,14 +150,22 @@ def bounds2img(w, s, e, n, zoom='auto',
         zoom = _calculate_zoom(w, s, e, n)
     tiles = []
     arrays = []
+    loops = 0
+    number_of_tiles = len([x for x in mt.tiles(w, s, e, n, [zoom])])
     for t in mt.tiles(w, s, e, n, [zoom]):
         x, y, z = t.x, t.y, t.z
-        tile_url = url.replace('tileX', str(x)).replace('tileY', str(y)).replace('tileZ', str(z))
+        tile_url = url.replace(
+            'tileX', str(x)).replace('tileY', str(y)).replace('tileZ', str(z))
         # ---
-        image = _fetch_tile(tile_url, wait, max_retries)
+        if path is not None:
+            image = _fetch_local_tile(tile_url, wait, max_retries, path,
+                                      number_of_tiles, loops)
+        else:
+            image = _fetch_tile(tile_url, wait, max_retries)
         # ---
         tiles.append(t)
         arrays.append(image)
+        loops += 1
     merged, extent = _merge_tiles(tiles, arrays)
     # lon/lat extent --> Spheric Mercator
     west, south, east, north = extent
@@ -160,6 +173,36 @@ def bounds2img(w, s, e, n, zoom='auto',
     right, top = mt.xy(east, north)
     extent = left, right, bottom, top
     return merged, extent
+
+
+def _fetch_local_tile(tile_url, wait, max_retries, path, number_of_tiles,
+                      loops):
+    """
+    Fetch local tile or try to download file if local file is not present.
+
+    Sometimes OSM servers deny requests via Python scripts but allows direct
+    downloads. In that case one can try to download the file manually using the
+    given url and filename.
+    """
+
+    fn = tile_url.replace('https://', '').replace('http://', '')
+    fn = fn.replace('/', '_')
+    image_path = os.path.join(path, fn)
+    if not os.path.isfile(image_path):
+        r = _retryer(tile_url, wait, max_retries)
+        if r.status_code == 200:
+            with open(image_path, 'wb') as f:
+                for chunk in r:
+                    f.write(chunk)
+        else:
+            print('Automatic download failed. Try manual download.')
+            print('Filename: {0}'.format(fn))
+            print('URL: {0}'.format(tile_url))
+            print('{0} tiles left.'.format(number_of_tiles - loops))
+            exit(0)
+    image = Image.open(image_path).convert('RGB')
+    image = np.asarray(image)
+    return image
 
 
 def _fetch_tile(tile_url, wait, max_retries):
