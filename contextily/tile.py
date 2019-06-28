@@ -151,22 +151,18 @@ def bounds2img(w, s, e, n, zoom='auto',
         zoom = _calculate_zoom(w, s, e, n)
     tiles = []
     arrays = []
-    loops = 0
-    number_of_tiles = len([x for x in mt.tiles(w, s, e, n, [zoom])])
     for t in mt.tiles(w, s, e, n, [zoom]):
         x, y, z = t.x, t.y, t.z
         tile_url = url.replace(
             'tileX', str(x)).replace('tileY', str(y)).replace('tileZ', str(z))
         # ---
         if path is not None:
-            image = _fetch_local_tile(tile_url, wait, max_retries, path,
-                                      number_of_tiles, loops)
+            image = _fetch_tile_with_cache(tile_url, wait, max_retries, path)
         else:
             image = _fetch_tile(tile_url, wait, max_retries)
         # ---
         tiles.append(t)
         arrays.append(image)
-        loops += 1
     merged, extent = _merge_tiles(tiles, arrays)
     # lon/lat extent --> Spheric Mercator
     west, south, east, north = extent
@@ -176,8 +172,7 @@ def bounds2img(w, s, e, n, zoom='auto',
     return merged, extent
 
 
-def _fetch_local_tile(tile_url, wait, max_retries, path, number_of_tiles,
-                      loops):
+def _fetch_tile_with_cache(tile_url, wait, max_retries, path):
     """
     Fetch local tile or try to download file if local file is not present.
 
@@ -189,18 +184,16 @@ def _fetch_local_tile(tile_url, wait, max_retries, path, number_of_tiles,
     fn = tile_url.replace('https://', '').replace('http://', '')
     fn = fn.replace('/', '_')
     image_path = os.path.join(path, fn)
+
     if not os.path.isfile(image_path):
-        r = _retryer(tile_url, wait, max_retries)
-        if r.status_code == 200:
+        request = _retryer(tile_url, wait, max_retries)
+        if request.status_code == 200:
             with open(image_path, 'wb') as f:
-                for chunk in r:
+                for chunk in request:
                     f.write(chunk)
         else:
-            print('Automatic download failed. Try manual download.')
-            print('Filename: {0}'.format(fn))
-            print('URL: {0}'.format(tile_url))
-            print('{0} tiles left.'.format(number_of_tiles - loops))
-            exit(0)
+            request.raise_for_status()
+
     image = Image.open(image_path).convert('RGB')
     image = np.asarray(image)
     return image
