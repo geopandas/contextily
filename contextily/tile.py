@@ -95,7 +95,7 @@ def bounds2raster(w, s, e, n, path, zoom='auto',
 def bounds2img(w, s, e, n, zoom='auto',
                url=sources.ST_TERRAIN, path=None, ll=False,
                wait=0, max_retries=2):
-    """
+    '''
     Take bounding box and zoom and return an image with all the tiles
     that compose the map and its Spherical Mercator extent.
 
@@ -114,8 +114,7 @@ def bounds2img(w, s, e, n, zoom='auto',
     zoom    : int
               Level of detail
     url     : str
-              [Optional. Default:
-              'http://tile.stamen.com/terrain/tileZ/tileX/tileY.png']
+              [Optional. Default: 'http://tile.stamen.com/terrain/tileZ/tileX/tileY.png']
               URL for tile provider. The placeholders for the XYZ need to be
               `tileX`, `tileY`, `tileZ`, respectively. IMPORTANT: tiles are
               assumed to be in the Spherical Mercator projection (EPSG:3857).
@@ -142,7 +141,7 @@ def bounds2img(w, s, e, n, zoom='auto',
               Image as a 3D array of RGB values
     extent  : tuple
               Bounding box [minX, maxX, minY, maxY] of the returned image
-    """
+    '''
     if not ll:
         # Convert w, s, e, n into lon/lat
         w, s = _sm2ll(w, s)
@@ -232,17 +231,15 @@ def _retryer(tile_url, wait, max_retries):
         request.raise_for_status()
     except requests.HTTPError:
         if request.status_code == 404:
-            raise requests.HTTPError(
-                'Tile URL resulted in a 404 error. '
-                'Double-check your tile url:\n{}'.format(tile_url))
+            raise requests.HTTPError('Tile URL resulted in a 404 error. '
+                                     'Double-check your tile url:\n{}'.format(tile_url))
         elif request.status_code == 104:
             if max_retries > 0:
                 os.wait(wait)
                 max_retries -= 1
                 request = _retryer(tile_url, wait, max_retries)
             else:
-                raise requests.HTTPError(
-                    'Connection reset by peer too many times.')
+                raise requests.HTTPError('Connection reset by peer too many times.')
     return request
 
 
