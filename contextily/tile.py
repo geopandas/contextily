@@ -152,8 +152,7 @@ def bounds2img(w, s, e, n, zoom='auto',
     arrays = []
     for t in mt.tiles(w, s, e, n, [zoom]):
         x, y, z = t.x, t.y, t.z
-        tile_url = url.replace(
-            'tileX', str(x)).replace('tileY', str(y)).replace('tileZ', str(z))
+        tile_url = url.replace('tileX', str(x)).replace('tileY', str(y)).replace('tileZ', str(z))
         # ---
         if path is not None:
             image = _fetch_tile_with_cache(tile_url, wait, max_retries, path)
