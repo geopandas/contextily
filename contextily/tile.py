@@ -172,11 +172,16 @@ def bounds2img(w, s, e, n, zoom='auto',
 
 def _fetch_tile_with_cache(tile_url, wait, max_retries, path):
     """
-    Fetch local tile or try to download file if local file is not present.
+    Fetch local tile from cache or try to download tile into cache if tile does
+    not exist.
 
     Sometimes OSM servers deny requests via Python scripts but allows direct
-    downloads. In that case one can try to download the file manually using the
-    given url and filename.
+    downloads. In that case one can try to download the tiles manually and copy
+    them using the cache name pattern. Remove 'http://' or 'https://' and
+    replace all slashes by underscores:
+
+    https://a.tile.openstreetmap.fr/osmfr/17/68848/41966.png
+    a.tile.openstreetmap.fr_osmfr_17_68848_41966.png
     """
 
     fn = tile_url.replace('https://', '').replace('http://', '')
