@@ -6,7 +6,6 @@ dependencies:
   # required
   #- geopy
   - matplotlib
-  - mercantile
   - pillow
   - rasterio
   - requests
@@ -16,4 +15,5 @@ dependencies:
   - pytest-cov
   - pip:
     - geopy
+    - mercantile
 
