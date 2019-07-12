@@ -5,13 +5,19 @@ import uuid
 
 import mercantile as mt
 import requests
+import atexit
 import io
 import os
+import shutil
+import tempfile
 import warnings
+
 import numpy as np
 import rasterio as rio
 from PIL import Image
 from rasterio.transform import from_origin
+from joblib import Memory as _Memory
+
 from . import tile_providers as sources
 
 
@@ -19,6 +25,16 @@ __all__ = ['bounds2raster', 'bounds2img', 'howmany']
 
 
 USER_AGENT = 'contextily-' + uuid.uuid4().hex
+
+tmpdir = tempfile.mkdtemp()
+memory = _Memory(tmpdir, verbose=0)
+
+
+def _clear_cache():
+    shutil.rmtree(tmpdir)
+
+
+atexit.register(_clear_cache)
 
 
 def bounds2raster(w, s, e, n, path, zoom='auto',
@@ -180,6 +196,7 @@ def _construct_tile_url(url, x, y, z):
     return tile_url
 
 
+@memory.cache
 def _fetch_tile(tile_url, wait, max_retries):
     request = _retryer(tile_url, wait, max_retries)
     with io.BytesIO(request.content) as image_stream:
