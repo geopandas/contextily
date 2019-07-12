@@ -1,0 +1,19 @@
+name: test-environment
+channels:
+  - defaults
+dependencies:
+  - python=3.5
+  # required
+  #- geopy
+  - matplotlib
+  - mercantile
+  - pillow
+  - rasterio
+  - requests
+  # testing
+  - pip
+  - pytest
+  - pytest-cov
+  - pip:
+    - geopy
+
