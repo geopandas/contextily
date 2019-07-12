@@ -5,19 +5,22 @@ only:
   - master
 os:
   - linux
-env:
-  - PYTHON="3.5"
-  - PYTHON="3.6"
-  - PYTHON="3.7"
+
+matrix:
+  include:
+    - env: ENV_FILE="ci/travis/36-minimal.yaml"
+    - env: ENV_FILE="ci/travis/37-latest-conda-forge.yaml"
+
 before_install:
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
   - chmod +x miniconda.sh
   - ./miniconda.sh -b -p ./miniconda
   - export PATH=`pwd`/miniconda/bin:$PATH
-  - conda update --yes conda
-  - conda config --add channels conda-forge --force
-  - conda create --yes -n TEST python=$PYTHON --file requirements.txt --file requirements-dev.txt
-  - source activate TEST
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update conda
+  - conda info
+  - conda env create --file="${ENV_FILE}"
+  - source activate test-environment
   - pip install coveralls
 
 install:
