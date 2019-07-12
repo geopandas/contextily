@@ -11,7 +11,7 @@ ATTRIBUTION = ("Map tiles by Stamen Design, under CC BY 3.0. "\
                "Data by OpenStreetMap, under ODbL.")
 ATTRIBUTION_SIZE = 8
 
-def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN, 
+def add_basemap(ax, zoom=ZOOM, url=None,
 		interpolation=INTERPOLATION, attribution = ATTRIBUTION, 
         attribution_size = ATTRIBUTION_SIZE,
                 **extra_imshow_args):
@@ -74,7 +74,8 @@ def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN,
 
     """
     # If web source
-    if url[:4] == 'http':
+    if (url is None or isinstance(url, dict) 
+            or (isinstance(url, str) and url[:4] == 'http')):
         # Extent
         left, right = ax.get_xlim()
         bottom, top = ax.get_ylim()
