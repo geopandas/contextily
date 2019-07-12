@@ -51,7 +51,9 @@ def process_data(data):
     ATTRIBUTIONS = {
         '{attribution.OpenStreetMap}':
             data['OpenStreetMap']['options']['attribution'],
-        '{attribution.Esri}': data['Esri']['options']['attribution']
+        '{attribution.Esri}': data['Esri']['options']['attribution'],
+        '{attribution.OpenMapSurfer}':
+            data['OpenMapSurfer']['options']['attribution'],
     }
 
     result = {}
@@ -108,7 +110,9 @@ def pythonize_data(data):
             for placeholder, attr in attributions.items():
                 if placeholder in value:
                     value = value.replace(placeholder, attr)
-                    break
+                    if '{attribution.' not in value:
+                        # replaced last attribution
+                        break
             else:
                 raise ValueError("Attribution not known: {}".format(value))
         elif key in rename_keys:
@@ -220,6 +224,10 @@ if __name__ == "__main__":
     data, description = get_json_data()
     with open("leaflet-providers-raw.json", "w") as f:
         json.dump(data, f)
+
+    # with open("leaflet-providers-raw.json", "r") as f:
+    #     data = json.load(f)
+    # description = ''
 
     result = process_data(data)
     with open("leaflet-providers-parsed.json", "w") as f:
