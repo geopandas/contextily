@@ -13,8 +13,8 @@ ATTRIBUTION_SIZE = 8
 
 def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN, 
 		interpolation=INTERPOLATION, attribution = ATTRIBUTION, 
-        attribution_size = ATTRIBUTION_SIZE,
-                **extra_imshow_args):
+        attribution_size = ATTRIBUTION_SIZE, reset_extent=True,
+        **extra_imshow_args):
     """
     Add a (web/local) basemap to `ax`
     ...
@@ -43,6 +43,10 @@ def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN,
     attribution_size    : int
                           [Optional. Defaults to `ATTRIBUTION_SIZE`].
                           Font size to render attribution text with.
+    reset_extent        : Boolean
+                          [Optional. Default=True] If True, the extent of the
+                          basemap added is reset to the original extent (xlim,
+                          ylim) of `ax`
     **extra_imshow_args : dict
                           Other parameters to be passed to `imshow`.
 
@@ -97,7 +101,9 @@ def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN,
     # Plotting
     ax.imshow(image, extent=extent, 
               interpolation=interpolation, **extra_imshow_args)
-    ax.axis((xmin, xmax, ymin, ymax))
+
+    if reset_extent:
+        ax.axis((xmin, xmax, ymin, ymax))
 
     if attribution:
         add_attribution(ax, attribution, font_size=attribution_size)
