@@ -5,6 +5,7 @@ import mercantile as mt
 import requests
 import io
 import os
+import warnings
 import numpy as np
 import rasterio as rio
 from PIL import Image
@@ -147,10 +148,8 @@ def bounds2img(w, s, e, n, zoom='auto',
     arrays = []
     for t in mt.tiles(w, s, e, n, [zoom]):
         x, y, z = t.x, t.y, t.z
-        tile_url = url.replace('tileX', str(x)).replace('tileY', str(y)).replace('tileZ', str(z))
-        # ---
+        tile_url = _construct_tile_url(url, x, y, z)
         image = _fetch_tile(tile_url, wait, max_retries)
-        # ---
         tiles.append(t)
         arrays.append(image)
     merged, extent = _merge_tiles(tiles, arrays)
@@ -160,6 +159,20 @@ def bounds2img(w, s, e, n, zoom='auto',
     right, top = mt.xy(east, north)
     extent = left, right, bottom, top
     return merged, extent
+
+
+def _construct_tile_url(url, x, y, z):
+    """
+    Generate actual tile url from tile provider definition or template url.
+    """
+    if 'tileX' in url and 'tileY' in url:
+        warnings.warn(
+            "The url format using 'tileX', 'tileY', 'tileZ' as placeholders "
+            "is deprecated. Please use '{x}', '{y}', '{z}' instead.",
+            FutureWarning)
+        url = url.replace('tileX', '{x}').replace('tileY', '{y}').replace('tileZ', '{z}')
+    tile_url = url.format(x=x, y=y, z=z)
+    return tile_url
 
 
 def _fetch_tile(tile_url, wait, max_retries):
