@@ -8,8 +8,7 @@ os:
 
 matrix:
   include:
-    - env: ENV_FILE="ci/travis/35-minimal.yaml"
-    - env: ENV_FILE="ci/travis/36.yaml"
+    - env: ENV_FILE="ci/travis/36-minimal.yaml"
     - env: ENV_FILE="ci/travis/37-latest-conda-forge.yaml"
 
 before_install:
