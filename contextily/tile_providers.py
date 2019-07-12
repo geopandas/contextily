@@ -20,3 +20,12 @@ ST_WATERCOLOR = 'http://tile.stamen.com/watercolor/tileZ/tileX/tileY.png'
 OSM_A = 'http://a.tile.openstreetmap.org/tileZ/tileX/tileY.png'
 OSM_B = 'http://b.tile.openstreetmap.org/tileZ/tileX/tileY.png'
 OSM_C = 'http://c.tile.openstreetmap.org/tileZ/tileX/tileY.png'
+
+# Carto, as a third
+CARTO_LIGHT = 'https://a.basemaps.cartocdn.com/light_all/tileZ/tileX/tileY.png'
+CARTO_LIGHT_BLANK = 'https://a.basemaps.cartocdn.com/light_nolabels/tileZ/tileX/tileY.png'
+CARTO_DARK = 'https://a.basemaps.cartocdn.com/dark_all/tileZ/tileX/tileY.png'
+CARTO_DARK_BLANK = 'https://a.basemaps.cartocdn.com/dark_nolabels/tileZ/tileX/tileY.png'
+CARTO_VOYAGER = 'https://a.basemaps.cartocdn.com/rastertiles/voyager/tileZ/tileX/tileY.png'
+CARTO_VOYAGER_BLANK = 'https://a.basemaps.cartocdn.com/rastertiles/voyager_nolabels/tileZ/tileX/tileY.png'
+
