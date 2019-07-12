@@ -1,6 +1,8 @@
 """Tools for downloading map tiles from coordinates."""
 from __future__ import (absolute_import, division, print_function)
 
+import uuid 
+
 import mercantile as mt
 import requests
 import io
@@ -14,6 +16,9 @@ from . import tile_providers as sources
 
 
 __all__ = ['bounds2raster', 'bounds2img', 'howmany']
+
+
+USER_AGENT = 'contextily-' + uuid.uuid4().hex
 
 
 def bounds2raster(w, s, e, n, path, zoom='auto',
@@ -204,7 +209,7 @@ def _retryer(tile_url, wait, max_retries):
     request object containing the web response.
     """
     try:
-        request = requests.get(tile_url)
+        request = requests.get(tile_url, headers={"user-agent": USER_AGENT})
         request.raise_for_status()
     except requests.HTTPError:
         if request.status_code == 404:
