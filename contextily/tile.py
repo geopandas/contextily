@@ -15,7 +15,7 @@ from rasterio.transform import from_origin
 from . import tile_providers as sources
 
 
-__all__ = ['bounds2raster', 'bounds2img', 'howmany']
+__all__ = ['bounds2raster', 'bounds2img', 'howmany', 'empty_tile_cache']
 
 
 USER_AGENT = 'contextily-' + uuid.uuid4().hex
@@ -263,6 +263,21 @@ def _retryer(tile_url, wait, max_retries):
             else:
                 raise requests.HTTPError('Connection reset by peer too many times.')
     return request
+
+
+def empty_tile_cache(cache_dir):
+    """
+    Remove all tiles from the given cache directory.
+
+    Parameters
+    ----------
+    cache_dir : str
+        Path to the cache directory.
+        
+    """
+    for root, dirs, files in os.walk(cache_dir):
+        for f in files:
+            os.unlink(os.path.join(root, f))
 
 
 def howmany(w, s, e, n, zoom, verbose=True, ll=False):
