@@ -198,8 +198,8 @@ def _fetch_tile_with_cache(tile_url, wait, max_retries, path):
     them using the cache name pattern. Remove 'http://' or 'https://' and
     replace all slashes by underscores:
 
-    https://a.tile.openstreetmap.fr/osmfr/17/68848/41966.png
-    a.tile.openstreetmap.fr_osmfr_17_68848_41966.png
+    URL: https://a.tile.openstreetmap.fr/osmfr/17/68848/41966.png
+    FILE: a.tile.openstreetmap.fr_osmfr_17_68848_41966.png
     """
 
     fn = tile_url.replace('https://', '').replace('http://', '')
