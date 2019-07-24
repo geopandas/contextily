@@ -9,10 +9,12 @@ INTERPOLATION = 'bilinear'
 ZOOM = 'auto'
 ATTRIBUTION = ("Map tiles by Stamen Design, under CC BY 3.0. "\
                "Data by OpenStreetMap, under ODbL.")
+ATTRIBUTION_SIZE = 8
 
 def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN, 
 		interpolation=INTERPOLATION, attribution = ATTRIBUTION, 
-                **extra_imshow_args):
+        attribution_size = ATTRIBUTION_SIZE, reset_extent=True,
+        **extra_imshow_args):
     """
     Add a (web/local) basemap to `ax`
     ...
@@ -38,6 +40,13 @@ def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN,
     attribution         : str
                           [Optional. Defaults to standard `ATTRIBUTION`] Text to be added at the
                           bottom of the axis.
+    attribution_size    : int
+                          [Optional. Defaults to `ATTRIBUTION_SIZE`].
+                          Font size to render attribution text with.
+    reset_extent        : Boolean
+                          [Optional. Default=True] If True, the extent of the
+                          basemap added is reset to the original extent (xlim,
+                          ylim) of `ax`
     **extra_imshow_args : dict
                           Other parameters to be passed to `imshow`.
 
@@ -68,11 +77,11 @@ def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN,
     >>> plt.show()
 
     """
+    xmin, xmax, ymin, ymax = ax.axis()
     # If web source
     if url[:4] == 'http':
         # Extent
-        left, right = ax.get_xlim()
-        bottom, top = ax.get_ylim()
+        left, right, bottom, top = xmin, xmax, ymin, ymax
         # Zoom
         if isinstance(zoom, str) and (zoom.lower() == 'auto'):
             min_ll = _sm2ll(left, bottom)
@@ -92,11 +101,16 @@ def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN,
     # Plotting
     ax.imshow(image, extent=extent, 
               interpolation=interpolation, **extra_imshow_args)
+
+    if reset_extent:
+        ax.axis((xmin, xmax, ymin, ymax))
+
     if attribution:
-        add_attribution(ax, attribution)
+        add_attribution(ax, attribution, font_size=attribution_size)
+
     return ax
 
-def add_attribution(ax, att=ATTRIBUTION):
+def add_attribution(ax, att=ATTRIBUTION, font_size=ATTRIBUTION_SIZE):
     '''
     Utility to add attribution text
     ...
@@ -109,6 +123,8 @@ def add_attribution(ax, att=ATTRIBUTION):
     att                 : str
                           [Optional. Defaults to standard `ATTRIBUTION`] Text to be added at the
                           bottom of the axis.
+    font_size           : int
+                          [Optional. Defaults to `ATTRIBUTION_SIZE`] Font size in which to render the attribution text.
 
     Returns
     -------
@@ -120,7 +136,7 @@ def add_attribution(ax, att=ATTRIBUTION):
     minY, maxY = ax.get_ylim()
     ax.text(minX + (maxX - minX) * 0.005, 
             minY + (maxY - minY) * 0.005, 
-            att, size=8, 
+            att, size=font_size,
             path_effects=[patheffects.withStroke(linewidth=2,
                                                  foreground="w")])
     return ax
