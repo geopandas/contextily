@@ -99,7 +99,7 @@ def bounds2raster(w, s, e, n, path, zoom='auto',
 
 
 def bounds2img(w, s, e, n, zoom='auto',
-               url=sources.ST_TERRAIN, path=None, ll=False,
+               url=sources.ST_TERRAIN, cache_dir=None, ll=False,
                wait=0, max_retries=2):
     '''
     Take bounding box and zoom and return an image with all the tiles
@@ -127,11 +127,12 @@ def bounds2img(w, s, e, n, zoom='auto',
     ll      : Boolean
               [Optional. Default: False] If True, `w`, `s`, `e`, `n` are
               assumed to be lon/lat as opposed to Spherical Mercator.
-    path    : str
-              [Optional. Default: None] If a path is given the tiles will be
-              downloaded to this location. If the tile can be found in the
-              given path the local tile will be used instead of the server
-              tile. This is faster and will reduce server usage.
+    cache_dir : str
+              [Optional. Default: None] If a path to a directory is given the
+              tiles will be downloaded to this location. If the tile can be
+              found in the given directory the local tile will be used instead
+              of the tile from the server. This is faster and will reduce
+              server usage.
     wait    : int
               [Optional. Default: 0]
               if the tile API is rate-limited, the number of seconds to wait
@@ -159,8 +160,9 @@ def bounds2img(w, s, e, n, zoom='auto',
     for t in mt.tiles(w, s, e, n, [zoom]):
         x, y, z = t.x, t.y, t.z
         tile_url = _construct_tile_url(url, x, y, z)
-        if path is not None:
-            image = _fetch_tile_with_cache(tile_url, wait, max_retries, path)
+        if cache_dir is not None:
+            image = _fetch_tile_with_cache(tile_url, wait, max_retries,
+                                           cache_dir)
         else:
             image = _fetch_tile(tile_url, wait, max_retries)
         tiles.append(t)
@@ -188,7 +190,7 @@ def _construct_tile_url(url, x, y, z):
     return tile_url
 
 
-def _fetch_tile_with_cache(tile_url, wait, max_retries, path):
+def _fetch_tile_with_cache(tile_url, wait, max_retries, cache_dir):
     """
     Fetch local tile from cache or try to download tile into cache if tile does
     not exist.
@@ -204,7 +206,9 @@ def _fetch_tile_with_cache(tile_url, wait, max_retries, path):
 
     fn = tile_url.replace('https://', '').replace('http://', '')
     fn = fn.replace('/', '_')
-    image_path = os.path.join(path, fn)
+    image_path = os.path.join(cache_dir, fn)
+
+    os.makedirs(cache_dir, exist_ok=True)
 
     if not os.path.isfile(image_path):
         request = _retryer(tile_url, wait, max_retries)

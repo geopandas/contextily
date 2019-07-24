@@ -66,7 +66,7 @@ def test_bounds2img_with_cache():
                   -93.50721740722656, 36.49387741088867)
     # download tile
     p = os.path.expanduser('~')
-    img, ext = ctx.bounds2img(w, s, e, n, path=p, zoom=4, ll=True)
+    img, ext = ctx.bounds2img(w, s, e, n, cache_dir=p, zoom=4, ll=True)
     solu = (-12523442.714243276,
             -10018754.171394622,
             2504688.5428486555,
@@ -78,7 +78,7 @@ def test_bounds2img_with_cache():
     assert img[200, 100, :].tolist() == [230, 225, 189]
 
     # fetch from cache
-    img, ext = ctx.bounds2img(w, s, e, n, path=p, zoom=4, ll=True)
+    img, ext = ctx.bounds2img(w, s, e, n, cache_dir=p, zoom=4, ll=True)
     solu = (-12523442.714243276,
             -10018754.171394622,
             2504688.5428486555,
