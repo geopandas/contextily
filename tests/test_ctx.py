@@ -61,21 +61,15 @@ def test_bounds2img():
     assert img[100, 200, :].tolist() == [156, 180, 131]
     assert img[200, 100, :].tolist() == [230, 225, 189]
 
+
 def test_bounds2img_with_cache():
     w, s, e, n = (-106.6495132446289, 25.845197677612305,
                   -93.50721740722656, 36.49387741088867)
     # download tile
-    p = os.path.expanduser('~')
-    img, ext = ctx.bounds2img(w, s, e, n, cache_dir=p, zoom=4, ll=True)
-    solu = (-12523442.714243276,
-            -10018754.171394622,
-            2504688.5428486555,
-            5009377.085697309)
-    for i, j in zip(ext, solu):
-        assert round(i - j, TOL) == 0
-    assert img[100, 100, :].tolist() == [230, 229, 188]
-    assert img[100, 200, :].tolist() == [156, 180, 131]
-    assert img[200, 100, :].tolist() == [230, 225, 189]
+    p = os.path.join(os.path.expanduser('~'), 'contextily_test_cache')
+    ctx.bounds2img(w, s, e, n, cache_dir=p, zoom=4, ll=True)
+
+    assert list(os.listdir(p)) == ['tile.stamen.com_terrain_4_3_6.png']
 
     # fetch from cache
     img, ext = ctx.bounds2img(w, s, e, n, cache_dir=p, zoom=4, ll=True)
@@ -88,8 +82,11 @@ def test_bounds2img_with_cache():
     assert img[100, 100, :].tolist() == [230, 229, 188]
     assert img[100, 200, :].tolist() == [156, 180, 131]
     assert img[200, 100, :].tolist() == [230, 225, 189]
-    os.remove(os.path.join(os.path.expanduser('~'),
-                           'tile.stamen.com_terrain_4_3_6.png'))
+
+    ctx.empty_tile_cache(p)
+    assert list(os.listdir(p)) != ['tile.stamen.com_terrain_4_3_6.png']
+    os.removedirs(p)
+
 
 def test_howmany():
     w, s, e, n = (-106.6495132446289, 25.845197677612305,
