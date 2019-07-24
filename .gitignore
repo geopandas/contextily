@@ -13,3 +13,6 @@ build/
 dist/
 .coverage
 .pytest_cache/
+
+# IDE
+.idea
