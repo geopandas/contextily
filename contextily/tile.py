@@ -245,7 +245,7 @@ def warp_tiles(img, ext,
                   image
     '''
     h, w, b = img.shape
-    # --- https://mapbox.github.io/rasterio/quickstart.html#opening-a-dataset-in-writing-mode
+    # --- https://rasterio.readthedocs.io/en/latest/quickstart.html#opening-a-dataset-in-writing-mode
     minX, maxX, minY, maxY = ext
     x = np.linspace(minX, maxX, w)
     y = np.linspace(minY, maxY, h)
