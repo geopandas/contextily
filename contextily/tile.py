@@ -209,7 +209,7 @@ def _fetch_tile(tile_url, wait, max_retries):
     return image
 
 
-def warp_tiles(img, ext, 
+def warp_tiles(img, extent,
                t_crs='EPSG:4326',
                resampling=Resampling.bilinear):
     '''
@@ -218,13 +218,13 @@ def warp_tiles(img, ext,
     NOTE: this method works well with contextily's `bounds2img` approach to
           raster dimensions (h, w, b)
     ...
-    
+
     Arguments
     ---------
     img         : ndarray
                   Image as a 3D array (h, w, b) of RGB values (e.g. as
                   returned from `contextily.bounds2img`)
-    ext         : tuple
+    extent      : tuple
                   Bounding box [minX, maxX, minY, maxY] of the returned image,
                   expressed in Web Mercator (`EPSG:3857`)
     t_crs       : str/CRS
@@ -234,7 +234,7 @@ def warp_tiles(img, ext,
                   [Optional. Default=Resampling.bilinear] Resampling method for
                   executing warping, expressed as a `rasterio.enums.Resampling
                   method
-    
+
     Returns
     -------
     img         : ndarray
@@ -246,19 +246,19 @@ def warp_tiles(img, ext,
     '''
     h, w, b = img.shape
     # --- https://rasterio.readthedocs.io/en/latest/quickstart.html#opening-a-dataset-in-writing-mode
-    minX, maxX, minY, maxY = ext
+    minX, maxX, minY, maxY = extent
     x = np.linspace(minX, maxX, w)
     y = np.linspace(minY, maxY, h)
     resX = (x[-1] - x[0]) / w
     resY = (y[-1] - y[0]) / h
     transform = from_origin(x[0] - resX / 2,
                             y[-1] + resY / 2, resX, resY)
-    # --- 
-    w_img, vrt = _warper(img.transpose(2, 0, 1), 
-                         transform, 
+    # ---
+    w_img, vrt = _warper(img.transpose(2, 0, 1),
+                         transform,
                          'EPSG:3857', t_crs,
                          resampling)
-    # --- 
+    # ---
     extent = vrt.bounds.left, vrt.bounds.right, \
              vrt.bounds.bottom, vrt.bounds.top
     return w_img.transpose(1, 2, 0), extent
