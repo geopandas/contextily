@@ -28,6 +28,7 @@ the internet into geospatial raster files. Bounding boxes can be passed in both 
 * `rasterio`
 * `requests`
 * `geopy`
+* `joblib`
 
 ## Installation
 

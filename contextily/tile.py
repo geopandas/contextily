@@ -5,13 +5,19 @@ import uuid
 
 import mercantile as mt
 import requests
+import atexit
 import io
 import os
+import shutil
+import tempfile
 import warnings
+
 import numpy as np
 import rasterio as rio
 from PIL import Image
 from rasterio.transform import from_origin
+from joblib import Memory as _Memory
+
 from . import tile_providers as sources
 
 
@@ -19,6 +25,16 @@ __all__ = ['bounds2raster', 'bounds2img', 'howmany', 'empty_tile_cache']
 
 
 USER_AGENT = 'contextily-' + uuid.uuid4().hex
+
+tmpdir = tempfile.mkdtemp()
+memory = _Memory(tmpdir, verbose=0)
+
+
+def _clear_cache():
+    shutil.rmtree(tmpdir)
+
+
+atexit.register(_clear_cache)
 
 
 def bounds2raster(w, s, e, n, path, zoom='auto',
@@ -224,6 +240,7 @@ def _fetch_tile_with_cache(tile_url, wait, max_retries, cache_dir):
     return image
 
 
+@memory.cache
 def _fetch_tile(tile_url, wait, max_retries):
     request = _retryer(tile_url, wait, max_retries)
     with io.BytesIO(request.content) as image_stream:
@@ -267,21 +284,6 @@ def _retryer(tile_url, wait, max_retries):
             else:
                 raise requests.HTTPError('Connection reset by peer too many times.')
     return request
-
-
-def empty_tile_cache(cache_dir):
-    """
-    Remove all tiles from the given cache directory.
-
-    Parameters
-    ----------
-    cache_dir : str
-        Path to the cache directory.
-        
-    """
-    for root, dirs, files in os.walk(cache_dir):
-        for f in files:
-            os.unlink(os.path.join(root, f))
 
 
 def howmany(w, s, e, n, zoom, verbose=True, ll=False):
