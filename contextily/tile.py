@@ -286,6 +286,21 @@ def _retryer(tile_url, wait, max_retries):
     return request
 
 
+def empty_tile_cache(cache_dir):
+    """
+    Remove all tiles from the given cache directory.
+
+    Parameters
+    ----------
+    cache_dir : str
+        Path to the cache directory.
+
+    """
+    for root, dirs, files in os.walk(cache_dir):
+        for f in files:
+            os.unlink(os.path.join(root, f))
+
+
 def howmany(w, s, e, n, zoom, verbose=True, ll=False):
     '''
     Number of tiles required for a given bounding box and a zoom level
