@@ -1,13 +1,21 @@
 """Tools for downloading map tiles from coordinates."""
 from __future__ import (absolute_import, division, print_function)
 
+import uuid 
+
 import mercantile as mt
 import requests
+import atexit
 import io
 import os
+import shutil
+import tempfile
+import warnings
+
 import numpy as np
 import rasterio as rio
 from PIL import Image
+from joblib import Memory as _Memory
 from rasterio.transform import from_origin
 from rasterio.io import MemoryFile
 from rasterio.vrt import WarpedVRT
@@ -15,7 +23,22 @@ from rasterio.enums import Resampling
 from . import tile_providers as sources
 
 
-__all__ = ['bounds2raster', 'bounds2img', 'howmany']
+__all__ = ['bounds2raster', 'bounds2img', 
+           'warp_tiles', 'warp_img_transform',
+           'howmany']
+
+
+USER_AGENT = 'contextily-' + uuid.uuid4().hex
+
+tmpdir = tempfile.mkdtemp()
+memory = _Memory(tmpdir, verbose=0)
+
+
+def _clear_cache():
+    shutil.rmtree(tmpdir)
+
+
+atexit.register(_clear_cache)
 
 
 def bounds2raster(w, s, e, n, path, zoom='auto',
@@ -70,7 +93,7 @@ def bounds2raster(w, s, e, n, path, zoom='auto',
         w, s = _sm2ll(w, s)
         e, n = _sm2ll(e, n)
     if zoom == 'auto':
-        zoom = _calculate_zoom(w, e, s, n)
+        zoom = _calculate_zoom(w, s, e, n)
     # Download
     Z, ext = bounds2img(w, s, e, n, zoom=zoom, url=url, ll=True)
     # Write
@@ -145,15 +168,13 @@ def bounds2img(w, s, e, n, zoom='auto',
         w, s = _sm2ll(w, s)
         e, n = _sm2ll(e, n)
     if zoom == 'auto':
-        zoom = _calculate_zoom(w, e, s, n)
+        zoom = _calculate_zoom(w, s, e, n)
     tiles = []
     arrays = []
     for t in mt.tiles(w, s, e, n, [zoom]):
         x, y, z = t.x, t.y, t.z
-        tile_url = url.replace('tileX', str(x)).replace('tileY', str(y)).replace('tileZ', str(z))
-        # ---
+        tile_url = _construct_tile_url(url, x, y, z)
         image = _fetch_tile(tile_url, wait, max_retries)
-        # ---
         tiles.append(t)
         arrays.append(image)
     merged, extent = _merge_tiles(tiles, arrays)
@@ -165,6 +186,21 @@ def bounds2img(w, s, e, n, zoom='auto',
     return merged, extent
 
 
+def _construct_tile_url(url, x, y, z):
+    """
+    Generate actual tile url from tile provider definition or template url.
+    """
+    if 'tileX' in url and 'tileY' in url:
+        warnings.warn(
+            "The url format using 'tileX', 'tileY', 'tileZ' as placeholders "
+            "is deprecated. Please use '{x}', '{y}', '{z}' instead.",
+            FutureWarning)
+        url = url.replace('tileX', '{x}').replace('tileY', '{y}').replace('tileZ', '{z}')
+    tile_url = url.format(x=x, y=y, z=z)
+    return tile_url
+
+
+@memory.cache
 def _fetch_tile(tile_url, wait, max_retries):
     request = _retryer(tile_url, wait, max_retries)
     with io.BytesIO(request.content) as image_stream:
@@ -313,7 +349,7 @@ def _retryer(tile_url, wait, max_retries):
     request object containing the web response.
     """
     try:
-        request = requests.get(tile_url)
+        request = requests.get(tile_url, headers={"user-agent": USER_AGENT})
         request.raise_for_status()
     except requests.HTTPError:
         if request.status_code == 404:
