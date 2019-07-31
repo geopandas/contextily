@@ -4,6 +4,7 @@ import numpy as np
 from . import tile_providers as sources
 from .tile import _calculate_zoom, bounds2img, _sm2ll, warp_tiles, _warper
 from rasterio.enums import Resampling
+from rasterio.warp import transform_bounds
 from matplotlib import patheffects
 
 INTERPOLATION = 'bilinear'
@@ -140,18 +141,9 @@ def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN,
 
 def _reproj_bb(left, right, bottom, top,
                s_crs, t_crs):
-    import geopandas
-    from shapely.geometry import Point
-    left_top = Point(left, top)
-    right_bottom = Point(right, bottom)
-    in_bb = geopandas.GeoSeries({'lt': left_top,
-                                 'rb': right_bottom}, 
-                                 crs=s_crs)
-    out_bb = in_bb.to_crs(t_crs)
-    left, top = list(out_bb['lt'].coords)[0]
-    right, bottom = list(out_bb['rb'].coords)[0]
-    return left, right, bottom, top
-
+    n_l, n_b, n_r, n_t = transform_bounds(s_crs, t_crs,
+                                          left, bottom, right, top)
+    return n_l, n_r, n_b, n_t
 
 def add_attribution(ax, att=ATTRIBUTION, font_size=ATTRIBUTION_SIZE):
     '''
