@@ -1,4 +1,3 @@
-geopandas
 geopy
 matplotlib
 mercantile

@@ -4,7 +4,6 @@ channels:
 dependencies:
   - python=3.6
   # required
-  - geopandas
   - geopy
   - matplotlib
   - mercantile

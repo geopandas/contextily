@@ -52,8 +52,8 @@ def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN,
                           ylim) of `ax`
     crs                 : None/str/CRS
                           [Optional. Default=None] CRS,
-                          expressed in any format permitted by rasterio and
-                          geopandas, to use for the resulting basemap. If
+                          expressed in any format permitted by rasterio, to
+                          use for the resulting basemap. If
                           None (default), no warping is performed and the
                           original Web Mercator (`EPSG:3857`, 
                           {'init' :'epsg:3857'}) is used.
