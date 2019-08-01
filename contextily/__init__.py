@@ -7,4 +7,4 @@ from .place import Place, plot_map
 from .tile import *
 from .plotting import add_basemap, add_attribution
 
-__version__ = '0.99.0.dev'
+__version__ = "0.99.0.dev"

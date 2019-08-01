@@ -6,6 +6,7 @@ from warnings import warn
 from .tile import howmany, bounds2raster, bounds2img, _sm2ll, _calculate_zoom
 from .plotting import ATTRIBUTION, INTERPOLATION, ZOOM, add_attribution
 
+
 class Place(object):
     """Geocode a place by name and get its map.
 
@@ -58,12 +59,12 @@ class Place(object):
 
         # Get geocoded values
         resp = gp.geocoders.Nominatim().geocode(search)
-        bbox = np.array([float(ii) for ii in resp.raw['boundingbox']])
+        bbox = np.array([float(ii) for ii in resp.raw["boundingbox"]])
 
-        if 'display_name' in resp.raw.keys():
-            place = resp.raw['display_name']
-        elif 'address' in resp.raw.keys():
-            place = resp.raw['address']
+        if "display_name" in resp.raw.keys():
+            place = resp.raw["display_name"]
+        elif "address" in resp.raw.keys():
+            place = resp.raw["address"]
         else:
             place = search
         self.place = place
@@ -75,7 +76,9 @@ class Place(object):
         self.geocode = resp
 
         # Get map params
-        self.zoom = _calculate_zoom(self.w, self.s, self.e, self.n) if zoom is None else zoom
+        self.zoom = (
+            _calculate_zoom(self.w, self.s, self.e, self.n) if zoom is None else zoom
+        )
         self.zoom = int(self.zoom)
         if self.zoom_adjust is not None:
             self.zoom += zoom_adjust
@@ -84,27 +87,34 @@ class Place(object):
         # Get the map
         self._get_map()
 
-
     def _get_map(self):
-        kwargs = {'ll': True}
+        kwargs = {"ll": True}
         if self.url is not None:
-            kwargs['url'] = self.url
+            kwargs["url"] = self.url
 
         try:
             if isinstance(self.path, str):
-                im, bbox = bounds2raster(self.w, self.s, self.e, self.n, self.path, zoom=self.zoom, **kwargs)
+                im, bbox = bounds2raster(
+                    self.w, self.s, self.e, self.n, self.path, zoom=self.zoom, **kwargs
+                )
             else:
-                im, bbox = bounds2img(self.w, self.s, self.e, self.n, self.zoom, **kwargs)
+                im, bbox = bounds2img(
+                    self.w, self.s, self.e, self.n, self.zoom, **kwargs
+                )
         except Exception as err:
-            raise ValueError('Could not retrieve map with parameters: {}, {}, {}, {}, zoom={}\n{}\nError: {}'.format(
-                self.w, self.s, self.e, self.n, self.zoom, kwargs, err))
+            raise ValueError(
+                "Could not retrieve map with parameters: {}, {}, {}, {}, zoom={}\n{}\nError: {}".format(
+                    self.w, self.s, self.e, self.n, self.zoom, kwargs, err
+                )
+            )
 
         self.im = im
         self.bbox_map = bbox
         return im, bbox
 
-    def plot(self, ax=None, zoom=ZOOM, interpolation=INTERPOLATION, 
-             attribution = ATTRIBUTION):
+    def plot(
+        self, ax=None, zoom=ZOOM, interpolation=INTERPOLATION, attribution=ATTRIBUTION
+    ):
         """
         Plot a `Place` object
         ...
@@ -148,7 +158,7 @@ class Place(object):
         axisoff = False
         if ax is None:
             fig, ax = plt.subplots(figsize=(12, 12))
-            title = self.place 
+            title = self.place
             axisoff = True
         ax.imshow(im, extent=bbox, interpolation=interpolation)
         ax.set(xlabel="X", ylabel="Y")
@@ -161,12 +171,21 @@ class Place(object):
         return ax
 
     def __repr__(self):
-        s = 'Place : {} | n_tiles: {} | zoom : {} | im : {}'.format(
-            self.place, self.n_tiles, self.zoom, self.im.shape[:2])
+        s = "Place : {} | n_tiles: {} | zoom : {} | im : {}".format(
+            self.place, self.n_tiles, self.zoom, self.im.shape[:2]
+        )
         return s
 
-def plot_map(place, bbox=None, title=None, ax=None, axis_off=True,
-        latlon=True, attribution = ATTRIBUTION):
+
+def plot_map(
+    place,
+    bbox=None,
+    title=None,
+    ax=None,
+    axis_off=True,
+    latlon=True,
+    attribution=ATTRIBUTION,
+):
     """Plot a map of the given place.
 
     Parameters
@@ -188,9 +207,14 @@ def plot_map(place, bbox=None, title=None, ax=None, axis_off=True,
     ax : instance of matplotlib Axes object | None
         The axis on the map is plotted.
     """
-    warn( ("The method `plot_map` is deprecated and will be removed from the"
-           " library in future versions. Please use either `add_basemap` or"
-           " the internal method `Place.plot`"), DeprecationWarning)
+    warn(
+        (
+            "The method `plot_map` is deprecated and will be removed from the"
+            " library in future versions. Please use either `add_basemap` or"
+            " the internal method `Place.plot`"
+        ),
+        DeprecationWarning,
+    )
     if not isinstance(place, Place):
         im = place
         bbox = bbox
