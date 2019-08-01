@@ -2,6 +2,7 @@
 
 import numpy as np
 from . import tile_providers as sources
+from . import providers
 from .tile import _calculate_zoom, bounds2img, _sm2ll, warp_tiles, _warper
 from rasterio.enums import Resampling
 from rasterio.warp import transform_bounds
@@ -9,9 +10,6 @@ from matplotlib import patheffects
 
 INTERPOLATION = "bilinear"
 ZOOM = "auto"
-ATTRIBUTION = (
-    "Map tiles by Stamen Design, under CC BY 3.0. " "Data by OpenStreetMap, under ODbL."
-)
 ATTRIBUTION_SIZE = 8
 
 
@@ -20,7 +18,7 @@ def add_basemap(
     zoom=ZOOM,
     url=None,
     interpolation=INTERPOLATION,
-    attribution=ATTRIBUTION,
+    attribution=None,
     attribution_size=ATTRIBUTION_SIZE,
     reset_extent=True,
     crs=None,
@@ -50,8 +48,9 @@ def add_basemap(
                           algorithm to be passed to `imshow`. See
                           `matplotlib.pyplot.imshow` for further details.
     attribution         : str
-                          [Optional. Defaults to standard `ATTRIBUTION`] Text to be added at the
-                          bottom of the axis.
+                          [Optional. Defaults to attribution specified by the url]
+                          Text to be added at the bottom of the axis. Specify False to
+                          not automatically add an attribution.
     attribution_size    : int
                           [Optional. Defaults to `ATTRIBUTION_SIZE`].
                           Font size to render attribution text with.
@@ -146,6 +145,11 @@ def add_basemap(
     if reset_extent:
         ax.axis((xmin, xmax, ymin, ymax))
 
+    # Add attribution text
+    if url is None:
+        url = providers.Stamen.Terrain
+    if isinstance(url, dict) and attribution is None:
+        attribution = url.get('attribution')
     if attribution:
         add_attribution(ax, attribution, font_size=attribution_size)
 
@@ -157,7 +161,7 @@ def _reproj_bb(left, right, bottom, top, s_crs, t_crs):
     return n_l, n_r, n_b, n_t
 
 
-def add_attribution(ax, att=ATTRIBUTION, font_size=ATTRIBUTION_SIZE):
+def add_attribution(ax, text, font_size=ATTRIBUTION_SIZE, **kwargs):
     """
     Utility to add attribution text
     ...
@@ -167,7 +171,7 @@ def add_attribution(ax, att=ATTRIBUTION, font_size=ATTRIBUTION_SIZE):
     ax                  : AxesSubplot
                           Matplotlib axis with `x_lim` and `y_lim` set in Web
                           Mercator (EPSG=3857)
-    att                 : str
+    text                : str
                           [Optional. Defaults to standard `ATTRIBUTION`] Text to be added at the
                           bottom of the axis.
     font_size           : int
@@ -179,13 +183,16 @@ def add_attribution(ax, att=ATTRIBUTION, font_size=ATTRIBUTION_SIZE):
                           Matplotlib axis with `x_lim` and `y_lim` set in Web
                           Mercator (EPSG=3857) and attribution text added
     """
-    minX, maxX = ax.get_xlim()
-    minY, maxY = ax.get_ylim()
-    ax.text(
-        minX + (maxX - minX) * 0.005,
-        minY + (maxY - minY) * 0.005,
-        att,
+
+    text_object = ax.text(
+        0.005,
+        0.005,
+        text,
+        transform=ax.transAxes,
+        ha="left",
+        va="bottom",
         size=font_size,
         path_effects=[patheffects.withStroke(linewidth=2, foreground="w")],
+        **kwargs,
     )
-    return ax
+    return text_object

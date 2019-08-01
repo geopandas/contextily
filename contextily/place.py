@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from warnings import warn
 from .tile import howmany, bounds2raster, bounds2img, _sm2ll, _calculate_zoom
-from .plotting import ATTRIBUTION, INTERPOLATION, ZOOM, add_attribution
+from .plotting import INTERPOLATION, ZOOM, add_attribution
 
 
 class Place(object):
@@ -113,7 +113,7 @@ class Place(object):
         return im, bbox
 
     def plot(
-        self, ax=None, zoom=ZOOM, interpolation=INTERPOLATION, attribution=ATTRIBUTION
+        self, ax=None, zoom=ZOOM, interpolation=INTERPOLATION, attribution=None
     ):
         """
         Plot a `Place` object
@@ -184,7 +184,7 @@ def plot_map(
     ax=None,
     axis_off=True,
     latlon=True,
-    attribution=ATTRIBUTION,
+    attribution=None,
 ):
     """Plot a map of the given place.
 
