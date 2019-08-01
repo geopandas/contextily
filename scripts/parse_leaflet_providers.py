@@ -117,6 +117,10 @@ def pythonize_data(data):
                 raise ValueError("Attribution not known: {}".format(value))
         elif key in rename_keys:
             key = rename_keys[key]
+        elif key == 'url' and any(k in value for k in rename_keys):
+            # NASAGIBS providers have {maxZoom} in the url
+            for old, new in rename_keys.items():
+                value = value.replace('{' + old + '}', '{' + new + '}')
         new_data.append((key, value))
 
     return dict(new_data)

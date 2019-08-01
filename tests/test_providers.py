@@ -34,5 +34,6 @@ def test_providers():
     w, s, e, n = (-106.6495132446289, 25.845197677612305,
                   -93.50721740722656, 36.49387741088867)
     for provider in [ctx.providers.OpenStreetMap.Mapnik,
-                     ctx.providers.Stamen.Toner]:
+                     ctx.providers.Stamen.Toner,
+                     ctx.providers.NASAGIBS.ViirsEarthAtNight2012]:
         ctx.bounds2img(w, s, e, n, 4, url=provider, ll=True)
