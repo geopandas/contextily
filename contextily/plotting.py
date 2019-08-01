@@ -180,6 +180,9 @@ def add_attribution(ax, att=ATTRIBUTION, font_size=ATTRIBUTION_SIZE):
                           Matplotlib axis with `x_lim` and `y_lim` set in Web
                           Mercator (EPSG=3857) and attribution text added
     """
+    # Add draw() as it resizes the axis and allows the wrapping to work as
+    # expected. See https://github.com/darribas/contextily/issues/95 for some
+    # details on the issue
     draw()
     txt = ax.text(
         0.005,
