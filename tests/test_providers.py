@@ -62,3 +62,16 @@ def test_providers_callable():
     assert updated_provider["apikey"] == "mykey"
     # check that original provider dict is not modified
     assert ctx.providers.GeoportailFrance.maps["apikey"] == "choisirgeoportail"
+
+
+def test_invalid_provider():
+    w, s, e, n = (-106.649, 25.845, -93.507, 36.494)
+    with pytest.raises(ValueError, match="The 'url' dict should at least contain"):
+        ctx.bounds2img(w, s, e, n, 4, url={"missing": "url"}, ll=True)
+
+
+def test_provider_attribute_access():
+    provider = ctx.providers.OpenStreetMap.Mapnik
+    assert provider.name == "OpenStreetMap.Mapnik"
+    with pytest.raises(AttributeError):
+        provider.non_existing_key

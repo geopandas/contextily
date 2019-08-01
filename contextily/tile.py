@@ -213,7 +213,7 @@ def _construct_tile_url(url, x, y, z):
     elif not isinstance(url, dict):
         raise TypeError("The 'url' needs to be a dict or string")
     elif "url" not in url:
-        raise ValueError("The 'url' dicts should at least contain a 'url' key")
+        raise ValueError("The 'url' dict should at least contain a 'url' key")
     else:
         url = url.copy()
 
