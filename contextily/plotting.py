@@ -6,6 +6,7 @@ from .tile import _calculate_zoom, bounds2img, _sm2ll, warp_tiles, _warper
 from rasterio.enums import Resampling
 from rasterio.warp import transform_bounds
 from matplotlib import patheffects
+from matplotlib.pyplot import draw
 
 INTERPOLATION = "bilinear"
 ZOOM = "auto"
@@ -179,6 +180,7 @@ def add_attribution(ax, att=ATTRIBUTION, font_size=ATTRIBUTION_SIZE):
                           Matplotlib axis with `x_lim` and `y_lim` set in Web
                           Mercator (EPSG=3857) and attribution text added
     """
+    draw()
     txt = ax.text(
         0.005,
         0.005,
