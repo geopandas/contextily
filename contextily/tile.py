@@ -1,7 +1,7 @@
 """Tools for downloading map tiles from coordinates."""
-from __future__ import (absolute_import, division, print_function)
+from __future__ import absolute_import, division, print_function
 
-import uuid 
+import uuid
 
 import mercantile as mt
 import requests
@@ -23,12 +23,10 @@ from rasterio.enums import Resampling
 from . import tile_providers as sources
 
 
-__all__ = ['bounds2raster', 'bounds2img', 
-           'warp_tiles', 'warp_img_transform',
-           'howmany']
+__all__ = ["bounds2raster", "bounds2img", "warp_tiles", "warp_img_transform", "howmany"]
 
 
-USER_AGENT = 'contextily-' + uuid.uuid4().hex
+USER_AGENT = "contextily-" + uuid.uuid4().hex
 
 tmpdir = tempfile.mkdtemp()
 memory = _Memory(tmpdir, verbose=0)
@@ -41,10 +39,19 @@ def _clear_cache():
 atexit.register(_clear_cache)
 
 
-def bounds2raster(w, s, e, n, path, zoom='auto',
-                  url=sources.ST_TERRAIN, ll=False,
-                  wait=0, max_retries=2):
-    '''
+def bounds2raster(
+    w,
+    s,
+    e,
+    n,
+    path,
+    zoom="auto",
+    url=sources.ST_TERRAIN,
+    ll=False,
+    wait=0,
+    max_retries=2,
+):
+    """
     Take bounding box and zoom, and write tiles into a raster file in
     the Spherical Mercator CRS (EPSG:3857)
 
@@ -87,12 +94,12 @@ def bounds2raster(w, s, e, n, path, zoom='auto',
               Image as a 3D array of RGB values
     extent  : tuple
               Bounding box [minX, maxX, minY, maxY] of the returned image
-    '''
+    """
     if not ll:
         # Convert w, s, e, n into lon/lat
         w, s = _sm2ll(w, s)
         e, n = _sm2ll(e, n)
-    if zoom == 'auto':
+    if zoom == "auto":
         zoom = _calculate_zoom(w, s, e, n)
     # Download
     Z, ext = bounds2img(w, s, e, n, zoom=zoom, url=url, ll=True)
@@ -105,23 +112,29 @@ def bounds2raster(w, s, e, n, path, zoom='auto',
     y = np.linspace(minY, maxY, h)
     resX = (x[-1] - x[0]) / w
     resY = (y[-1] - y[0]) / h
-    transform = from_origin(x[0] - resX / 2,
-                            y[-1] + resY / 2, resX, resY)
+    transform = from_origin(x[0] - resX / 2, y[-1] + resY / 2, resX, resY)
     # ---
-    raster = rio.open(path, 'w',
-                      driver='GTiff', height=h, width=w,
-                      count=b, dtype=str(Z.dtype.name),
-                      crs='epsg:3857', transform=transform)
+    raster = rio.open(
+        path,
+        "w",
+        driver="GTiff",
+        height=h,
+        width=w,
+        count=b,
+        dtype=str(Z.dtype.name),
+        crs="epsg:3857",
+        transform=transform,
+    )
     for band in range(b):
         raster.write(Z[:, :, band], band + 1)
     raster.close()
     return Z, ext
 
 
-def bounds2img(w, s, e, n, zoom='auto',
-               url=sources.ST_TERRAIN, ll=False,
-               wait=0, max_retries=2):
-    '''
+def bounds2img(
+    w, s, e, n, zoom="auto", url=sources.ST_TERRAIN, ll=False, wait=0, max_retries=2
+):
+    """
     Take bounding box and zoom and return an image with all the tiles
     that compose the map and its Spherical Mercator extent.
 
@@ -162,12 +175,12 @@ def bounds2img(w, s, e, n, zoom='auto',
               Image as a 3D array of RGB values
     extent  : tuple
               Bounding box [minX, maxX, minY, maxY] of the returned image
-    '''
+    """
     if not ll:
         # Convert w, s, e, n into lon/lat
         w, s = _sm2ll(w, s)
         e, n = _sm2ll(e, n)
-    if zoom == 'auto':
+    if zoom == "auto":
         zoom = _calculate_zoom(w, s, e, n)
     tiles = []
     arrays = []
@@ -190,12 +203,15 @@ def _construct_tile_url(url, x, y, z):
     """
     Generate actual tile url from tile provider definition or template url.
     """
-    if 'tileX' in url and 'tileY' in url:
+    if "tileX" in url and "tileY" in url:
         warnings.warn(
             "The url format using 'tileX', 'tileY', 'tileZ' as placeholders "
             "is deprecated. Please use '{x}', '{y}', '{z}' instead.",
-            FutureWarning)
-        url = url.replace('tileX', '{x}').replace('tileY', '{y}').replace('tileZ', '{z}')
+            FutureWarning,
+        )
+        url = (
+            url.replace("tileX", "{x}").replace("tileY", "{y}").replace("tileZ", "{z}")
+        )
     tile_url = url.format(x=x, y=y, z=z)
     return tile_url
 
@@ -204,15 +220,13 @@ def _construct_tile_url(url, x, y, z):
 def _fetch_tile(tile_url, wait, max_retries):
     request = _retryer(tile_url, wait, max_retries)
     with io.BytesIO(request.content) as image_stream:
-        image = Image.open(image_stream).convert('RGB')
+        image = Image.open(image_stream).convert("RGB")
         image = np.asarray(image)
     return image
 
 
-def warp_tiles(img, extent,
-               t_crs='EPSG:4326',
-               resampling=Resampling.bilinear):
-    '''
+def warp_tiles(img, extent, t_crs="EPSG:4326", resampling=Resampling.bilinear):
+    """
     Reproject (warp) a Web Mercator basemap into any CRS on-the-fly
 
     NOTE: this method works well with contextily's `bounds2img` approach to
@@ -243,7 +257,7 @@ def warp_tiles(img, extent,
     ext         : tuple
                   Bounding box [minX, maxX, minY, maxY] of the returned (warped)
                   image
-    '''
+    """
     h, w, b = img.shape
     # --- https://rasterio.readthedocs.io/en/latest/quickstart.html#opening-a-dataset-in-writing-mode
     minX, maxX, minY, maxY = extent
@@ -251,23 +265,18 @@ def warp_tiles(img, extent,
     y = np.linspace(minY, maxY, h)
     resX = (x[-1] - x[0]) / w
     resY = (y[-1] - y[0]) / h
-    transform = from_origin(x[0] - resX / 2,
-                            y[-1] + resY / 2, resX, resY)
+    transform = from_origin(x[0] - resX / 2, y[-1] + resY / 2, resX, resY)
     # ---
-    w_img, vrt = _warper(img.transpose(2, 0, 1),
-                         transform,
-                         'EPSG:3857', t_crs,
-                         resampling)
+    w_img, vrt = _warper(
+        img.transpose(2, 0, 1), transform, "EPSG:3857", t_crs, resampling
+    )
     # ---
-    extent = vrt.bounds.left, vrt.bounds.right, \
-             vrt.bounds.bottom, vrt.bounds.top
+    extent = vrt.bounds.left, vrt.bounds.right, vrt.bounds.bottom, vrt.bounds.top
     return w_img.transpose(1, 2, 0), extent
 
 
-def warp_img_transform(img, transform, 
-                       s_crs, t_crs,
-                       resampling=Resampling.bilinear):
-    '''
+def warp_img_transform(img, transform, s_crs, t_crs, resampling=Resampling.bilinear):
+    """
     Reproject (warp) an `img` with a given `transform` and `s_crs` into a
     different `t_crs`
 
@@ -301,29 +310,30 @@ def warp_img_transform(img, transform,
     w_transform : affine.Affine
                   Transform of the input image as expressed by `rasterio` and
                   the `affine` package
-    '''
-    w_img, vrt = _warper(img, transform, 
-                         s_crs, t_crs,
-                         resampling)
+    """
+    w_img, vrt = _warper(img, transform, s_crs, t_crs, resampling)
     return w_img, vrt.transform
 
 
-def _warper(img, transform, 
-            s_crs, t_crs,
-            resampling):
-    '''
+def _warper(img, transform, s_crs, t_crs, resampling):
+    """
     Warp an image returning it as a virtual file
-    '''
+    """
     b, h, w = img.shape
     with MemoryFile() as memfile:
-        with memfile.open(driver='GTiff', height=h, width=w, \
-                          count=b, dtype=str(img.dtype.name), \
-                          crs=s_crs, transform=transform) as mraster:
+        with memfile.open(
+            driver="GTiff",
+            height=h,
+            width=w,
+            count=b,
+            dtype=str(img.dtype.name),
+            crs=s_crs,
+            transform=transform,
+        ) as mraster:
             for band in range(b):
-                mraster.write(img[band, :, :], band+1)
+                mraster.write(img[band, :, :], band + 1)
             # --- Virtual Warp
-            vrt = WarpedVRT(mraster, crs=t_crs,
-                            resampling=resampling)
+            vrt = WarpedVRT(mraster, crs=t_crs, resampling=resampling)
             img = vrt.read()
     return img, vrt
 
@@ -353,20 +363,22 @@ def _retryer(tile_url, wait, max_retries):
         request.raise_for_status()
     except requests.HTTPError:
         if request.status_code == 404:
-            raise requests.HTTPError('Tile URL resulted in a 404 error. '
-                                     'Double-check your tile url:\n{}'.format(tile_url))
+            raise requests.HTTPError(
+                "Tile URL resulted in a 404 error. "
+                "Double-check your tile url:\n{}".format(tile_url)
+            )
         elif request.status_code == 104:
             if max_retries > 0:
                 os.wait(wait)
                 max_retries -= 1
                 request = _retryer(tile_url, wait, max_retries)
             else:
-                raise requests.HTTPError('Connection reset by peer too many times.')
+                raise requests.HTTPError("Connection reset by peer too many times.")
     return request
 
 
 def howmany(w, s, e, n, zoom, verbose=True, ll=False):
-    '''
+    """
     Number of tiles required for a given bounding box and a zoom level
     ...
 
@@ -388,22 +400,21 @@ def howmany(w, s, e, n, zoom, verbose=True, ll=False):
     ll      : Boolean
               [Optional. Default: False] If True, `w`, `s`, `e`, `n` are
               assumed to be lon/lat as opposed to Spherical Mercator.
-    '''
+    """
     if not ll:
         # Convert w, s, e, n into lon/lat
         w, s = _sm2ll(w, s)
         e, n = _sm2ll(e, n)
-    if zoom == 'auto':
+    if zoom == "auto":
         zoom = _calculate_zoom(w, s, e, n)
     tiles = len(list(mt.tiles(w, s, e, n, [zoom])))
     if verbose:
-        print("Using zoom level %i, this will download %i tiles" % (zoom,
-              tiles))
+        print("Using zoom level %i, this will download %i tiles" % (zoom, tiles))
     return tiles
 
 
 def bb2wdw(bb, rtr):
-    '''
+    """
     Convert XY bounding box into the window of the tile raster
     ...
 
@@ -418,21 +429,20 @@ def bb2wdw(bb, rtr):
     -------
     window  : tuple
               ((row_start, row_stop), (col_start, col_stop))
-    '''
+    """
     rbb = rtr.bounds
     xi = np.linspace(rbb.left, rbb.right, rtr.shape[1])
     yi = np.linspace(rbb.bottom, rbb.top, rtr.shape[0])
 
-    window = ((rtr.shape[0] - yi.searchsorted(bb[3]),
-              rtr.shape[0] - yi.searchsorted(bb[1])),
-              (xi.searchsorted(bb[0]),
-               xi.searchsorted(bb[2]))
-              )
+    window = (
+        (rtr.shape[0] - yi.searchsorted(bb[3]), rtr.shape[0] - yi.searchsorted(bb[1])),
+        (xi.searchsorted(bb[0]), xi.searchsorted(bb[2])),
+    )
     return window
 
 
 def _sm2ll(x, y):
-    '''
+    """
     Transform Spherical Mercator coordinates point into lon/lat
 
     NOTE: Translated from the JS implementation in
@@ -450,12 +460,12 @@ def _sm2ll(x, y):
     -------
     ll      : tuple
               lon/lat coordinates
-    '''
-    rMajor = 6378137.  # Equatorial Radius, QGS84
+    """
+    rMajor = 6378137.0  # Equatorial Radius, QGS84
     shift = np.pi * rMajor
-    lon = x / shift * 180.
-    lat = y / shift * 180.
-    lat = 180. / np.pi * (2. * np.arctan(np.exp(lat * np.pi / 180.)) - np.pi / 2.)
+    lon = x / shift * 180.0
+    lat = y / shift * 180.0
+    lat = 180.0 / np.pi * (2.0 * np.arctan(np.exp(lat * np.pi / 180.0)) - np.pi / 2.0)
     return lon, lat
 
 
@@ -488,8 +498,8 @@ def _calculate_zoom(w, s, e, n):
     lat_length = np.subtract(*lat_range)
 
     # Calculate the zoom
-    zoom_lon = np.ceil(np.log2(360 * 2. / lon_length))
-    zoom_lat = np.ceil(np.log2(360 * 2. / lat_length))
+    zoom_lon = np.ceil(np.log2(360 * 2.0 / lon_length))
+    zoom_lat = np.ceil(np.log2(360 * 2.0 / lat_length))
     zoom = np.max([zoom_lon, zoom_lat])
     return int(zoom)
 
@@ -524,18 +534,21 @@ def _merge_tiles(tiles, arrays):
     h, w, d = arrays[0].shape
 
     # number of rows and columns in the merged tile
-    n_x, n_y = (indices+1).max(axis=0)
+    n_x, n_y = (indices + 1).max(axis=0)
 
     # empty merged tiles array to be filled in
     img = np.zeros((h * n_y, w * n_x, d), dtype=np.uint8)
 
     for ind, arr in zip(indices, arrays):
         x, y = ind
-        img[y*h:(y+1)*h, x*w:(x+1)*w, :] = arr
+        img[y * h : (y + 1) * h, x * w : (x + 1) * w, :] = arr
 
     bounds = np.array([mt.bounds(t) for t in tiles])
     west, south, east, north = (
-        min(bounds[:, 0]), min(bounds[:, 1]),
-        max(bounds[:, 2]), max(bounds[:, 3]))
+        min(bounds[:, 0]),
+        min(bounds[:, 1]),
+        max(bounds[:, 2]),
+        max(bounds[:, 3]),
+    )
 
     return img, (west, south, east, north)
