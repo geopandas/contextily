@@ -33,7 +33,7 @@ class TileProvider(Bunch):
     """
 
     def __call__(self, **kwargs):
-        new = self.copy()
+        new = TileProvider(self)  # takes a copy preserving the class
         new.update(kwargs)
         return new
 

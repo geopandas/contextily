@@ -37,3 +37,14 @@ def test_providers():
                      ctx.providers.Stamen.Toner,
                      ctx.providers.NASAGIBS.ViirsEarthAtNight2012]:
         ctx.bounds2img(w, s, e, n, 4, url=provider, ll=True)
+
+
+def test_providers_callable():
+    # only testing the callable functionality to override a keyword, as we
+    # cannot test the actual providers that need an API key
+    updated_provider = ctx.providers.GeoportailFrance.maps(apikey="mykey")
+    assert isinstance(updated_provider, ctx._providers.TileProvider)
+    assert 'url' in updated_provider
+    assert updated_provider["apikey"] == "mykey"
+    # check that original provider dict is not modified
+    assert ctx.providers.GeoportailFrance.maps["apikey"] == "choisirgeoportail"
