@@ -49,8 +49,11 @@ def add_basemap(
                           `matplotlib.pyplot.imshow` for further details.
     attribution         : str
                           [Optional. Defaults to attribution specified by the url]
-                          Text to be added at the bottom of the axis. Specify False to
-                          not automatically add an attribution.
+                          Text to be added at the bottom of the axis. This
+                          defaults to the attribution of the provider specified
+                          in `url` if available. Specify False to not
+                          automatically add an attribution, or a string to pass
+                          a custom attribution.
     attribution_size    : int
                           [Optional. Defaults to `ATTRIBUTION_SIZE`].
                           Font size to render attribution text with.
@@ -163,8 +166,7 @@ def _reproj_bb(left, right, bottom, top, s_crs, t_crs):
 
 def add_attribution(ax, text, font_size=ATTRIBUTION_SIZE, **kwargs):
     """
-    Utility to add attribution text
-    ...
+    Utility to add attribution text.
 
     Arguments
     ---------
@@ -172,16 +174,17 @@ def add_attribution(ax, text, font_size=ATTRIBUTION_SIZE, **kwargs):
                           Matplotlib axis with `x_lim` and `y_lim` set in Web
                           Mercator (EPSG=3857)
     text                : str
-                          [Optional. Defaults to standard `ATTRIBUTION`] Text to be added at the
-                          bottom of the axis.
+                          Text to be added at the bottom of the axis.
     font_size           : int
-                          [Optional. Defaults to `ATTRIBUTION_SIZE`] Font size in which to render the attribution text.
+                          [Optional. Defaults to 8] Font size in which to render
+                          the attribution text.
+    **kwargs            : Additional keywords to pass to the matplotlib `text`
+                          method.
 
     Returns
     -------
-    ax                  : AxesSubplot
-                          Matplotlib axis with `x_lim` and `y_lim` set in Web
-                          Mercator (EPSG=3857) and attribution text added
+    matplotlib.text.Text
+                          Matplotlib Text object added to the plot.
     """
     text_artist = ax.text(
         0.005,
