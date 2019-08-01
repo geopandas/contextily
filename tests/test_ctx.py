@@ -348,7 +348,7 @@ def test_basemap_attribution():
     ax.axis(extent)
     ctx.add_basemap(ax, url=ctx.providers.OpenStreetMap.Mapnik)
     txt, = get_attr(ax)
-    assert txt.get_text() == ctx.OpenStreetMap.Mapnik["attribution"]
+    assert txt.get_text() == ctx.providers.OpenStreetMap.Mapnik["attribution"]
 
 
 def test_attribution():
