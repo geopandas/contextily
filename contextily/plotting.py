@@ -18,7 +18,7 @@ ATTRIBUTION_SIZE = 8
 def add_basemap(
     ax,
     zoom=ZOOM,
-    url=sources.ST_TERRAIN,
+    url=None,
     interpolation=INTERPOLATION,
     attribution=ATTRIBUTION,
     attribution_size=ATTRIBUTION_SIZE,
@@ -102,7 +102,11 @@ def add_basemap(
     """
     xmin, xmax, ymin, ymax = ax.axis()
     # If web source
-    if url[:4] == "http":
+    if (
+        url is None
+        or isinstance(url, dict)
+        or (isinstance(url, str) and url[:4] == "http")
+    ):
         # Extent
         left, right, bottom, top = xmin, xmax, ymin, ymax
         # Convert extent from `crs` into WM for tile query

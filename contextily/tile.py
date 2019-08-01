@@ -21,7 +21,7 @@ from rasterio.io import MemoryFile
 from rasterio.vrt import WarpedVRT
 from rasterio.enums import Resampling
 from . import tile_providers as sources
-
+from . import providers
 
 __all__ = ["bounds2raster", "bounds2img", "warp_tiles", "warp_img_transform", "howmany"]
 
@@ -40,16 +40,7 @@ atexit.register(_clear_cache)
 
 
 def bounds2raster(
-    w,
-    s,
-    e,
-    n,
-    path,
-    zoom="auto",
-    url=sources.ST_TERRAIN,
-    ll=False,
-    wait=0,
-    max_retries=2,
+    w, s, e, n, path, zoom="auto", url=None, ll=False, wait=0, max_retries=2
 ):
     """
     Take bounding box and zoom, and write tiles into a raster file in
@@ -131,9 +122,7 @@ def bounds2raster(
     return Z, ext
 
 
-def bounds2img(
-    w, s, e, n, zoom="auto", url=sources.ST_TERRAIN, ll=False, wait=0, max_retries=2
-):
+def bounds2img(w, s, e, n, zoom="auto", url=None, ll=False, wait=0, max_retries=2):
     """
     Take bounding box and zoom and return an image with all the tiles
     that compose the map and its Spherical Mercator extent.
@@ -199,7 +188,7 @@ def bounds2img(
     return merged, extent
 
 
-def _construct_tile_url(url, x, y, z):
+def _url_from_string(url):
     """
     Generate actual tile url from tile provider definition or template url.
     """
@@ -212,7 +201,26 @@ def _construct_tile_url(url, x, y, z):
         url = (
             url.replace("tileX", "{x}").replace("tileY", "{y}").replace("tileZ", "{z}")
         )
-    tile_url = url.format(x=x, y=y, z=z)
+    return {"url": url}
+
+
+def _construct_tile_url(url, x, y, z):
+    if url is None:
+        url = providers.Stamen.Terrain
+
+    if isinstance(url, str):
+        url = _url_from_string(url)
+    elif not isinstance(url, dict):
+        raise TypeError("The 'url' needs to be a dict or string")
+    elif "url" not in url:
+        raise ValueError("The 'url' dict should at least contain a 'url' key")
+    else:
+        url = url.copy()
+
+    tile_url = url.pop("url")
+    subdomains = url.pop("subdomains", "abc")
+    r = url.pop("r", "")
+    tile_url = tile_url.format(x=x, y=y, z=z, s=subdomains[0], r=r, **url)
     return tile_url
 
 
