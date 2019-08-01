@@ -189,7 +189,8 @@ def add_attribution(ax, att=ATTRIBUTION, font_size=ATTRIBUTION_SIZE):
         path_effects=[patheffects.withStroke(linewidth=2, foreground="w")],
         wrap=True,
     )
-    bb = ax.get_window_extent()
-    wrap_width = (bb.x1 - bb.x0) - (bb.x1 - bb.x0) * 0.1
+    # hack to have the text wrapped in the ax extent, for some explanation see
+    # https://stackoverflow.com/questions/48079364/wrapping-text-not-working-in-matplotlib
+    wrap_width = ax.get_window_extent().width * 0.99
     txt._get_wrap_line_width = lambda: wrap_width
     return ax
