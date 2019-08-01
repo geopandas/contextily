@@ -7,6 +7,7 @@ from .tile import _calculate_zoom, bounds2img, _sm2ll, warp_tiles, _warper
 from rasterio.enums import Resampling
 from rasterio.warp import transform_bounds
 from matplotlib import patheffects
+from matplotlib.pyplot import draw
 
 INTERPOLATION = "bilinear"
 ZOOM = "auto"
@@ -186,6 +187,11 @@ def add_attribution(ax, text, font_size=ATTRIBUTION_SIZE, **kwargs):
     matplotlib.text.Text
                           Matplotlib Text object added to the plot.
     """
+    # Add draw() as it resizes the axis and allows the wrapping to work as
+    # expected. See https://github.com/darribas/contextily/issues/95 for some
+    # details on the issue
+    draw()
+
     text_artist = ax.text(
         0.005,
         0.005,
