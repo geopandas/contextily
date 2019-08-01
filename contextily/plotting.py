@@ -179,13 +179,17 @@ def add_attribution(ax, att=ATTRIBUTION, font_size=ATTRIBUTION_SIZE):
                           Matplotlib axis with `x_lim` and `y_lim` set in Web
                           Mercator (EPSG=3857) and attribution text added
     """
-    minX, maxX = ax.get_xlim()
-    minY, maxY = ax.get_ylim()
-    ax.text(
-        minX + (maxX - minX) * 0.005,
-        minY + (maxY - minY) * 0.005,
+    txt = ax.text(
+        0.005,
+        0.005,
         att,
+        transform=ax.transAxes,
         size=font_size,
         path_effects=[patheffects.withStroke(linewidth=2, foreground="w")],
+        wrap=True,
     )
+    # hack to have the text wrapped in the ax extent, for some explanation see
+    # https://stackoverflow.com/questions/48079364/wrapping-text-not-working-in-matplotlib
+    wrap_width = ax.get_window_extent().width * 0.99
+    txt._get_wrap_line_width = lambda: wrap_width
     return ax
