@@ -54,6 +54,8 @@ class Place(object):
 
     def __init__(self, search, zoom=None, path=None, zoom_adjust=None, url=None):
         self.path = path
+        if url is None:
+            url = providers.Stamen.Terrain
         self.url = url
         self.zoom_adjust = zoom_adjust
 
@@ -133,8 +135,12 @@ class Place(object):
                               algorithm to be passed to `imshow`. See
                               `matplotlib.pyplot.imshow` for further details.
         attribution         : str
-                              [Optional. Defaults to standard `ATTRIBUTION`] Text to be added at the
-                              bottom of the axis.
+                              [Optional. Defaults to attribution specified by the url]
+                              Text to be added at the bottom of the axis. This
+                              defaults to the attribution of the provider specified
+                              in `url` if available. Specify False to not
+                              automatically add an attribution, or a string to pass
+                              a custom attribution.
 
         Returns
         -------
@@ -160,6 +166,8 @@ class Place(object):
             axisoff = True
         ax.imshow(im, extent=bbox, interpolation=interpolation)
         ax.set(xlabel="X", ylabel="Y")
+        if isinstance(self.url, dict) and attribution is None:
+            attribution = self.url.get("attribution")
         if attribution:
             add_attribution(ax, attribution)
         if title is not None:
