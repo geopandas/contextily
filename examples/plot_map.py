@@ -20,11 +20,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import contextily as ctx
 
-loc = ctx.Place('boulder', zoom_adjust=0)  # zoom_adjust modifies the auto-zoom
+loc = ctx.Place("boulder", zoom_adjust=0)  # zoom_adjust modifies the auto-zoom
 
 # Print some metadata
-for attr in ['w', 's', 'e', 'n', 'place', 'zoom', 'n_tiles']:
-    print('{}: {}'.format(attr, getattr(loc, attr)))
+for attr in ["w", "s", "e", "n", "place", "zoom", "n_tiles"]:
+    print("{}: {}".format(attr, getattr(loc, attr)))
 
 # Show the map
 im1 = loc.im
@@ -36,7 +36,7 @@ ctx.plot_map(loc, ax=axs[0])
 # The zoom level will be chosen for you by default, though you can specify
 # this manually as well:
 
-loc2 = ctx.Place('boulder', zoom=11)
+loc2 = ctx.Place("boulder", zoom=11)
 ctx.plot_map(loc2, ax=axs[1])
 
 ###############################################################################
@@ -48,6 +48,6 @@ ctx.plot_map(loc2, ax=axs[1])
 
 zoom = ctx.calculate_zoom(loc.w, loc.s, loc.e, loc.n)
 im2, bbox = ctx.bounds2img(loc.w, loc.s, loc.e, loc.n, zoom=zoom, ll=True)
-ctx.plot_map(im2, bbox, ax=axs[2], title='Boulder, CO')
+ctx.plot_map(im2, bbox, ax=axs[2], title="Boulder, CO")
 
 plt.show()

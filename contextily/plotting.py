@@ -7,17 +7,26 @@ from rasterio.enums import Resampling
 from rasterio.warp import transform_bounds
 from matplotlib import patheffects
 
-INTERPOLATION = 'bilinear'
-ZOOM = 'auto'
-ATTRIBUTION = ("Map tiles by Stamen Design, under CC BY 3.0. "\
-               "Data by OpenStreetMap, under ODbL.")
+INTERPOLATION = "bilinear"
+ZOOM = "auto"
+ATTRIBUTION = (
+    "Map tiles by Stamen Design, under CC BY 3.0. " "Data by OpenStreetMap, under ODbL."
+)
 ATTRIBUTION_SIZE = 8
 
-def add_basemap(ax, zoom=ZOOM, url=None,
-		interpolation=INTERPOLATION, attribution = ATTRIBUTION, 
-        attribution_size = ATTRIBUTION_SIZE, reset_extent=True,
-        crs=None, resampling=Resampling.bilinear,
-        **extra_imshow_args):
+
+def add_basemap(
+    ax,
+    zoom=ZOOM,
+    url=None,
+    interpolation=INTERPOLATION,
+    attribution=ATTRIBUTION,
+    attribution_size=ATTRIBUTION_SIZE,
+    reset_extent=True,
+    crs=None,
+    resampling=Resampling.bilinear,
+    **extra_imshow_args
+):
     """
     Add a (web/local) basemap to `ax`
     ...
@@ -94,42 +103,42 @@ def add_basemap(ax, zoom=ZOOM, url=None,
     xmin, xmax, ymin, ymax = ax.axis()
     # If web source
     if (url is None or isinstance(url, dict) 
-            or (isinstance(url, str) and url[:4] == 'http')):
+            or (isinstance(url, str) and url[:4] == "http")):
         # Extent
         left, right, bottom, top = xmin, xmax, ymin, ymax
         # Convert extent from `crs` into WM for tile query
         if crs is not None:
-            left, right, bottom, top = _reproj_bb(left, right, bottom, top,
-                                                  crs, {'init' :'epsg:3857'})
+            left, right, bottom, top = _reproj_bb(
+                left, right, bottom, top, crs, {"init": "epsg:3857"}
+            )
         # Zoom
-        if isinstance(zoom, str) and (zoom.lower() == 'auto'):
+        if isinstance(zoom, str) and (zoom.lower() == "auto"):
             min_ll = _sm2ll(left, bottom)
             max_ll = _sm2ll(right, top)
             zoom = _calculate_zoom(*min_ll, *max_ll)
-        image, extent = bounds2img(left, bottom, right, top,
-                                   zoom=zoom, url=url, ll=False)
+        image, extent = bounds2img(
+            left, bottom, right, top, zoom=zoom, url=url, ll=False
+        )
         # Warping
         if crs is not None:
-            image, extent = warp_tiles(image, extent, t_crs=crs,
-                                       resampling=resampling)
+            image, extent = warp_tiles(image, extent, t_crs=crs, resampling=resampling)
     # If local source
     else:
         import rasterio as rio
+
         # Read file
         raster = rio.open(url)
-        image = np.array([ band for band in raster.read() ])
+        image = np.array([band for band in raster.read()])
         # Warp
         if (crs is not None) and (raster.crs != crs):
-            image, raster = _warper(image, 
-                                    raster.transform,
-                                    raster.crs, crs,
-                                    resampling)
+            image, raster = _warper(
+                image, raster.transform, raster.crs, crs, resampling
+            )
         image = image.transpose(1, 2, 0)
         bb = raster.bounds
         extent = bb.left, bb.right, bb.bottom, bb.top
     # Plotting
-    ax.imshow(image, extent=extent, 
-              interpolation=interpolation, **extra_imshow_args)
+    ax.imshow(image, extent=extent, interpolation=interpolation, **extra_imshow_args)
 
     if reset_extent:
         ax.axis((xmin, xmax, ymin, ymax))
@@ -140,14 +149,13 @@ def add_basemap(ax, zoom=ZOOM, url=None,
     return ax
 
 
-def _reproj_bb(left, right, bottom, top,
-               s_crs, t_crs):
-    n_l, n_b, n_r, n_t = transform_bounds(s_crs, t_crs,
-                                          left, bottom, right, top)
+def _reproj_bb(left, right, bottom, top, s_crs, t_crs):
+    n_l, n_b, n_r, n_t = transform_bounds(s_crs, t_crs, left, bottom, right, top)
     return n_l, n_r, n_b, n_t
 
+
 def add_attribution(ax, att=ATTRIBUTION, font_size=ATTRIBUTION_SIZE):
-    '''
+    """
     Utility to add attribution text
     ...
 
@@ -167,12 +175,14 @@ def add_attribution(ax, att=ATTRIBUTION, font_size=ATTRIBUTION_SIZE):
     ax                  : AxesSubplot
                           Matplotlib axis with `x_lim` and `y_lim` set in Web
                           Mercator (EPSG=3857) and attribution text added
-    '''
+    """
     minX, maxX = ax.get_xlim()
     minY, maxY = ax.get_ylim()
-    ax.text(minX + (maxX - minX) * 0.005, 
-            minY + (maxY - minY) * 0.005, 
-            att, size=font_size,
-            path_effects=[patheffects.withStroke(linewidth=2,
-                                                 foreground="w")])
+    ax.text(
+        minX + (maxX - minX) * 0.005,
+        minY + (maxY - minY) * 0.005,
+        att,
+        size=font_size,
+        path_effects=[patheffects.withStroke(linewidth=2, foreground="w")],
+    )
     return ax
