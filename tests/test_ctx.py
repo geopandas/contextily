@@ -241,7 +241,7 @@ def test_add_basemap():
     fig, ax = matplotlib.pyplot.subplots(1)
     ax.set_xlim(x1, x2)
     ax.set_ylim(y1, y2)
-    ax = ctx.add_basemap(ax, zoom=10)
+    ctx.add_basemap(ax, zoom=10)
 
     # ensure add_basemap did not change the axis limits of ax
     ax_extent = (x1, x2, y1, y2)
@@ -256,7 +256,7 @@ def test_add_basemap():
     ax.set_xlim(x1, x2)
     ax.set_ylim(y1, y2)
     loc = ctx.Place(SEARCH, path="./test2.tif", zoom_adjust=ADJUST)
-    ax = ctx.add_basemap(ax, url="./test2.tif")
+    ctx.add_basemap(ax, url="./test2.tif")
 
     raster_extent = (
         -11740803.981631357,
@@ -273,7 +273,7 @@ def test_add_basemap():
     f, ax = matplotlib.pyplot.subplots(1)
     ax.set_xlim(x1, x2)
     ax.set_ylim(y1, y2)
-    ax = ctx.add_basemap(ax, zoom="auto")
+    ctx.add_basemap(ax, zoom="auto")
 
     ax_extent = (
         -11740727.544603072,
@@ -292,7 +292,7 @@ def test_add_basemap():
     f, ax = matplotlib.pyplot.subplots(1)
     ax.set_xlim(x1, x2)
     ax.set_ylim(y1, y2)
-    ax = ctx.add_basemap(ax, crs={"init": "epsg:4326"}, attribution=None)
+    ctx.add_basemap(ax, crs={"init": "epsg:4326"}, attribution=None)
     assert ax.get_xlim() == (x1, x2)
     assert ax.get_ylim() == (y1, y2)
     assert ax.images[0].get_array().sum() == 724238693
@@ -303,9 +303,7 @@ def test_add_basemap():
     f, ax = matplotlib.pyplot.subplots(1)
     ax.set_xlim(x1, x2)
     ax.set_ylim(y1, y2)
-    ax = ctx.add_basemap(
-        ax, url="./test2.tif", crs={"init": "epsg:4326"}, attribution=None
-    )
+    ctx.add_basemap(ax, url="./test2.tif", crs={"init": "epsg:4326"}, attribution=None)
     assert ax.get_xlim() == (x1, x2)
     assert ax.get_ylim() == (y1, y2)
     assert ax.images[0].get_array().sum() == 724238693

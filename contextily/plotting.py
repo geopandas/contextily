@@ -88,7 +88,7 @@ def add_basemap(
     Add a web basemap:
 
     >>> ax = db.plot(alpha=0.5, color='k', figsize=(6, 6))
-    >>> ax = ctx.add_basemap(ax, url=url)
+    >>> ctx.add_basemap(ax, url=url)
     >>> plt.show()
 
     Or download a basemap to a local file and then plot it:
@@ -96,7 +96,7 @@ def add_basemap(
     >>> url = 'virginia.tiff'
     >>> _ = ctx.bounds2raster(*db.total_bounds, zoom=6, path=url)
     >>> ax = db.plot(alpha=0.5, color='k', figsize=(6, 6))
-    >>> ax = ctx.add_basemap(ax, url=url)
+    >>> ctx.add_basemap(ax, url=url)
     >>> plt.show()
 
     """
@@ -141,7 +141,9 @@ def add_basemap(
         bb = raster.bounds
         extent = bb.left, bb.right, bb.bottom, bb.top
     # Plotting
-    ax.imshow(image, extent=extent, interpolation=interpolation, **extra_imshow_args)
+    img = ax.imshow(
+        image, extent=extent, interpolation=interpolation, **extra_imshow_args
+    )
 
     if reset_extent:
         ax.axis((xmin, xmax, ymin, ymax))
@@ -149,7 +151,7 @@ def add_basemap(
     if attribution:
         add_attribution(ax, attribution, font_size=attribution_size)
 
-    return ax
+    return img
 
 
 def _reproj_bb(left, right, bottom, top, s_crs, t_crs):
