@@ -313,6 +313,52 @@ def test_add_basemap():
     assert_array_almost_equal(ax.images[0].get_array().mean(), 179.79593258881636)
 
 
+def test_basemap_attribution():
+    extent = (-11945319, -10336026, 2910477, 4438236)
+
+    def get_attr(ax):
+        return [
+            c
+            for c in ax.get_children()
+            if isinstance(c, matplotlib.text.Text) and c.get_text()
+        ]
+
+    # default provider and attribution
+    fig, ax = matplotlib.pyplot.subplots()
+    ax.axis(extent)
+    ctx.add_basemap(ax)
+    txt, = get_attr(ax)
+    assert txt.get_text() == ctx.providers.Stamen.Terrain["attribution"]
+
+    # override attribution
+    fig, ax = matplotlib.pyplot.subplots()
+    ax.axis(extent)
+    ctx.add_basemap(ax, attribution="custom text")
+    txt, = get_attr(ax)
+    assert txt.get_text() == "custom text"
+
+    # disable attribution
+    fig, ax = matplotlib.pyplot.subplots()
+    ax.axis(extent)
+    ctx.add_basemap(ax, attribution=False)
+    assert len(get_attr(ax)) == 0
+
+    # specified provider
+    fig, ax = matplotlib.pyplot.subplots()
+    ax.axis(extent)
+    ctx.add_basemap(ax, url=ctx.providers.OpenStreetMap.Mapnik)
+    txt, = get_attr(ax)
+    assert txt.get_text() == ctx.OpenStreetMap.Mapnik["attribution"]
+
+
 def test_attribution():
-    f, ax = matplotlib.pyplot.subplots(1)
-    ax = ctx.add_attribution(ax, "Test")
+    fig, ax = matplotlib.pyplot.subplots(1)
+    txt = ctx.add_attribution(ax, "Test")
+    assert isinstance(txt, matplotlib.text.Text)
+    assert txt.get_text() == "Test"
+
+    # test passthrough font size and kwargs
+    fig, ax = matplotlib.pyplot.subplots(1)
+    txt = ctx.add_attribution(ax, "Test", font_size=15, fontfamily="monospace")
+    assert txt.get_size() == 15
+    assert txt.get_fontfamily() == ["monospace"]

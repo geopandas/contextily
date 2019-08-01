@@ -112,9 +112,7 @@ class Place(object):
         self.bbox_map = bbox
         return im, bbox
 
-    def plot(
-        self, ax=None, zoom=ZOOM, interpolation=INTERPOLATION, attribution=None
-    ):
+    def plot(self, ax=None, zoom=ZOOM, interpolation=INTERPOLATION, attribution=None):
         """
         Plot a `Place` object
         ...
@@ -178,13 +176,7 @@ class Place(object):
 
 
 def plot_map(
-    place,
-    bbox=None,
-    title=None,
-    ax=None,
-    axis_off=True,
-    latlon=True,
-    attribution=None,
+    place, bbox=None, title=None, ax=None, axis_off=True, latlon=True, attribution=None
 ):
     """Plot a map of the given place.
 

@@ -23,7 +23,7 @@ def add_basemap(
     reset_extent=True,
     crs=None,
     resampling=Resampling.bilinear,
-    **extra_imshow_args
+    **extra_imshow_args,
 ):
     """
     Add a (web/local) basemap to `ax`
@@ -152,7 +152,7 @@ def add_basemap(
     if url is None:
         url = providers.Stamen.Terrain
     if isinstance(url, dict) and attribution is None:
-        attribution = url.get('attribution')
+        attribution = url.get("attribution")
     if attribution:
         add_attribution(ax, attribution, font_size=attribution_size)
 
@@ -194,6 +194,7 @@ def add_attribution(ax, text, font_size=ATTRIBUTION_SIZE, **kwargs):
         size=font_size,
         path_effects=[patheffects.withStroke(linewidth=2, foreground="w")],
         wrap=True,
+        **kwargs,
     )
     # hack to have the text wrapped in the ax extent, for some explanation see
     # https://stackoverflow.com/questions/48079364/wrapping-text-not-working-in-matplotlib
