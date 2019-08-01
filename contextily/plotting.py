@@ -2,7 +2,9 @@
 
 import numpy as np
 from . import tile_providers as sources
-from .tile import _calculate_zoom, bounds2img, _sm2ll
+from .tile import _calculate_zoom, bounds2img, _sm2ll, warp_tiles, _warper
+from rasterio.enums import Resampling
+from rasterio.warp import transform_bounds
 from matplotlib import patheffects
 
 INTERPOLATION = 'bilinear'
@@ -14,6 +16,7 @@ ATTRIBUTION_SIZE = 8
 def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN, 
 		interpolation=INTERPOLATION, attribution = ATTRIBUTION, 
         attribution_size = ATTRIBUTION_SIZE, reset_extent=True,
+        crs=None, resampling=Resampling.bilinear,
         **extra_imshow_args):
     """
     Add a (web/local) basemap to `ax`
@@ -47,6 +50,17 @@ def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN,
                           [Optional. Default=True] If True, the extent of the
                           basemap added is reset to the original extent (xlim,
                           ylim) of `ax`
+    crs                 : None/str/CRS
+                          [Optional. Default=None] CRS,
+                          expressed in any format permitted by rasterio, to
+                          use for the resulting basemap. If
+                          None (default), no warping is performed and the
+                          original Web Mercator (`EPSG:3857`, 
+                          {'init' :'epsg:3857'}) is used.
+    resampling          : <enum 'Resampling'>
+                          [Optional. Default=Resampling.bilinear] Resampling 
+                          method for executing warping, expressed as a 
+                          `rasterio.enums.Resampling` method
     **extra_imshow_args : dict
                           Other parameters to be passed to `imshow`.
 
@@ -82,6 +96,10 @@ def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN,
     if url[:4] == 'http':
         # Extent
         left, right, bottom, top = xmin, xmax, ymin, ymax
+        # Convert extent from `crs` into WM for tile query
+        if crs is not None:
+            left, right, bottom, top = _reproj_bb(left, right, bottom, top,
+                                                  crs, {'init' :'epsg:3857'})
         # Zoom
         if isinstance(zoom, str) and (zoom.lower() == 'auto'):
             min_ll = _sm2ll(left, bottom)
@@ -89,13 +107,23 @@ def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN,
             zoom = _calculate_zoom(*min_ll, *max_ll)
         image, extent = bounds2img(left, bottom, right, top,
                                    zoom=zoom, url=url, ll=False)
+        # Warping
+        if crs is not None:
+            image, extent = warp_tiles(image, extent, t_crs=crs,
+                                       resampling=resampling)
     # If local source
     else:
         import rasterio as rio
-        # Read extent
+        # Read file
         raster = rio.open(url)
-        image = np.array([ band for band in raster.read() ])\
-                  .transpose(1, 2, 0)
+        image = np.array([ band for band in raster.read() ])
+        # Warp
+        if (crs is not None) and (raster.crs != crs):
+            image, raster = _warper(image, 
+                                    raster.transform,
+                                    raster.crs, crs,
+                                    resampling)
+        image = image.transpose(1, 2, 0)
         bb = raster.bounds
         extent = bb.left, bb.right, bb.bottom, bb.top
     # Plotting
@@ -109,6 +137,13 @@ def add_basemap(ax, zoom=ZOOM, url=sources.ST_TERRAIN,
         add_attribution(ax, attribution, font_size=attribution_size)
 
     return ax
+
+
+def _reproj_bb(left, right, bottom, top,
+               s_crs, t_crs):
+    n_l, n_b, n_r, n_t = transform_bounds(s_crs, t_crs,
+                                          left, bottom, right, top)
+    return n_l, n_r, n_b, n_t
 
 def add_attribution(ax, att=ATTRIBUTION, font_size=ATTRIBUTION_SIZE):
     '''
