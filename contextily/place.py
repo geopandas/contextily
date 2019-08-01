@@ -4,7 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from warnings import warn
 from .tile import howmany, bounds2raster, bounds2img, _sm2ll, _calculate_zoom
-from .plotting import ATTRIBUTION, INTERPOLATION, ZOOM, add_attribution
+from .plotting import INTERPOLATION, ZOOM, add_attribution
+from . import providers
 
 
 class Place(object):
@@ -54,6 +55,8 @@ class Place(object):
 
     def __init__(self, search, zoom=None, path=None, zoom_adjust=None, url=None):
         self.path = path
+        if url is None:
+            url = providers.Stamen.Terrain
         self.url = url
         self.zoom_adjust = zoom_adjust
 
@@ -112,9 +115,7 @@ class Place(object):
         self.bbox_map = bbox
         return im, bbox
 
-    def plot(
-        self, ax=None, zoom=ZOOM, interpolation=INTERPOLATION, attribution=ATTRIBUTION
-    ):
+    def plot(self, ax=None, zoom=ZOOM, interpolation=INTERPOLATION, attribution=None):
         """
         Plot a `Place` object
         ...
@@ -135,8 +136,12 @@ class Place(object):
                               algorithm to be passed to `imshow`. See
                               `matplotlib.pyplot.imshow` for further details.
         attribution         : str
-                              [Optional. Defaults to standard `ATTRIBUTION`] Text to be added at the
-                              bottom of the axis.
+                              [Optional. Defaults to attribution specified by the url]
+                              Text to be added at the bottom of the axis. This
+                              defaults to the attribution of the provider specified
+                              in `url` if available. Specify False to not
+                              automatically add an attribution, or a string to pass
+                              a custom attribution.
 
         Returns
         -------
@@ -162,6 +167,8 @@ class Place(object):
             axisoff = True
         ax.imshow(im, extent=bbox, interpolation=interpolation)
         ax.set(xlabel="X", ylabel="Y")
+        if isinstance(self.url, dict) and attribution is None:
+            attribution = self.url.get("attribution")
         if attribution:
             add_attribution(ax, attribution)
         if title is not None:
@@ -178,13 +185,7 @@ class Place(object):
 
 
 def plot_map(
-    place,
-    bbox=None,
-    title=None,
-    ax=None,
-    axis_off=True,
-    latlon=True,
-    attribution=ATTRIBUTION,
+    place, bbox=None, title=None, ax=None, axis_off=True, latlon=True, attribution=None
 ):
     """Plot a map of the given place.
 

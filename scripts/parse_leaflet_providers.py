@@ -15,6 +15,7 @@ import textwrap
 
 import selenium.webdriver
 import git
+import html2text
 
 
 GIT_URL = "https://github.com/leaflet-extras/leaflet-providers.git"
@@ -96,6 +97,7 @@ def pythonize_data(data):
     Clean-up the javascript based dictionary:
     - rename mixedCase keys
     - substitute the attribution placeholders
+    - convert html attribution to plain text
 
     """
     rename_keys = {"maxZoom": "max_zoom", "minZoom": "min_zoom"}
@@ -105,15 +107,20 @@ def pythonize_data(data):
 
     new_data = []
     for key, value in items:
-        if (key == "attribution") and ("{attribution." in value):
-            for placeholder, attr in attributions.items():
-                if placeholder in value:
-                    value = value.replace(placeholder, attr)
-                    if "{attribution." not in value:
-                        # replaced last attribution
-                        break
-            else:
-                raise ValueError("Attribution not known: {}".format(value))
+        if key == "attribution":
+            if "{attribution." in value:
+                for placeholder, attr in attributions.items():
+                    if placeholder in value:
+                        value = value.replace(placeholder, attr)
+                        if "{attribution." not in value:
+                            # replaced last attribution
+                            break
+                else:
+                    raise ValueError("Attribution not known: {}".format(value))
+            # convert html text to plain text
+            converter = html2text.HTML2Text(bodywidth=1000)
+            converter.ignore_links = True
+            value = converter.handle(value).strip()
         elif key in rename_keys:
             key = rename_keys[key]
         elif key == "url" and any(k in value for k in rename_keys):
