@@ -183,16 +183,17 @@ def add_attribution(ax, text, font_size=ATTRIBUTION_SIZE, **kwargs):
                           Matplotlib axis with `x_lim` and `y_lim` set in Web
                           Mercator (EPSG=3857) and attribution text added
     """
-
-    text_object = ax.text(
+    text_artist = ax.text(
         0.005,
         0.005,
         text,
         transform=ax.transAxes,
-        ha="left",
-        va="bottom",
         size=font_size,
         path_effects=[patheffects.withStroke(linewidth=2, foreground="w")],
-        **kwargs,
+        wrap=True,
     )
-    return text_object
+    # hack to have the text wrapped in the ax extent, for some explanation see
+    # https://stackoverflow.com/questions/48079364/wrapping-text-not-working-in-matplotlib
+    wrap_width = ax.get_window_extent().width * 0.99
+    text_artist._get_wrap_line_width = lambda: wrap_width
+    return text_artist
