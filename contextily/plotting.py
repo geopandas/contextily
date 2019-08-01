@@ -102,8 +102,11 @@ def add_basemap(
     """
     xmin, xmax, ymin, ymax = ax.axis()
     # If web source
-    if (url is None or isinstance(url, dict) 
-            or (isinstance(url, str) and url[:4] == "http")):
+    if (
+        url is None
+        or isinstance(url, dict)
+        or (isinstance(url, str) and url[:4] == "http")
+    ):
         # Extent
         left, right, bottom, top = xmin, xmax, ymin, ymax
         # Convert extent from `crs` into WM for tile query

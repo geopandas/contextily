@@ -30,17 +30,17 @@ def get_json_data():
         commit_hexsha = repo.head.object.hexsha
         commit_message = repo.head.object.message
 
-        index_path = "file://" + os.path.join(tmpdirname, 'index.html')
+        index_path = "file://" + os.path.join(tmpdirname, "index.html")
 
         driver = selenium.webdriver.Firefox()
         driver.get(index_path)
         data = driver.execute_script(
-            'return JSON.stringify(L.TileLayer.Provider.providers)')
+            "return JSON.stringify(L.TileLayer.Provider.providers)"
+        )
         driver.close()
 
     data = json.loads(data)
-    description = "commit {0} ({1})".format(
-        commit_hexsha, commit_message.strip())
+    description = "commit {0} ({1})".format(commit_hexsha, commit_message.strip())
 
     return data, description
 
@@ -49,11 +49,9 @@ def process_data(data):
     # extract attributions from rawa data that later need to be substituted
     global ATTRIBUTIONS
     ATTRIBUTIONS = {
-        '{attribution.OpenStreetMap}':
-            data['OpenStreetMap']['options']['attribution'],
-        '{attribution.Esri}': data['Esri']['options']['attribution'],
-        '{attribution.OpenMapSurfer}':
-            data['OpenMapSurfer']['options']['attribution'],
+        "{attribution.OpenStreetMap}": data["OpenStreetMap"]["options"]["attribution"],
+        "{attribution.Esri}": data["Esri"]["options"]["attribution"],
+        "{attribution.OpenMapSurfer}": data["OpenMapSurfer"]["options"]["attribution"],
     }
 
     result = {}
@@ -62,14 +60,14 @@ def process_data(data):
     return result
 
 
-def process_provider(data, name='OpenStreetMap'):
+def process_provider(data, name="OpenStreetMap"):
     provider = data[name].copy()
-    variants = provider.pop('variants', None)
-    options = provider.pop('options')
+    variants = provider.pop("variants", None)
+    options = provider.pop("options")
     provider_keys = {**provider, **options}
 
     if variants is None:
-        provider_keys['name'] = name
+        provider_keys["name"] = name
         provider_keys = pythonize_data(provider_keys)
         return provider_keys
 
@@ -78,14 +76,15 @@ def process_provider(data, name='OpenStreetMap'):
     for variant in variants:
         var = variants[variant]
         if isinstance(var, str):
-            variant_keys = {'variant': var}
+            variant_keys = {"variant": var}
         else:
             variant_keys = var.copy()
-            variant_options = variant_keys.pop('options', {})
+            variant_options = variant_keys.pop("options", {})
             variant_keys = {**variant_keys, **variant_options}
         variant_keys = {**provider_keys, **variant_keys}
-        variant_keys['name'] = "{provider}.{variant}".format(
-            provider=name, variant=variant)
+        variant_keys["name"] = "{provider}.{variant}".format(
+            provider=name, variant=variant
+        )
         variant_keys = pythonize_data(variant_keys)
         result[variant] = variant_keys
 
@@ -99,28 +98,28 @@ def pythonize_data(data):
     - substitute the attribution placeholders
 
     """
-    rename_keys = {'maxZoom': 'max_zoom', 'minZoom': 'min_zoom'}
+    rename_keys = {"maxZoom": "max_zoom", "minZoom": "min_zoom"}
     attributions = ATTRIBUTIONS
 
     items = data.items()
 
     new_data = []
     for key, value in items:
-        if (key == 'attribution') and ('{attribution.' in value):
+        if (key == "attribution") and ("{attribution." in value):
             for placeholder, attr in attributions.items():
                 if placeholder in value:
                     value = value.replace(placeholder, attr)
-                    if '{attribution.' not in value:
+                    if "{attribution." not in value:
                         # replaced last attribution
                         break
             else:
                 raise ValueError("Attribution not known: {}".format(value))
         elif key in rename_keys:
             key = rename_keys[key]
-        elif key == 'url' and any(k in value for k in rename_keys):
+        elif key == "url" and any(k in value for k in rename_keys):
             # NASAGIBS providers have {maxZoom} in the url
             for old, new in rename_keys.items():
-                value = value.replace('{' + old + '}', '{' + new + '}')
+                value = value.replace("{" + old + "}", "{" + new + "}")
         new_data.append((key, value))
 
     return dict(new_data)
@@ -178,9 +177,12 @@ providers = Bunch(
 
 
 def format_provider(data, name):
-    formatted_keys = ',\n    '.join(
-        ["{key} = {value!r}".format(key=key, value=value)
-         for key, value in data.items()])
+    formatted_keys = ",\n    ".join(
+        [
+            "{key} = {value!r}".format(key=key, value=value)
+            for key, value in data.items()
+        ]
+    )
     provider_template = """\
 {name} = TileProvider(
     {formatted_keys}
@@ -193,8 +195,7 @@ def format_bunch(data, name):
 {name} = Bunch(
 {variants}
 )"""
-    return bunch_template.format(
-        name=name, variants=textwrap.indent(data, '    '))
+    return bunch_template.format(name=name, variants=textwrap.indent(data, "    "))
 
 
 def generate_file(data, description):
@@ -202,7 +203,7 @@ def generate_file(data, description):
 
     for provider_name in data.keys():
         provider = data[provider_name]
-        if 'url' in provider.keys():
+        if "url" in provider.keys():
             res = format_provider(provider, provider_name)
         else:
             variants = []
@@ -211,16 +212,17 @@ def generate_file(data, description):
                 formatted = format_provider(provider[variant], variant)
                 variants.append(formatted)
 
-            variants = ',\n'.join(variants)
+            variants = ",\n".join(variants)
             res = format_bunch(variants, provider_name)
 
         providers.append(res)
 
-    providers = ',\n'.join(providers)
+    providers = ",\n".join(providers)
     content = template.format(
-        providers=textwrap.indent(providers, '    '),
+        providers=textwrap.indent(providers, "    "),
         description=description,
-        timestamp=datetime.date.today())
+        timestamp=datetime.date.today(),
+    )
     return content
 
 
@@ -237,11 +239,12 @@ if __name__ == "__main__":
     with open("leaflet-providers-parsed.json", "w") as f:
         # wanted to add this as header to the file, but JSON does not support
         # comments
-        print("JSON representation of the leaflet providers defined by the "
-              "leaflet-providers.js extension to Leaflet "
-              "(https://github.com/leaflet-extras/leaflet-providers)")
-        print("This file is automatically generated from {}".format(
-            description))
+        print(
+            "JSON representation of the leaflet providers defined by the "
+            "leaflet-providers.js extension to Leaflet "
+            "(https://github.com/leaflet-extras/leaflet-providers)"
+        )
+        print("This file is automatically generated from {}".format(description))
         json.dump(result, f)
 
     content = generate_file(result, description)
