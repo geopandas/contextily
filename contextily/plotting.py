@@ -2,6 +2,7 @@
 
 import numpy as np
 from . import tile_providers as sources
+from . import providers
 from .tile import _calculate_zoom, bounds2img, _sm2ll, warp_tiles, _warper
 from rasterio.enums import Resampling
 from rasterio.warp import transform_bounds
@@ -10,9 +11,6 @@ from matplotlib.pyplot import draw
 
 INTERPOLATION = "bilinear"
 ZOOM = "auto"
-ATTRIBUTION = (
-    "Map tiles by Stamen Design, under CC BY 3.0. " "Data by OpenStreetMap, under ODbL."
-)
 ATTRIBUTION_SIZE = 8
 
 
@@ -21,12 +19,12 @@ def add_basemap(
     zoom=ZOOM,
     url=None,
     interpolation=INTERPOLATION,
-    attribution=ATTRIBUTION,
+    attribution=None,
     attribution_size=ATTRIBUTION_SIZE,
     reset_extent=True,
     crs=None,
     resampling=Resampling.bilinear,
-    **extra_imshow_args
+    **extra_imshow_args,
 ):
     """
     Add a (web/local) basemap to `ax`
@@ -51,8 +49,12 @@ def add_basemap(
                           algorithm to be passed to `imshow`. See
                           `matplotlib.pyplot.imshow` for further details.
     attribution         : str
-                          [Optional. Defaults to standard `ATTRIBUTION`] Text to be added at the
-                          bottom of the axis.
+                          [Optional. Defaults to attribution specified by the url]
+                          Text to be added at the bottom of the axis. This
+                          defaults to the attribution of the provider specified
+                          in `url` if available. Specify False to not
+                          automatically add an attribution, or a string to pass
+                          a custom attribution.
     attribution_size    : int
                           [Optional. Defaults to `ATTRIBUTION_SIZE`].
                           Font size to render attribution text with.
@@ -147,6 +149,11 @@ def add_basemap(
     if reset_extent:
         ax.axis((xmin, xmax, ymin, ymax))
 
+    # Add attribution text
+    if url is None:
+        url = providers.Stamen.Terrain
+    if isinstance(url, dict) and attribution is None:
+        attribution = url.get("attribution")
     if attribution:
         add_attribution(ax, attribution, font_size=attribution_size)
 
@@ -158,43 +165,45 @@ def _reproj_bb(left, right, bottom, top, s_crs, t_crs):
     return n_l, n_r, n_b, n_t
 
 
-def add_attribution(ax, att=ATTRIBUTION, font_size=ATTRIBUTION_SIZE):
+def add_attribution(ax, text, font_size=ATTRIBUTION_SIZE, **kwargs):
     """
-    Utility to add attribution text
-    ...
+    Utility to add attribution text.
 
     Arguments
     ---------
     ax                  : AxesSubplot
                           Matplotlib axis with `x_lim` and `y_lim` set in Web
                           Mercator (EPSG=3857)
-    att                 : str
-                          [Optional. Defaults to standard `ATTRIBUTION`] Text to be added at the
-                          bottom of the axis.
+    text                : str
+                          Text to be added at the bottom of the axis.
     font_size           : int
-                          [Optional. Defaults to `ATTRIBUTION_SIZE`] Font size in which to render the attribution text.
+                          [Optional. Defaults to 8] Font size in which to render
+                          the attribution text.
+    **kwargs            : Additional keywords to pass to the matplotlib `text`
+                          method.
 
     Returns
     -------
-    ax                  : AxesSubplot
-                          Matplotlib axis with `x_lim` and `y_lim` set in Web
-                          Mercator (EPSG=3857) and attribution text added
+    matplotlib.text.Text
+                          Matplotlib Text object added to the plot.
     """
     # Add draw() as it resizes the axis and allows the wrapping to work as
     # expected. See https://github.com/darribas/contextily/issues/95 for some
     # details on the issue
     draw()
-    txt = ax.text(
+
+    text_artist = ax.text(
         0.005,
         0.005,
-        att,
+        text,
         transform=ax.transAxes,
         size=font_size,
         path_effects=[patheffects.withStroke(linewidth=2, foreground="w")],
         wrap=True,
+        **kwargs,
     )
     # hack to have the text wrapped in the ax extent, for some explanation see
     # https://stackoverflow.com/questions/48079364/wrapping-text-not-working-in-matplotlib
     wrap_width = ax.get_window_extent().width * 0.99
-    txt._get_wrap_line_width = lambda: wrap_width
-    return ax
+    text_artist._get_wrap_line_width = lambda: wrap_width
+    return text_artist
