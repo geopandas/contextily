@@ -181,11 +181,15 @@ def add_attribution(ax, att=ATTRIBUTION, font_size=ATTRIBUTION_SIZE):
     """
     minX, maxX = ax.get_xlim()
     minY, maxY = ax.get_ylim()
-    ax.text(
-        minX + (maxX - minX) * 0.005,
-        minY + (maxY - minY) * 0.005,
-        att,
-        size=font_size,
-        path_effects=[patheffects.withStroke(linewidth=2, foreground="w")],
-    )
+    txt = ax.text(
+            minX + (maxX - minX) * 0.005,
+            minY + (maxY - minY) * 0.005,
+            att,
+            size=font_size,
+            path_effects=[patheffects.withStroke(linewidth=2, foreground="w")],
+            wrap=True
+        )
+    bb = ax.get_window_extent()
+    wrap_width = (bb.x1 - bb.x0) - (bb.x1 - bb.x0) * 0.1
+    txt._get_wrap_line_width = lambda : wrap_width
     return ax
