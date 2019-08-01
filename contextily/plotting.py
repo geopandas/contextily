@@ -179,12 +179,11 @@ def add_attribution(ax, att=ATTRIBUTION, font_size=ATTRIBUTION_SIZE):
                           Matplotlib axis with `x_lim` and `y_lim` set in Web
                           Mercator (EPSG=3857) and attribution text added
     """
-    minX, maxX = ax.get_xlim()
-    minY, maxY = ax.get_ylim()
     txt = ax.text(
-        minX + (maxX - minX) * 0.005,
-        minY + (maxY - minY) * 0.005,
+        0.005,
+        0.005,
         att,
+        transform=ax.transAxes,
         size=font_size,
         path_effects=[patheffects.withStroke(linewidth=2, foreground="w")],
         wrap=True,
