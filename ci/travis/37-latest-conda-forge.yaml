@@ -10,6 +10,7 @@ dependencies:
   - pillow
   - rasterio
   - requests
+  - joblib
   # testing
   - pip
   - pytest

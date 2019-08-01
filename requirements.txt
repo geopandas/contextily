@@ -4,3 +4,4 @@ mercantile
 pillow
 rasterio
 requests
+joblib

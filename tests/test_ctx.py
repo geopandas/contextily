@@ -61,6 +61,29 @@ def test_bounds2img():
     assert img[100, 200, :].tolist() == [156, 180, 131]
     assert img[200, 100, :].tolist() == [230, 225, 189]
 
+def test_warp_tiles():
+    w, s, e, n = (-106.6495132446289, 25.845197677612305,
+            -93.50721740722656, 36.49387741088867)
+    img, ext = ctx.bounds2img(w, s, e, n, zoom=4, ll=True)
+    wimg, wext = ctx.warp_tiles(img, ext)
+    assert wext == (-112.54394531249996, -90.07903186397023,
+                    21.966726124122374,  41.013065787006276)
+    assert wimg[100, 100, :].tolist() == [228, 221, 184]
+    assert wimg[100, 200, :].tolist() == [213, 219, 177]
+    assert wimg[200, 100, :].tolist() == [133, 130, 109]
+
+def test_warp_img_transform():
+    w, s, e, n = ext = (-106.6495132446289, 25.845197677612305,
+                        -93.50721740722656, 36.49387741088867)
+    _ = ctx.bounds2raster(w, s, e, n, 'test.tif', zoom=4, ll=True)
+    rtr = rio.open('test.tif')
+    img = np.array([ band for band in rtr.read() ])
+    wimg, wext = ctx.warp_img_transform(img, rtr.transform,
+                                        rtr.crs, {'init': 'epsg:4326'})
+    assert wimg[:, 100, 100].tolist() == [228, 221, 184]
+    assert wimg[:, 100, 200].tolist() == [213, 219, 177]
+    assert wimg[:, 200, 100].tolist() == [133, 130, 109]
+
 def test_howmany():
     w, s, e, n = (-106.6495132446289, 25.845197677612305,
             -93.50721740722656, 36.49387741088867)
@@ -149,14 +172,15 @@ def test_add_basemap():
                        4852834.0517692715, 4891969.810251278]
 
     # Test web basemap
-    f, ax = matplotlib.pyplot.subplots(1)
+    fig, ax = matplotlib.pyplot.subplots(1)
     ax.set_xlim(x1, x2)
     ax.set_ylim(y1, y2)
     ax = ctx.add_basemap(ax, zoom=10)
 
-    ax_extent = (-11740727.544603072, -11662456.027639052,
-                  4852834.0517692715, 4891969.810251278)
-    assert_array_almost_equal(ax_extent, ax.images[0].get_extent())
+    # ensure add_basemap did not change the axis limits of ax
+    ax_extent = (x1, x2, y1, y2)
+    assert ax.axis() == ax_extent
+
     assert ax.images[0].get_array().sum() == 75853866
     assert ax.images[0].get_array().shape == (256, 512, 3)
     assert_array_almost_equal(ax.images[0].get_array().mean(),
@@ -190,6 +214,38 @@ def test_add_basemap():
     assert ax.images[0].get_array().shape == (1024, 1280, 3)
     assert_array_almost_equal(ax.images[0].get_array().mean(),
                               184.10206197102863)
+
+    # Test on-th-fly warping
+    x1, x2 = -105.5, -105.00
+    y1, y2 = 39.56, 40.13
+    f, ax = matplotlib.pyplot.subplots(1)
+    ax.set_xlim(x1, x2)
+    ax.set_ylim(y1, y2)
+    ax = ctx.add_basemap(ax, 
+                         crs={'init': 'epsg:4326'},
+                         attribution=None)
+    assert ax.get_xlim() == (x1, x2)
+    assert ax.get_ylim() == (y1, y2)
+    assert ax.images[0].get_array().sum() == 724238693
+    assert ax.images[0].get_array().shape == (1135, 1183, 3)
+    assert_array_almost_equal(ax.images[0].get_array().mean(),
+                              179.79593258881636)
+    # Test local source warping
+    _ = ctx.bounds2raster(x1, y1, x2, y2, "./test2.tif", ll=True)
+    f, ax = matplotlib.pyplot.subplots(1)
+    ax.set_xlim(x1, x2)
+    ax.set_ylim(y1, y2)
+    ax = ctx.add_basemap(ax, 
+                         url="./test2.tif",
+                         crs={'init': 'epsg:4326'},
+                         attribution=None)
+    assert ax.get_xlim() == (x1, x2)
+    assert ax.get_ylim() == (y1, y2)
+    assert ax.images[0].get_array().sum() == 724238693
+    assert ax.images[0].get_array().shape == (1135, 1183, 3)
+    assert_array_almost_equal(ax.images[0].get_array().mean(),
+                              179.79593258881636)
+
 
 def test_attribution():
     f, ax = matplotlib.pyplot.subplots(1)
