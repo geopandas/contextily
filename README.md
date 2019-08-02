@@ -23,7 +23,7 @@ the internet into geospatial raster files. Bounding boxes can be passed in both 
 
 * `mercantile`
 * `numpy`
-- `matplotlib`
+* `matplotlib`
 * `pillow`
 * `rasterio`
 * `requests`
@@ -40,8 +40,10 @@ pip3 install contextily
 
 ## Contributors
 
-* [Dani Arribas-Bel](http://darribas.org/) ([@darribas](http://twitter.com/darribas))
-* [Chris Holdgraf](http://chrisholdgraf.com/) ([@choldgraf](http://twitter.com/choldgraf))
+* [Dani Arribas-Bel](http://darribas.org/) ([`@darribas`](http://twitter.com/darribas))
+* [Joris Van den Bossche](https://jorisvandenbossche.github.io/) ([`@levijohnwolf`](https://twitter.com/levijohnwolf))
+* [Levi Wolf](http://ljwolf.org/) [`@jorisvandenbossche`](https://twitter.com/jorisvdbossche))
+* [Chris Holdgraf](http://chrisholdgraf.com/) ([`@choldgraf`](http://twitter.com/choldgraf))
 * [Filipe Fernandes](https://ocefpaf.github.io/python4oceanographers/) ([@ocefpaf](http://twitter.com/ocefpaf))
 
 ## License
