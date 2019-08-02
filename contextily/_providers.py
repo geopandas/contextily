@@ -43,81 +43,81 @@ providers = Bunch(
         Mapnik = TileProvider(
             url = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
             max_zoom = 19,
-            attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            attribution = '(C) OpenStreetMap contributors',
             name = 'OpenStreetMap.Mapnik'
         ),
         DE = TileProvider(
             url = 'https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png',
             max_zoom = 18,
-            attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            attribution = '(C) OpenStreetMap contributors',
             name = 'OpenStreetMap.DE'
         ),
         CH = TileProvider(
             url = 'https://tile.osm.ch/switzerland/{z}/{x}/{y}.png',
             max_zoom = 18,
-            attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            attribution = '(C) OpenStreetMap contributors',
             bounds = [[45, 5], [48, 11]],
             name = 'OpenStreetMap.CH'
         ),
         France = TileProvider(
             url = 'https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png',
             max_zoom = 20,
-            attribution = '&copy; Openstreetmap France | &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            attribution = '(C) Openstreetmap France | (C) OpenStreetMap contributors',
             name = 'OpenStreetMap.France'
         ),
         HOT = TileProvider(
             url = 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
             max_zoom = 19,
-            attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a>',
+            attribution = '(C) OpenStreetMap contributors, Tiles style by Humanitarian OpenStreetMap Team hosted by OpenStreetMap France',
             name = 'OpenStreetMap.HOT'
         ),
         BZH = TileProvider(
             url = 'https://tile.openstreetmap.bzh/br/{z}/{x}/{y}.png',
             max_zoom = 19,
-            attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles courtesy of <a href="http://www.openstreetmap.bzh/" target="_blank">Breton OpenStreetMap Team</a>',
+            attribution = '(C) OpenStreetMap contributors, Tiles courtesy of Breton OpenStreetMap Team',
             bounds = [[46.2, -5.5], [50, 0.7]],
             name = 'OpenStreetMap.BZH'
         )
     ),
     OpenSeaMap = TileProvider(
         url = 'https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',
-        attribution = 'Map data: &copy; <a href="http://www.openseamap.org">OpenSeaMap</a> contributors',
+        attribution = 'Map data: (C) OpenSeaMap contributors',
         name = 'OpenSeaMap'
     ),
     OpenPtMap = TileProvider(
         url = 'http://openptmap.org/tiles/{z}/{x}/{y}.png',
         max_zoom = 17,
-        attribution = 'Map data: &copy; <a href="http://www.openptmap.org">OpenPtMap</a> contributors',
+        attribution = 'Map data: (C) OpenPtMap contributors',
         name = 'OpenPtMap'
     ),
     OpenTopoMap = TileProvider(
         url = 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
         max_zoom = 17,
-        attribution = 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
+        attribution = 'Map data: (C) OpenStreetMap contributors, SRTM | Map style: (C) OpenTopoMap (CC-BY-SA)',
         name = 'OpenTopoMap'
     ),
     OpenRailwayMap = TileProvider(
         url = 'https://{s}.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png',
         max_zoom = 19,
-        attribution = 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Map style: &copy; <a href="https://www.OpenRailwayMap.org">OpenRailwayMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
+        attribution = 'Map data: (C) OpenStreetMap contributors | Map style: (C) OpenRailwayMap (CC-BY-SA)',
         name = 'OpenRailwayMap'
     ),
     OpenFireMap = TileProvider(
         url = 'http://openfiremap.org/hytiles/{z}/{x}/{y}.png',
         max_zoom = 19,
-        attribution = 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Map style: &copy; <a href="http://www.openfiremap.org">OpenFireMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
+        attribution = 'Map data: (C) OpenStreetMap contributors | Map style: (C) OpenFireMap (CC-BY-SA)',
         name = 'OpenFireMap'
     ),
     SafeCast = TileProvider(
         url = 'https://s3.amazonaws.com/te512.safecast.org/{z}/{x}/{y}.png',
         max_zoom = 16,
-        attribution = 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Map style: &copy; <a href="https://blog.safecast.org/about/">SafeCast</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
+        attribution = 'Map data: (C) OpenStreetMap contributors | Map style: (C) SafeCast (CC-BY-SA)',
         name = 'SafeCast'
     ),
     Thunderforest = Bunch(
         OpenCycleMap = TileProvider(
             url = 'https://{s}.tile.thunderforest.com/{variant}/{z}/{x}/{y}.png?apikey={apikey}',
-            attribution = '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            attribution = '(C) Thunderforest, (C) OpenStreetMap contributors',
             variant = 'cycle',
             apikey = '<insert your api key here>',
             max_zoom = 22,
@@ -125,7 +125,7 @@ providers = Bunch(
         ),
         Transport = TileProvider(
             url = 'https://{s}.tile.thunderforest.com/{variant}/{z}/{x}/{y}.png?apikey={apikey}',
-            attribution = '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            attribution = '(C) Thunderforest, (C) OpenStreetMap contributors',
             variant = 'transport',
             apikey = '<insert your api key here>',
             max_zoom = 22,
@@ -133,7 +133,7 @@ providers = Bunch(
         ),
         TransportDark = TileProvider(
             url = 'https://{s}.tile.thunderforest.com/{variant}/{z}/{x}/{y}.png?apikey={apikey}',
-            attribution = '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            attribution = '(C) Thunderforest, (C) OpenStreetMap contributors',
             variant = 'transport-dark',
             apikey = '<insert your api key here>',
             max_zoom = 22,
@@ -141,7 +141,7 @@ providers = Bunch(
         ),
         SpinalMap = TileProvider(
             url = 'https://{s}.tile.thunderforest.com/{variant}/{z}/{x}/{y}.png?apikey={apikey}',
-            attribution = '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            attribution = '(C) Thunderforest, (C) OpenStreetMap contributors',
             variant = 'spinal-map',
             apikey = '<insert your api key here>',
             max_zoom = 22,
@@ -149,7 +149,7 @@ providers = Bunch(
         ),
         Landscape = TileProvider(
             url = 'https://{s}.tile.thunderforest.com/{variant}/{z}/{x}/{y}.png?apikey={apikey}',
-            attribution = '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            attribution = '(C) Thunderforest, (C) OpenStreetMap contributors',
             variant = 'landscape',
             apikey = '<insert your api key here>',
             max_zoom = 22,
@@ -157,7 +157,7 @@ providers = Bunch(
         ),
         Outdoors = TileProvider(
             url = 'https://{s}.tile.thunderforest.com/{variant}/{z}/{x}/{y}.png?apikey={apikey}',
-            attribution = '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            attribution = '(C) Thunderforest, (C) OpenStreetMap contributors',
             variant = 'outdoors',
             apikey = '<insert your api key here>',
             max_zoom = 22,
@@ -165,7 +165,7 @@ providers = Bunch(
         ),
         Pioneer = TileProvider(
             url = 'https://{s}.tile.thunderforest.com/{variant}/{z}/{x}/{y}.png?apikey={apikey}',
-            attribution = '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            attribution = '(C) Thunderforest, (C) OpenStreetMap contributors',
             variant = 'pioneer',
             apikey = '<insert your api key here>',
             max_zoom = 22,
@@ -173,7 +173,7 @@ providers = Bunch(
         ),
         MobileAtlas = TileProvider(
             url = 'https://{s}.tile.thunderforest.com/{variant}/{z}/{x}/{y}.png?apikey={apikey}',
-            attribution = '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            attribution = '(C) Thunderforest, (C) OpenStreetMap contributors',
             variant = 'mobile-atlas',
             apikey = '<insert your api key here>',
             max_zoom = 22,
@@ -181,7 +181,7 @@ providers = Bunch(
         ),
         Neighbourhood = TileProvider(
             url = 'https://{s}.tile.thunderforest.com/{variant}/{z}/{x}/{y}.png?apikey={apikey}',
-            attribution = '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            attribution = '(C) Thunderforest, (C) OpenStreetMap contributors',
             variant = 'neighbourhood',
             apikey = '<insert your api key here>',
             max_zoom = 22,
@@ -193,28 +193,28 @@ providers = Bunch(
             url = 'https://maps.heigit.org/openmapsurfer/tiles/{variant}/webmercator/{z}/{x}/{y}.png',
             max_zoom = 19,
             variant = 'roads',
-            attribution = 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> | Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            attribution = 'Imagery from GIScience Research Group @ University of Heidelberg | Map data (C) OpenStreetMap contributors',
             name = 'OpenMapSurfer.Roads'
         ),
         Hybrid = TileProvider(
             url = 'https://maps.heigit.org/openmapsurfer/tiles/{variant}/webmercator/{z}/{x}/{y}.png',
             max_zoom = 19,
             variant = 'hybrid',
-            attribution = 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> | Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            attribution = 'Imagery from GIScience Research Group @ University of Heidelberg | Map data (C) OpenStreetMap contributors',
             name = 'OpenMapSurfer.Hybrid'
         ),
         AdminBounds = TileProvider(
             url = 'https://maps.heigit.org/openmapsurfer/tiles/{variant}/webmercator/{z}/{x}/{y}.png',
             max_zoom = 18,
             variant = 'adminb',
-            attribution = 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> | Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            attribution = 'Imagery from GIScience Research Group @ University of Heidelberg | Map data (C) OpenStreetMap contributors',
             name = 'OpenMapSurfer.AdminBounds'
         ),
         ContourLines = TileProvider(
             url = 'https://maps.heigit.org/openmapsurfer/tiles/{variant}/webmercator/{z}/{x}/{y}.png',
             max_zoom = 18,
             variant = 'asterc',
-            attribution = 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> | Map data  <a href="https://lpdaac.usgs.gov/products/aster_policies">ASTER GDEM</a>',
+            attribution = 'Imagery from GIScience Research Group @ University of Heidelberg | Map data ASTER GDEM',
             min_zoom = 13,
             name = 'OpenMapSurfer.ContourLines'
         ),
@@ -222,14 +222,14 @@ providers = Bunch(
             url = 'https://maps.heigit.org/openmapsurfer/tiles/{variant}/webmercator/{z}/{x}/{y}.png',
             max_zoom = 18,
             variant = 'asterh',
-            attribution = 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> | Map data  <a href="https://lpdaac.usgs.gov/products/aster_policies">ASTER GDEM</a>, <a href="http://srtm.csi.cgiar.org/">SRTM</a>',
+            attribution = 'Imagery from GIScience Research Group @ University of Heidelberg | Map data ASTER GDEM, SRTM',
             name = 'OpenMapSurfer.Hillshade'
         ),
         ElementsAtRisk = TileProvider(
             url = 'https://maps.heigit.org/openmapsurfer/tiles/{variant}/webmercator/{z}/{x}/{y}.png',
             max_zoom = 19,
             variant = 'elements_at_risk',
-            attribution = 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> | Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            attribution = 'Imagery from GIScience Research Group @ University of Heidelberg | Map data (C) OpenStreetMap contributors',
             name = 'OpenMapSurfer.ElementsAtRisk'
         )
     ),
@@ -238,27 +238,27 @@ providers = Bunch(
             url = 'https://{s}.tile.openstreetmap.se/hydda/{variant}/{z}/{x}/{y}.png',
             max_zoom = 18,
             variant = 'full',
-            attribution = 'Tiles courtesy of <a href="http://openstreetmap.se/" target="_blank">OpenStreetMap Sweden</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            attribution = 'Tiles courtesy of OpenStreetMap Sweden -- Map data (C) OpenStreetMap contributors',
             name = 'Hydda.Full'
         ),
         Base = TileProvider(
             url = 'https://{s}.tile.openstreetmap.se/hydda/{variant}/{z}/{x}/{y}.png',
             max_zoom = 18,
             variant = 'base',
-            attribution = 'Tiles courtesy of <a href="http://openstreetmap.se/" target="_blank">OpenStreetMap Sweden</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            attribution = 'Tiles courtesy of OpenStreetMap Sweden -- Map data (C) OpenStreetMap contributors',
             name = 'Hydda.Base'
         ),
         RoadsAndLabels = TileProvider(
             url = 'https://{s}.tile.openstreetmap.se/hydda/{variant}/{z}/{x}/{y}.png',
             max_zoom = 18,
             variant = 'roads_and_labels',
-            attribution = 'Tiles courtesy of <a href="http://openstreetmap.se/" target="_blank">OpenStreetMap Sweden</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            attribution = 'Tiles courtesy of OpenStreetMap Sweden -- Map data (C) OpenStreetMap contributors',
             name = 'Hydda.RoadsAndLabels'
         )
     ),
     MapBox = TileProvider(
         url = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}{r}.png?access_token={accessToken}',
-        attribution = '<a href="https://www.mapbox.com/about/maps/" target="_blank">&copy; Mapbox</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors <a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a>',
+        attribution = '(C) Mapbox (C) OpenStreetMap contributors Improve this map',
         subdomains = 'abcd',
         id = 'mapbox.streets',
         accessToken = '<insert your access token here>',
@@ -267,7 +267,7 @@ providers = Bunch(
     Stamen = Bunch(
         Toner = TileProvider(
             url = 'https://stamen-tiles-{s}.a.ssl.fastly.net/{variant}/{z}/{x}/{y}{r}.{ext}',
-            attribution = 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            attribution = 'Map tiles by Stamen Design, CC BY 3.0 -- Map data (C) OpenStreetMap contributors',
             subdomains = 'abcd',
             min_zoom = 0,
             max_zoom = 20,
@@ -277,7 +277,7 @@ providers = Bunch(
         ),
         TonerBackground = TileProvider(
             url = 'https://stamen-tiles-{s}.a.ssl.fastly.net/{variant}/{z}/{x}/{y}{r}.{ext}',
-            attribution = 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            attribution = 'Map tiles by Stamen Design, CC BY 3.0 -- Map data (C) OpenStreetMap contributors',
             subdomains = 'abcd',
             min_zoom = 0,
             max_zoom = 20,
@@ -287,7 +287,7 @@ providers = Bunch(
         ),
         TonerHybrid = TileProvider(
             url = 'https://stamen-tiles-{s}.a.ssl.fastly.net/{variant}/{z}/{x}/{y}{r}.{ext}',
-            attribution = 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            attribution = 'Map tiles by Stamen Design, CC BY 3.0 -- Map data (C) OpenStreetMap contributors',
             subdomains = 'abcd',
             min_zoom = 0,
             max_zoom = 20,
@@ -297,7 +297,7 @@ providers = Bunch(
         ),
         TonerLines = TileProvider(
             url = 'https://stamen-tiles-{s}.a.ssl.fastly.net/{variant}/{z}/{x}/{y}{r}.{ext}',
-            attribution = 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            attribution = 'Map tiles by Stamen Design, CC BY 3.0 -- Map data (C) OpenStreetMap contributors',
             subdomains = 'abcd',
             min_zoom = 0,
             max_zoom = 20,
@@ -307,7 +307,7 @@ providers = Bunch(
         ),
         TonerLabels = TileProvider(
             url = 'https://stamen-tiles-{s}.a.ssl.fastly.net/{variant}/{z}/{x}/{y}{r}.{ext}',
-            attribution = 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            attribution = 'Map tiles by Stamen Design, CC BY 3.0 -- Map data (C) OpenStreetMap contributors',
             subdomains = 'abcd',
             min_zoom = 0,
             max_zoom = 20,
@@ -317,7 +317,7 @@ providers = Bunch(
         ),
         TonerLite = TileProvider(
             url = 'https://stamen-tiles-{s}.a.ssl.fastly.net/{variant}/{z}/{x}/{y}{r}.{ext}',
-            attribution = 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            attribution = 'Map tiles by Stamen Design, CC BY 3.0 -- Map data (C) OpenStreetMap contributors',
             subdomains = 'abcd',
             min_zoom = 0,
             max_zoom = 20,
@@ -327,7 +327,7 @@ providers = Bunch(
         ),
         Watercolor = TileProvider(
             url = 'https://stamen-tiles-{s}.a.ssl.fastly.net/{variant}/{z}/{x}/{y}.{ext}',
-            attribution = 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            attribution = 'Map tiles by Stamen Design, CC BY 3.0 -- Map data (C) OpenStreetMap contributors',
             subdomains = 'abcd',
             min_zoom = 1,
             max_zoom = 16,
@@ -337,7 +337,7 @@ providers = Bunch(
         ),
         Terrain = TileProvider(
             url = 'https://stamen-tiles-{s}.a.ssl.fastly.net/{variant}/{z}/{x}/{y}{r}.{ext}',
-            attribution = 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            attribution = 'Map tiles by Stamen Design, CC BY 3.0 -- Map data (C) OpenStreetMap contributors',
             subdomains = 'abcd',
             min_zoom = 0,
             max_zoom = 18,
@@ -347,7 +347,7 @@ providers = Bunch(
         ),
         TerrainBackground = TileProvider(
             url = 'https://stamen-tiles-{s}.a.ssl.fastly.net/{variant}/{z}/{x}/{y}{r}.{ext}',
-            attribution = 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            attribution = 'Map tiles by Stamen Design, CC BY 3.0 -- Map data (C) OpenStreetMap contributors',
             subdomains = 'abcd',
             min_zoom = 0,
             max_zoom = 18,
@@ -357,7 +357,7 @@ providers = Bunch(
         ),
         TopOSMRelief = TileProvider(
             url = 'https://stamen-tiles-{s}.a.ssl.fastly.net/{variant}/{z}/{x}/{y}.{ext}',
-            attribution = 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            attribution = 'Map tiles by Stamen Design, CC BY 3.0 -- Map data (C) OpenStreetMap contributors',
             subdomains = 'abcd',
             min_zoom = 0,
             max_zoom = 20,
@@ -368,7 +368,7 @@ providers = Bunch(
         ),
         TopOSMFeatures = TileProvider(
             url = 'https://stamen-tiles-{s}.a.ssl.fastly.net/{variant}/{z}/{x}/{y}{r}.{ext}',
-            attribution = 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            attribution = 'Map tiles by Stamen Design, CC BY 3.0 -- Map data (C) OpenStreetMap contributors',
             subdomains = 'abcd',
             min_zoom = 0,
             max_zoom = 20,
@@ -383,13 +383,13 @@ providers = Bunch(
         WorldStreetMap = TileProvider(
             url = 'https://server.arcgisonline.com/ArcGIS/rest/services/{variant}/MapServer/tile/{z}/{y}/{x}',
             variant = 'World_Street_Map',
-            attribution = 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012',
+            attribution = 'Tiles (C) Esri -- Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012',
             name = 'Esri.WorldStreetMap'
         ),
         DeLorme = TileProvider(
             url = 'https://server.arcgisonline.com/ArcGIS/rest/services/{variant}/MapServer/tile/{z}/{y}/{x}',
             variant = 'Specialty/DeLorme_World_Base_Map',
-            attribution = 'Tiles &copy; Esri &mdash; Copyright: &copy;2012 DeLorme',
+            attribution = 'Tiles (C) Esri -- Copyright: (C)2012 DeLorme',
             min_zoom = 1,
             max_zoom = 11,
             name = 'Esri.DeLorme'
@@ -397,54 +397,54 @@ providers = Bunch(
         WorldTopoMap = TileProvider(
             url = 'https://server.arcgisonline.com/ArcGIS/rest/services/{variant}/MapServer/tile/{z}/{y}/{x}',
             variant = 'World_Topo_Map',
-            attribution = 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community',
+            attribution = 'Tiles (C) Esri -- Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community',
             name = 'Esri.WorldTopoMap'
         ),
         WorldImagery = TileProvider(
             url = 'https://server.arcgisonline.com/ArcGIS/rest/services/{variant}/MapServer/tile/{z}/{y}/{x}',
             variant = 'World_Imagery',
-            attribution = 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+            attribution = 'Tiles (C) Esri -- Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
             name = 'Esri.WorldImagery'
         ),
         WorldTerrain = TileProvider(
             url = 'https://server.arcgisonline.com/ArcGIS/rest/services/{variant}/MapServer/tile/{z}/{y}/{x}',
             variant = 'World_Terrain_Base',
-            attribution = 'Tiles &copy; Esri &mdash; Source: USGS, Esri, TANA, DeLorme, and NPS',
+            attribution = 'Tiles (C) Esri -- Source: USGS, Esri, TANA, DeLorme, and NPS',
             max_zoom = 13,
             name = 'Esri.WorldTerrain'
         ),
         WorldShadedRelief = TileProvider(
             url = 'https://server.arcgisonline.com/ArcGIS/rest/services/{variant}/MapServer/tile/{z}/{y}/{x}',
             variant = 'World_Shaded_Relief',
-            attribution = 'Tiles &copy; Esri &mdash; Source: Esri',
+            attribution = 'Tiles (C) Esri -- Source: Esri',
             max_zoom = 13,
             name = 'Esri.WorldShadedRelief'
         ),
         WorldPhysical = TileProvider(
             url = 'https://server.arcgisonline.com/ArcGIS/rest/services/{variant}/MapServer/tile/{z}/{y}/{x}',
             variant = 'World_Physical_Map',
-            attribution = 'Tiles &copy; Esri &mdash; Source: US National Park Service',
+            attribution = 'Tiles (C) Esri -- Source: US National Park Service',
             max_zoom = 8,
             name = 'Esri.WorldPhysical'
         ),
         OceanBasemap = TileProvider(
             url = 'https://server.arcgisonline.com/ArcGIS/rest/services/{variant}/MapServer/tile/{z}/{y}/{x}',
             variant = 'Ocean_Basemap',
-            attribution = 'Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri',
+            attribution = 'Tiles (C) Esri -- Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri',
             max_zoom = 13,
             name = 'Esri.OceanBasemap'
         ),
         NatGeoWorldMap = TileProvider(
             url = 'https://server.arcgisonline.com/ArcGIS/rest/services/{variant}/MapServer/tile/{z}/{y}/{x}',
             variant = 'NatGeo_World_Map',
-            attribution = 'Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC',
+            attribution = 'Tiles (C) Esri -- National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC',
             max_zoom = 16,
             name = 'Esri.NatGeoWorldMap'
         ),
         WorldGrayCanvas = TileProvider(
             url = 'https://server.arcgisonline.com/ArcGIS/rest/services/{variant}/MapServer/tile/{z}/{y}/{x}',
             variant = 'Canvas/World_Light_Gray_Base',
-            attribution = 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
+            attribution = 'Tiles (C) Esri -- Esri, DeLorme, NAVTEQ',
             max_zoom = 16,
             name = 'Esri.WorldGrayCanvas'
         )
@@ -453,7 +453,7 @@ providers = Bunch(
         Clouds = TileProvider(
             url = 'http://{s}.tile.openweathermap.org/map/{variant}/{z}/{x}/{y}.png?appid={apiKey}',
             max_zoom = 19,
-            attribution = 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>',
+            attribution = 'Map data (C) OpenWeatherMap',
             apiKey = '<insert your api key here>',
             opacity = 0.5,
             variant = 'clouds',
@@ -462,7 +462,7 @@ providers = Bunch(
         CloudsClassic = TileProvider(
             url = 'http://{s}.tile.openweathermap.org/map/{variant}/{z}/{x}/{y}.png?appid={apiKey}',
             max_zoom = 19,
-            attribution = 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>',
+            attribution = 'Map data (C) OpenWeatherMap',
             apiKey = '<insert your api key here>',
             opacity = 0.5,
             variant = 'clouds_cls',
@@ -471,7 +471,7 @@ providers = Bunch(
         Precipitation = TileProvider(
             url = 'http://{s}.tile.openweathermap.org/map/{variant}/{z}/{x}/{y}.png?appid={apiKey}',
             max_zoom = 19,
-            attribution = 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>',
+            attribution = 'Map data (C) OpenWeatherMap',
             apiKey = '<insert your api key here>',
             opacity = 0.5,
             variant = 'precipitation',
@@ -480,7 +480,7 @@ providers = Bunch(
         PrecipitationClassic = TileProvider(
             url = 'http://{s}.tile.openweathermap.org/map/{variant}/{z}/{x}/{y}.png?appid={apiKey}',
             max_zoom = 19,
-            attribution = 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>',
+            attribution = 'Map data (C) OpenWeatherMap',
             apiKey = '<insert your api key here>',
             opacity = 0.5,
             variant = 'precipitation_cls',
@@ -489,7 +489,7 @@ providers = Bunch(
         Rain = TileProvider(
             url = 'http://{s}.tile.openweathermap.org/map/{variant}/{z}/{x}/{y}.png?appid={apiKey}',
             max_zoom = 19,
-            attribution = 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>',
+            attribution = 'Map data (C) OpenWeatherMap',
             apiKey = '<insert your api key here>',
             opacity = 0.5,
             variant = 'rain',
@@ -498,7 +498,7 @@ providers = Bunch(
         RainClassic = TileProvider(
             url = 'http://{s}.tile.openweathermap.org/map/{variant}/{z}/{x}/{y}.png?appid={apiKey}',
             max_zoom = 19,
-            attribution = 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>',
+            attribution = 'Map data (C) OpenWeatherMap',
             apiKey = '<insert your api key here>',
             opacity = 0.5,
             variant = 'rain_cls',
@@ -507,7 +507,7 @@ providers = Bunch(
         Pressure = TileProvider(
             url = 'http://{s}.tile.openweathermap.org/map/{variant}/{z}/{x}/{y}.png?appid={apiKey}',
             max_zoom = 19,
-            attribution = 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>',
+            attribution = 'Map data (C) OpenWeatherMap',
             apiKey = '<insert your api key here>',
             opacity = 0.5,
             variant = 'pressure',
@@ -516,7 +516,7 @@ providers = Bunch(
         PressureContour = TileProvider(
             url = 'http://{s}.tile.openweathermap.org/map/{variant}/{z}/{x}/{y}.png?appid={apiKey}',
             max_zoom = 19,
-            attribution = 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>',
+            attribution = 'Map data (C) OpenWeatherMap',
             apiKey = '<insert your api key here>',
             opacity = 0.5,
             variant = 'pressure_cntr',
@@ -525,7 +525,7 @@ providers = Bunch(
         Wind = TileProvider(
             url = 'http://{s}.tile.openweathermap.org/map/{variant}/{z}/{x}/{y}.png?appid={apiKey}',
             max_zoom = 19,
-            attribution = 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>',
+            attribution = 'Map data (C) OpenWeatherMap',
             apiKey = '<insert your api key here>',
             opacity = 0.5,
             variant = 'wind',
@@ -534,7 +534,7 @@ providers = Bunch(
         Temperature = TileProvider(
             url = 'http://{s}.tile.openweathermap.org/map/{variant}/{z}/{x}/{y}.png?appid={apiKey}',
             max_zoom = 19,
-            attribution = 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>',
+            attribution = 'Map data (C) OpenWeatherMap',
             apiKey = '<insert your api key here>',
             opacity = 0.5,
             variant = 'temp',
@@ -543,7 +543,7 @@ providers = Bunch(
         Snow = TileProvider(
             url = 'http://{s}.tile.openweathermap.org/map/{variant}/{z}/{x}/{y}.png?appid={apiKey}',
             max_zoom = 19,
-            attribution = 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>',
+            attribution = 'Map data (C) OpenWeatherMap',
             apiKey = '<insert your api key here>',
             opacity = 0.5,
             variant = 'snow',
@@ -553,7 +553,7 @@ providers = Bunch(
     HERE = Bunch(
         normalDay = TileProvider(
             url = 'https://{s}.{base}.maps.api.here.com/maptile/2.1/{type}/{mapID}/{variant}/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg={language}',
-            attribution = 'Map &copy; 1987-2019 <a href="http://developer.here.com">HERE</a>',
+            attribution = 'Map (C) 1987-2019 HERE',
             subdomains = '1234',
             mapID = 'newest',
             app_id = '<insert your app_id here>',
@@ -569,7 +569,7 @@ providers = Bunch(
         ),
         normalDayCustom = TileProvider(
             url = 'https://{s}.{base}.maps.api.here.com/maptile/2.1/{type}/{mapID}/{variant}/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg={language}',
-            attribution = 'Map &copy; 1987-2019 <a href="http://developer.here.com">HERE</a>',
+            attribution = 'Map (C) 1987-2019 HERE',
             subdomains = '1234',
             mapID = 'newest',
             app_id = '<insert your app_id here>',
@@ -585,7 +585,7 @@ providers = Bunch(
         ),
         normalDayGrey = TileProvider(
             url = 'https://{s}.{base}.maps.api.here.com/maptile/2.1/{type}/{mapID}/{variant}/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg={language}',
-            attribution = 'Map &copy; 1987-2019 <a href="http://developer.here.com">HERE</a>',
+            attribution = 'Map (C) 1987-2019 HERE',
             subdomains = '1234',
             mapID = 'newest',
             app_id = '<insert your app_id here>',
@@ -601,7 +601,7 @@ providers = Bunch(
         ),
         normalDayMobile = TileProvider(
             url = 'https://{s}.{base}.maps.api.here.com/maptile/2.1/{type}/{mapID}/{variant}/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg={language}',
-            attribution = 'Map &copy; 1987-2019 <a href="http://developer.here.com">HERE</a>',
+            attribution = 'Map (C) 1987-2019 HERE',
             subdomains = '1234',
             mapID = 'newest',
             app_id = '<insert your app_id here>',
@@ -617,7 +617,7 @@ providers = Bunch(
         ),
         normalDayGreyMobile = TileProvider(
             url = 'https://{s}.{base}.maps.api.here.com/maptile/2.1/{type}/{mapID}/{variant}/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg={language}',
-            attribution = 'Map &copy; 1987-2019 <a href="http://developer.here.com">HERE</a>',
+            attribution = 'Map (C) 1987-2019 HERE',
             subdomains = '1234',
             mapID = 'newest',
             app_id = '<insert your app_id here>',
@@ -633,7 +633,7 @@ providers = Bunch(
         ),
         normalDayTransit = TileProvider(
             url = 'https://{s}.{base}.maps.api.here.com/maptile/2.1/{type}/{mapID}/{variant}/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg={language}',
-            attribution = 'Map &copy; 1987-2019 <a href="http://developer.here.com">HERE</a>',
+            attribution = 'Map (C) 1987-2019 HERE',
             subdomains = '1234',
             mapID = 'newest',
             app_id = '<insert your app_id here>',
@@ -649,7 +649,7 @@ providers = Bunch(
         ),
         normalDayTransitMobile = TileProvider(
             url = 'https://{s}.{base}.maps.api.here.com/maptile/2.1/{type}/{mapID}/{variant}/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg={language}',
-            attribution = 'Map &copy; 1987-2019 <a href="http://developer.here.com">HERE</a>',
+            attribution = 'Map (C) 1987-2019 HERE',
             subdomains = '1234',
             mapID = 'newest',
             app_id = '<insert your app_id here>',
@@ -665,7 +665,7 @@ providers = Bunch(
         ),
         normalNight = TileProvider(
             url = 'https://{s}.{base}.maps.api.here.com/maptile/2.1/{type}/{mapID}/{variant}/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg={language}',
-            attribution = 'Map &copy; 1987-2019 <a href="http://developer.here.com">HERE</a>',
+            attribution = 'Map (C) 1987-2019 HERE',
             subdomains = '1234',
             mapID = 'newest',
             app_id = '<insert your app_id here>',
@@ -681,7 +681,7 @@ providers = Bunch(
         ),
         normalNightMobile = TileProvider(
             url = 'https://{s}.{base}.maps.api.here.com/maptile/2.1/{type}/{mapID}/{variant}/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg={language}',
-            attribution = 'Map &copy; 1987-2019 <a href="http://developer.here.com">HERE</a>',
+            attribution = 'Map (C) 1987-2019 HERE',
             subdomains = '1234',
             mapID = 'newest',
             app_id = '<insert your app_id here>',
@@ -697,7 +697,7 @@ providers = Bunch(
         ),
         normalNightGrey = TileProvider(
             url = 'https://{s}.{base}.maps.api.here.com/maptile/2.1/{type}/{mapID}/{variant}/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg={language}',
-            attribution = 'Map &copy; 1987-2019 <a href="http://developer.here.com">HERE</a>',
+            attribution = 'Map (C) 1987-2019 HERE',
             subdomains = '1234',
             mapID = 'newest',
             app_id = '<insert your app_id here>',
@@ -713,7 +713,7 @@ providers = Bunch(
         ),
         normalNightGreyMobile = TileProvider(
             url = 'https://{s}.{base}.maps.api.here.com/maptile/2.1/{type}/{mapID}/{variant}/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg={language}',
-            attribution = 'Map &copy; 1987-2019 <a href="http://developer.here.com">HERE</a>',
+            attribution = 'Map (C) 1987-2019 HERE',
             subdomains = '1234',
             mapID = 'newest',
             app_id = '<insert your app_id here>',
@@ -729,7 +729,7 @@ providers = Bunch(
         ),
         normalNightTransit = TileProvider(
             url = 'https://{s}.{base}.maps.api.here.com/maptile/2.1/{type}/{mapID}/{variant}/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg={language}',
-            attribution = 'Map &copy; 1987-2019 <a href="http://developer.here.com">HERE</a>',
+            attribution = 'Map (C) 1987-2019 HERE',
             subdomains = '1234',
             mapID = 'newest',
             app_id = '<insert your app_id here>',
@@ -745,7 +745,7 @@ providers = Bunch(
         ),
         normalNightTransitMobile = TileProvider(
             url = 'https://{s}.{base}.maps.api.here.com/maptile/2.1/{type}/{mapID}/{variant}/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg={language}',
-            attribution = 'Map &copy; 1987-2019 <a href="http://developer.here.com">HERE</a>',
+            attribution = 'Map (C) 1987-2019 HERE',
             subdomains = '1234',
             mapID = 'newest',
             app_id = '<insert your app_id here>',
@@ -761,7 +761,7 @@ providers = Bunch(
         ),
         reducedDay = TileProvider(
             url = 'https://{s}.{base}.maps.api.here.com/maptile/2.1/{type}/{mapID}/{variant}/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg={language}',
-            attribution = 'Map &copy; 1987-2019 <a href="http://developer.here.com">HERE</a>',
+            attribution = 'Map (C) 1987-2019 HERE',
             subdomains = '1234',
             mapID = 'newest',
             app_id = '<insert your app_id here>',
@@ -777,7 +777,7 @@ providers = Bunch(
         ),
         reducedNight = TileProvider(
             url = 'https://{s}.{base}.maps.api.here.com/maptile/2.1/{type}/{mapID}/{variant}/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg={language}',
-            attribution = 'Map &copy; 1987-2019 <a href="http://developer.here.com">HERE</a>',
+            attribution = 'Map (C) 1987-2019 HERE',
             subdomains = '1234',
             mapID = 'newest',
             app_id = '<insert your app_id here>',
@@ -793,7 +793,7 @@ providers = Bunch(
         ),
         basicMap = TileProvider(
             url = 'https://{s}.{base}.maps.api.here.com/maptile/2.1/{type}/{mapID}/{variant}/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg={language}',
-            attribution = 'Map &copy; 1987-2019 <a href="http://developer.here.com">HERE</a>',
+            attribution = 'Map (C) 1987-2019 HERE',
             subdomains = '1234',
             mapID = 'newest',
             app_id = '<insert your app_id here>',
@@ -809,7 +809,7 @@ providers = Bunch(
         ),
         mapLabels = TileProvider(
             url = 'https://{s}.{base}.maps.api.here.com/maptile/2.1/{type}/{mapID}/{variant}/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg={language}',
-            attribution = 'Map &copy; 1987-2019 <a href="http://developer.here.com">HERE</a>',
+            attribution = 'Map (C) 1987-2019 HERE',
             subdomains = '1234',
             mapID = 'newest',
             app_id = '<insert your app_id here>',
@@ -825,7 +825,7 @@ providers = Bunch(
         ),
         trafficFlow = TileProvider(
             url = 'https://{s}.{base}.maps.api.here.com/maptile/2.1/{type}/{mapID}/{variant}/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg={language}',
-            attribution = 'Map &copy; 1987-2019 <a href="http://developer.here.com">HERE</a>',
+            attribution = 'Map (C) 1987-2019 HERE',
             subdomains = '1234',
             mapID = 'newest',
             app_id = '<insert your app_id here>',
@@ -841,7 +841,7 @@ providers = Bunch(
         ),
         carnavDayGrey = TileProvider(
             url = 'https://{s}.{base}.maps.api.here.com/maptile/2.1/{type}/{mapID}/{variant}/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg={language}',
-            attribution = 'Map &copy; 1987-2019 <a href="http://developer.here.com">HERE</a>',
+            attribution = 'Map (C) 1987-2019 HERE',
             subdomains = '1234',
             mapID = 'newest',
             app_id = '<insert your app_id here>',
@@ -857,7 +857,7 @@ providers = Bunch(
         ),
         hybridDay = TileProvider(
             url = 'https://{s}.{base}.maps.api.here.com/maptile/2.1/{type}/{mapID}/{variant}/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg={language}',
-            attribution = 'Map &copy; 1987-2019 <a href="http://developer.here.com">HERE</a>',
+            attribution = 'Map (C) 1987-2019 HERE',
             subdomains = '1234',
             mapID = 'newest',
             app_id = '<insert your app_id here>',
@@ -873,7 +873,7 @@ providers = Bunch(
         ),
         hybridDayMobile = TileProvider(
             url = 'https://{s}.{base}.maps.api.here.com/maptile/2.1/{type}/{mapID}/{variant}/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg={language}',
-            attribution = 'Map &copy; 1987-2019 <a href="http://developer.here.com">HERE</a>',
+            attribution = 'Map (C) 1987-2019 HERE',
             subdomains = '1234',
             mapID = 'newest',
             app_id = '<insert your app_id here>',
@@ -889,7 +889,7 @@ providers = Bunch(
         ),
         hybridDayTransit = TileProvider(
             url = 'https://{s}.{base}.maps.api.here.com/maptile/2.1/{type}/{mapID}/{variant}/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg={language}',
-            attribution = 'Map &copy; 1987-2019 <a href="http://developer.here.com">HERE</a>',
+            attribution = 'Map (C) 1987-2019 HERE',
             subdomains = '1234',
             mapID = 'newest',
             app_id = '<insert your app_id here>',
@@ -905,7 +905,7 @@ providers = Bunch(
         ),
         hybridDayGrey = TileProvider(
             url = 'https://{s}.{base}.maps.api.here.com/maptile/2.1/{type}/{mapID}/{variant}/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg={language}',
-            attribution = 'Map &copy; 1987-2019 <a href="http://developer.here.com">HERE</a>',
+            attribution = 'Map (C) 1987-2019 HERE',
             subdomains = '1234',
             mapID = 'newest',
             app_id = '<insert your app_id here>',
@@ -921,7 +921,7 @@ providers = Bunch(
         ),
         pedestrianDay = TileProvider(
             url = 'https://{s}.{base}.maps.api.here.com/maptile/2.1/{type}/{mapID}/{variant}/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg={language}',
-            attribution = 'Map &copy; 1987-2019 <a href="http://developer.here.com">HERE</a>',
+            attribution = 'Map (C) 1987-2019 HERE',
             subdomains = '1234',
             mapID = 'newest',
             app_id = '<insert your app_id here>',
@@ -937,7 +937,7 @@ providers = Bunch(
         ),
         pedestrianNight = TileProvider(
             url = 'https://{s}.{base}.maps.api.here.com/maptile/2.1/{type}/{mapID}/{variant}/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg={language}',
-            attribution = 'Map &copy; 1987-2019 <a href="http://developer.here.com">HERE</a>',
+            attribution = 'Map (C) 1987-2019 HERE',
             subdomains = '1234',
             mapID = 'newest',
             app_id = '<insert your app_id here>',
@@ -953,7 +953,7 @@ providers = Bunch(
         ),
         satelliteDay = TileProvider(
             url = 'https://{s}.{base}.maps.api.here.com/maptile/2.1/{type}/{mapID}/{variant}/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg={language}',
-            attribution = 'Map &copy; 1987-2019 <a href="http://developer.here.com">HERE</a>',
+            attribution = 'Map (C) 1987-2019 HERE',
             subdomains = '1234',
             mapID = 'newest',
             app_id = '<insert your app_id here>',
@@ -969,7 +969,7 @@ providers = Bunch(
         ),
         terrainDay = TileProvider(
             url = 'https://{s}.{base}.maps.api.here.com/maptile/2.1/{type}/{mapID}/{variant}/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg={language}',
-            attribution = 'Map &copy; 1987-2019 <a href="http://developer.here.com">HERE</a>',
+            attribution = 'Map (C) 1987-2019 HERE',
             subdomains = '1234',
             mapID = 'newest',
             app_id = '<insert your app_id here>',
@@ -985,7 +985,7 @@ providers = Bunch(
         ),
         terrainDayMobile = TileProvider(
             url = 'https://{s}.{base}.maps.api.here.com/maptile/2.1/{type}/{mapID}/{variant}/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg={language}',
-            attribution = 'Map &copy; 1987-2019 <a href="http://developer.here.com">HERE</a>',
+            attribution = 'Map (C) 1987-2019 HERE',
             subdomains = '1234',
             mapID = 'newest',
             app_id = '<insert your app_id here>',
@@ -1006,18 +1006,18 @@ providers = Bunch(
         max_zoom = 16,
         subdomains = '1234',
         bounds = [[47.204642, 15.996093], [49.830896, 22.576904]],
-        attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, vizualization CC-By-SA 2.0 <a href="http://freemap.sk">Freemap.sk</a>',
+        attribution = '(C) OpenStreetMap contributors, vizualization CC-By-SA 2.0 Freemap.sk',
         name = 'FreeMapSK'
     ),
     MtbMap = TileProvider(
         url = 'http://tile.mtbmap.cz/mtbmap_tiles/{z}/{x}/{y}.png',
-        attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &amp; USGS',
+        attribution = '(C) OpenStreetMap contributors & USGS',
         name = 'MtbMap'
     ),
     CartoDB = Bunch(
         Positron = TileProvider(
             url = 'https://{s}.basemaps.cartocdn.com/{variant}/{z}/{x}/{y}{r}.png',
-            attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            attribution = '(C) OpenStreetMap contributors (C) CARTO',
             subdomains = 'abcd',
             max_zoom = 19,
             variant = 'light_all',
@@ -1025,7 +1025,7 @@ providers = Bunch(
         ),
         PositronNoLabels = TileProvider(
             url = 'https://{s}.basemaps.cartocdn.com/{variant}/{z}/{x}/{y}{r}.png',
-            attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            attribution = '(C) OpenStreetMap contributors (C) CARTO',
             subdomains = 'abcd',
             max_zoom = 19,
             variant = 'light_nolabels',
@@ -1033,7 +1033,7 @@ providers = Bunch(
         ),
         PositronOnlyLabels = TileProvider(
             url = 'https://{s}.basemaps.cartocdn.com/{variant}/{z}/{x}/{y}{r}.png',
-            attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            attribution = '(C) OpenStreetMap contributors (C) CARTO',
             subdomains = 'abcd',
             max_zoom = 19,
             variant = 'light_only_labels',
@@ -1041,7 +1041,7 @@ providers = Bunch(
         ),
         DarkMatter = TileProvider(
             url = 'https://{s}.basemaps.cartocdn.com/{variant}/{z}/{x}/{y}{r}.png',
-            attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            attribution = '(C) OpenStreetMap contributors (C) CARTO',
             subdomains = 'abcd',
             max_zoom = 19,
             variant = 'dark_all',
@@ -1049,7 +1049,7 @@ providers = Bunch(
         ),
         DarkMatterNoLabels = TileProvider(
             url = 'https://{s}.basemaps.cartocdn.com/{variant}/{z}/{x}/{y}{r}.png',
-            attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            attribution = '(C) OpenStreetMap contributors (C) CARTO',
             subdomains = 'abcd',
             max_zoom = 19,
             variant = 'dark_nolabels',
@@ -1057,7 +1057,7 @@ providers = Bunch(
         ),
         DarkMatterOnlyLabels = TileProvider(
             url = 'https://{s}.basemaps.cartocdn.com/{variant}/{z}/{x}/{y}{r}.png',
-            attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            attribution = '(C) OpenStreetMap contributors (C) CARTO',
             subdomains = 'abcd',
             max_zoom = 19,
             variant = 'dark_only_labels',
@@ -1065,7 +1065,7 @@ providers = Bunch(
         ),
         Voyager = TileProvider(
             url = 'https://{s}.basemaps.cartocdn.com/{variant}/{z}/{x}/{y}{r}.png',
-            attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            attribution = '(C) OpenStreetMap contributors (C) CARTO',
             subdomains = 'abcd',
             max_zoom = 19,
             variant = 'rastertiles/voyager',
@@ -1073,7 +1073,7 @@ providers = Bunch(
         ),
         VoyagerNoLabels = TileProvider(
             url = 'https://{s}.basemaps.cartocdn.com/{variant}/{z}/{x}/{y}{r}.png',
-            attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            attribution = '(C) OpenStreetMap contributors (C) CARTO',
             subdomains = 'abcd',
             max_zoom = 19,
             variant = 'rastertiles/voyager_nolabels',
@@ -1081,7 +1081,7 @@ providers = Bunch(
         ),
         VoyagerOnlyLabels = TileProvider(
             url = 'https://{s}.basemaps.cartocdn.com/{variant}/{z}/{x}/{y}{r}.png',
-            attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            attribution = '(C) OpenStreetMap contributors (C) CARTO',
             subdomains = 'abcd',
             max_zoom = 19,
             variant = 'rastertiles/voyager_only_labels',
@@ -1089,7 +1089,7 @@ providers = Bunch(
         ),
         VoyagerLabelsUnder = TileProvider(
             url = 'https://{s}.basemaps.cartocdn.com/{variant}/{z}/{x}/{y}{r}.png',
-            attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            attribution = '(C) OpenStreetMap contributors (C) CARTO',
             subdomains = 'abcd',
             max_zoom = 19,
             variant = 'rastertiles/voyager_labels_under',
@@ -1100,14 +1100,14 @@ providers = Bunch(
         HikeBike = TileProvider(
             url = 'https://tiles.wmflabs.org/{variant}/{z}/{x}/{y}.png',
             max_zoom = 19,
-            attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            attribution = '(C) OpenStreetMap contributors',
             variant = 'hikebike',
             name = 'HikeBike.HikeBike'
         ),
         HillShading = TileProvider(
             url = 'https://tiles.wmflabs.org/{variant}/{z}/{x}/{y}.png',
             max_zoom = 15,
-            attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            attribution = '(C) OpenStreetMap contributors',
             variant = 'hillshading',
             name = 'HikeBike.HillShading'
         )
@@ -1116,7 +1116,7 @@ providers = Bunch(
         basemap = TileProvider(
             url = 'https://maps{s}.wien.gv.at/basemap/{variant}/normal/google3857/{z}/{y}/{x}.{format}',
             max_zoom = 20,
-            attribution = 'Datenquelle: <a href="https://www.basemap.at">basemap.at</a>',
+            attribution = 'Datenquelle: basemap.at',
             subdomains = ['', '1', '2', '3', '4'],
             format = 'png',
             bounds = [[46.35877, 8.782379], [49.037872, 17.189532]],
@@ -1126,7 +1126,7 @@ providers = Bunch(
         grau = TileProvider(
             url = 'https://maps{s}.wien.gv.at/basemap/{variant}/normal/google3857/{z}/{y}/{x}.{format}',
             max_zoom = 19,
-            attribution = 'Datenquelle: <a href="https://www.basemap.at">basemap.at</a>',
+            attribution = 'Datenquelle: basemap.at',
             subdomains = ['', '1', '2', '3', '4'],
             format = 'png',
             bounds = [[46.35877, 8.782379], [49.037872, 17.189532]],
@@ -1136,7 +1136,7 @@ providers = Bunch(
         overlay = TileProvider(
             url = 'https://maps{s}.wien.gv.at/basemap/{variant}/normal/google3857/{z}/{y}/{x}.{format}',
             max_zoom = 19,
-            attribution = 'Datenquelle: <a href="https://www.basemap.at">basemap.at</a>',
+            attribution = 'Datenquelle: basemap.at',
             subdomains = ['', '1', '2', '3', '4'],
             format = 'png',
             bounds = [[46.35877, 8.782379], [49.037872, 17.189532]],
@@ -1146,7 +1146,7 @@ providers = Bunch(
         highdpi = TileProvider(
             url = 'https://maps{s}.wien.gv.at/basemap/{variant}/normal/google3857/{z}/{y}/{x}.{format}',
             max_zoom = 19,
-            attribution = 'Datenquelle: <a href="https://www.basemap.at">basemap.at</a>',
+            attribution = 'Datenquelle: basemap.at',
             subdomains = ['', '1', '2', '3', '4'],
             format = 'jpeg',
             bounds = [[46.35877, 8.782379], [49.037872, 17.189532]],
@@ -1156,7 +1156,7 @@ providers = Bunch(
         orthofoto = TileProvider(
             url = 'https://maps{s}.wien.gv.at/basemap/{variant}/normal/google3857/{z}/{y}/{x}.{format}',
             max_zoom = 20,
-            attribution = 'Datenquelle: <a href="https://www.basemap.at">basemap.at</a>',
+            attribution = 'Datenquelle: basemap.at',
             subdomains = ['', '1', '2', '3', '4'],
             format = 'jpeg',
             bounds = [[46.35877, 8.782379], [49.037872, 17.189532]],
@@ -1170,7 +1170,7 @@ providers = Bunch(
             min_zoom = 6,
             max_zoom = 19,
             bounds = [[50.5, 3.25], [54, 7.6]],
-            attribution = 'Kaartgegevens &copy; <a href="kadaster.nl">Kadaster</a>',
+            attribution = 'Kaartgegevens (C) Kadaster',
             variant = 'brtachtergrondkaart',
             name = 'nlmaps.standaard'
         ),
@@ -1179,7 +1179,7 @@ providers = Bunch(
             min_zoom = 6,
             max_zoom = 19,
             bounds = [[50.5, 3.25], [54, 7.6]],
-            attribution = 'Kaartgegevens &copy; <a href="kadaster.nl">Kadaster</a>',
+            attribution = 'Kaartgegevens (C) Kadaster',
             variant = 'brtachtergrondkaartpastel',
             name = 'nlmaps.pastel'
         ),
@@ -1188,7 +1188,7 @@ providers = Bunch(
             min_zoom = 6,
             max_zoom = 19,
             bounds = [[50.5, 3.25], [54, 7.6]],
-            attribution = 'Kaartgegevens &copy; <a href="kadaster.nl">Kadaster</a>',
+            attribution = 'Kaartgegevens (C) Kadaster',
             variant = 'brtachtergrondkaartgrijs',
             name = 'nlmaps.grijs'
         ),
@@ -1197,14 +1197,14 @@ providers = Bunch(
             min_zoom = 6,
             max_zoom = 19,
             bounds = [[50.5, 3.25], [54, 7.6]],
-            attribution = 'Kaartgegevens &copy; <a href="kadaster.nl">Kadaster</a>',
+            attribution = 'Kaartgegevens (C) Kadaster',
             name = 'nlmaps.luchtfoto'
         )
     ),
     NASAGIBS = Bunch(
         ModisTerraTrueColorCR = TileProvider(
             url = 'https://map1.vis.earthdata.nasa.gov/wmts-webmerc/{variant}/default/{time}/{tilematrixset}{max_zoom}/{z}/{y}/{x}.{format}',
-            attribution = 'Imagery provided by services from the Global Imagery Browse Services (GIBS), operated by the NASA/GSFC/Earth Science Data and Information System (<a href="https://earthdata.nasa.gov">ESDIS</a>) with funding provided by NASA/HQ.',
+            attribution = 'Imagery provided by services from the Global Imagery Browse Services (GIBS), operated by the NASA/GSFC/Earth Science Data and Information System (ESDIS) with funding provided by NASA/HQ.',
             bounds = [[-85.0511287776, -179.999999975], [85.0511287776, 179.999999975]],
             min_zoom = 1,
             max_zoom = 9,
@@ -1216,7 +1216,7 @@ providers = Bunch(
         ),
         ModisTerraBands367CR = TileProvider(
             url = 'https://map1.vis.earthdata.nasa.gov/wmts-webmerc/{variant}/default/{time}/{tilematrixset}{max_zoom}/{z}/{y}/{x}.{format}',
-            attribution = 'Imagery provided by services from the Global Imagery Browse Services (GIBS), operated by the NASA/GSFC/Earth Science Data and Information System (<a href="https://earthdata.nasa.gov">ESDIS</a>) with funding provided by NASA/HQ.',
+            attribution = 'Imagery provided by services from the Global Imagery Browse Services (GIBS), operated by the NASA/GSFC/Earth Science Data and Information System (ESDIS) with funding provided by NASA/HQ.',
             bounds = [[-85.0511287776, -179.999999975], [85.0511287776, 179.999999975]],
             min_zoom = 1,
             max_zoom = 9,
@@ -1228,7 +1228,7 @@ providers = Bunch(
         ),
         ViirsEarthAtNight2012 = TileProvider(
             url = 'https://map1.vis.earthdata.nasa.gov/wmts-webmerc/{variant}/default/{time}/{tilematrixset}{max_zoom}/{z}/{y}/{x}.{format}',
-            attribution = 'Imagery provided by services from the Global Imagery Browse Services (GIBS), operated by the NASA/GSFC/Earth Science Data and Information System (<a href="https://earthdata.nasa.gov">ESDIS</a>) with funding provided by NASA/HQ.',
+            attribution = 'Imagery provided by services from the Global Imagery Browse Services (GIBS), operated by the NASA/GSFC/Earth Science Data and Information System (ESDIS) with funding provided by NASA/HQ.',
             bounds = [[-85.0511287776, -179.999999975], [85.0511287776, 179.999999975]],
             min_zoom = 1,
             max_zoom = 8,
@@ -1240,7 +1240,7 @@ providers = Bunch(
         ),
         ModisTerraLSTDay = TileProvider(
             url = 'https://map1.vis.earthdata.nasa.gov/wmts-webmerc/{variant}/default/{time}/{tilematrixset}{max_zoom}/{z}/{y}/{x}.{format}',
-            attribution = 'Imagery provided by services from the Global Imagery Browse Services (GIBS), operated by the NASA/GSFC/Earth Science Data and Information System (<a href="https://earthdata.nasa.gov">ESDIS</a>) with funding provided by NASA/HQ.',
+            attribution = 'Imagery provided by services from the Global Imagery Browse Services (GIBS), operated by the NASA/GSFC/Earth Science Data and Information System (ESDIS) with funding provided by NASA/HQ.',
             bounds = [[-85.0511287776, -179.999999975], [85.0511287776, 179.999999975]],
             min_zoom = 1,
             max_zoom = 7,
@@ -1253,7 +1253,7 @@ providers = Bunch(
         ),
         ModisTerraSnowCover = TileProvider(
             url = 'https://map1.vis.earthdata.nasa.gov/wmts-webmerc/{variant}/default/{time}/{tilematrixset}{max_zoom}/{z}/{y}/{x}.{format}',
-            attribution = 'Imagery provided by services from the Global Imagery Browse Services (GIBS), operated by the NASA/GSFC/Earth Science Data and Information System (<a href="https://earthdata.nasa.gov">ESDIS</a>) with funding provided by NASA/HQ.',
+            attribution = 'Imagery provided by services from the Global Imagery Browse Services (GIBS), operated by the NASA/GSFC/Earth Science Data and Information System (ESDIS) with funding provided by NASA/HQ.',
             bounds = [[-85.0511287776, -179.999999975], [85.0511287776, 179.999999975]],
             min_zoom = 1,
             max_zoom = 8,
@@ -1266,7 +1266,7 @@ providers = Bunch(
         ),
         ModisTerraAOD = TileProvider(
             url = 'https://map1.vis.earthdata.nasa.gov/wmts-webmerc/{variant}/default/{time}/{tilematrixset}{max_zoom}/{z}/{y}/{x}.{format}',
-            attribution = 'Imagery provided by services from the Global Imagery Browse Services (GIBS), operated by the NASA/GSFC/Earth Science Data and Information System (<a href="https://earthdata.nasa.gov">ESDIS</a>) with funding provided by NASA/HQ.',
+            attribution = 'Imagery provided by services from the Global Imagery Browse Services (GIBS), operated by the NASA/GSFC/Earth Science Data and Information System (ESDIS) with funding provided by NASA/HQ.',
             bounds = [[-85.0511287776, -179.999999975], [85.0511287776, 179.999999975]],
             min_zoom = 1,
             max_zoom = 6,
@@ -1279,7 +1279,7 @@ providers = Bunch(
         ),
         ModisTerraChlorophyll = TileProvider(
             url = 'https://map1.vis.earthdata.nasa.gov/wmts-webmerc/{variant}/default/{time}/{tilematrixset}{max_zoom}/{z}/{y}/{x}.{format}',
-            attribution = 'Imagery provided by services from the Global Imagery Browse Services (GIBS), operated by the NASA/GSFC/Earth Science Data and Information System (<a href="https://earthdata.nasa.gov">ESDIS</a>) with funding provided by NASA/HQ.',
+            attribution = 'Imagery provided by services from the Global Imagery Browse Services (GIBS), operated by the NASA/GSFC/Earth Science Data and Information System (ESDIS) with funding provided by NASA/HQ.',
             bounds = [[-85.0511287776, -179.999999975], [85.0511287776, 179.999999975]],
             min_zoom = 1,
             max_zoom = 7,
@@ -1293,7 +1293,7 @@ providers = Bunch(
     ),
     NLS = TileProvider(
         url = 'https://nls-{s}.tileserver.com/nls/{z}/{x}/{y}.jpg',
-        attribution = '<a href="http://geo.nls.uk/maps/">National Library of Scotland Historic Maps</a>',
+        attribution = 'National Library of Scotland Historic Maps',
         bounds = [[49.6, -12], [61.7, 3]],
         min_zoom = 1,
         max_zoom = 18,
@@ -1303,7 +1303,7 @@ providers = Bunch(
     JusticeMap = Bunch(
         income = TileProvider(
             url = 'http://www.justicemap.org/tile/{size}/{variant}/{z}/{x}/{y}.png',
-            attribution = '<a href="http://www.justicemap.org/terms.php">Justice Map</a>',
+            attribution = 'Justice Map',
             size = 'county',
             bounds = [[14, -180], [72, -56]],
             variant = 'income',
@@ -1311,7 +1311,7 @@ providers = Bunch(
         ),
         americanIndian = TileProvider(
             url = 'http://www.justicemap.org/tile/{size}/{variant}/{z}/{x}/{y}.png',
-            attribution = '<a href="http://www.justicemap.org/terms.php">Justice Map</a>',
+            attribution = 'Justice Map',
             size = 'county',
             bounds = [[14, -180], [72, -56]],
             variant = 'indian',
@@ -1319,7 +1319,7 @@ providers = Bunch(
         ),
         asian = TileProvider(
             url = 'http://www.justicemap.org/tile/{size}/{variant}/{z}/{x}/{y}.png',
-            attribution = '<a href="http://www.justicemap.org/terms.php">Justice Map</a>',
+            attribution = 'Justice Map',
             size = 'county',
             bounds = [[14, -180], [72, -56]],
             variant = 'asian',
@@ -1327,7 +1327,7 @@ providers = Bunch(
         ),
         black = TileProvider(
             url = 'http://www.justicemap.org/tile/{size}/{variant}/{z}/{x}/{y}.png',
-            attribution = '<a href="http://www.justicemap.org/terms.php">Justice Map</a>',
+            attribution = 'Justice Map',
             size = 'county',
             bounds = [[14, -180], [72, -56]],
             variant = 'black',
@@ -1335,7 +1335,7 @@ providers = Bunch(
         ),
         hispanic = TileProvider(
             url = 'http://www.justicemap.org/tile/{size}/{variant}/{z}/{x}/{y}.png',
-            attribution = '<a href="http://www.justicemap.org/terms.php">Justice Map</a>',
+            attribution = 'Justice Map',
             size = 'county',
             bounds = [[14, -180], [72, -56]],
             variant = 'hispanic',
@@ -1343,7 +1343,7 @@ providers = Bunch(
         ),
         multi = TileProvider(
             url = 'http://www.justicemap.org/tile/{size}/{variant}/{z}/{x}/{y}.png',
-            attribution = '<a href="http://www.justicemap.org/terms.php">Justice Map</a>',
+            attribution = 'Justice Map',
             size = 'county',
             bounds = [[14, -180], [72, -56]],
             variant = 'multi',
@@ -1351,7 +1351,7 @@ providers = Bunch(
         ),
         nonWhite = TileProvider(
             url = 'http://www.justicemap.org/tile/{size}/{variant}/{z}/{x}/{y}.png',
-            attribution = '<a href="http://www.justicemap.org/terms.php">Justice Map</a>',
+            attribution = 'Justice Map',
             size = 'county',
             bounds = [[14, -180], [72, -56]],
             variant = 'nonwhite',
@@ -1359,7 +1359,7 @@ providers = Bunch(
         ),
         white = TileProvider(
             url = 'http://www.justicemap.org/tile/{size}/{variant}/{z}/{x}/{y}.png',
-            attribution = '<a href="http://www.justicemap.org/terms.php">Justice Map</a>',
+            attribution = 'Justice Map',
             size = 'county',
             bounds = [[14, -180], [72, -56]],
             variant = 'white',
@@ -1367,7 +1367,7 @@ providers = Bunch(
         ),
         plurality = TileProvider(
             url = 'http://www.justicemap.org/tile/{size}/{variant}/{z}/{x}/{y}.png',
-            attribution = '<a href="http://www.justicemap.org/terms.php">Justice Map</a>',
+            attribution = 'Justice Map',
             size = 'county',
             bounds = [[14, -180], [72, -56]],
             variant = 'plural',
@@ -1376,7 +1376,7 @@ providers = Bunch(
     ),
     Wikimedia = TileProvider(
         url = 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}{r}.png',
-        attribution = '<a href="https://wikimediafoundation.org/wiki/Maps_Terms_of_Use">Wikimedia</a>',
+        attribution = 'Wikimedia',
         min_zoom = 1,
         max_zoom = 19,
         name = 'Wikimedia'
@@ -1384,7 +1384,7 @@ providers = Bunch(
     GeoportailFrance = Bunch(
         parcels = TileProvider(
             url = 'https://wxs.ign.fr/{apikey}/geoportail/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE={style}&TILEMATRIXSET=PM&FORMAT={format}&LAYER={variant}&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}',
-            attribution = '<a target="_blank" href="https://www.geoportail.gouv.fr/">Geoportail France</a>',
+            attribution = 'Geoportail France',
             bounds = [[-75, -180], [81, 180]],
             min_zoom = 2,
             max_zoom = 20,
@@ -1396,7 +1396,7 @@ providers = Bunch(
         ),
         ignMaps = TileProvider(
             url = 'https://wxs.ign.fr/{apikey}/geoportail/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE={style}&TILEMATRIXSET=PM&FORMAT={format}&LAYER={variant}&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}',
-            attribution = '<a target="_blank" href="https://www.geoportail.gouv.fr/">Geoportail France</a>',
+            attribution = 'Geoportail France',
             bounds = [[-75, -180], [81, 180]],
             min_zoom = 2,
             max_zoom = 18,
@@ -1408,7 +1408,7 @@ providers = Bunch(
         ),
         maps = TileProvider(
             url = 'https://wxs.ign.fr/{apikey}/geoportail/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE={style}&TILEMATRIXSET=PM&FORMAT={format}&LAYER={variant}&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}',
-            attribution = '<a target="_blank" href="https://www.geoportail.gouv.fr/">Geoportail France</a>',
+            attribution = 'Geoportail France',
             bounds = [[-75, -180], [81, 180]],
             min_zoom = 2,
             max_zoom = 18,
@@ -1420,7 +1420,7 @@ providers = Bunch(
         ),
         orthos = TileProvider(
             url = 'https://wxs.ign.fr/{apikey}/geoportail/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE={style}&TILEMATRIXSET=PM&FORMAT={format}&LAYER={variant}&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}',
-            attribution = '<a target="_blank" href="https://www.geoportail.gouv.fr/">Geoportail France</a>',
+            attribution = 'Geoportail France',
             bounds = [[-75, -180], [81, 180]],
             min_zoom = 2,
             max_zoom = 19,
@@ -1438,7 +1438,7 @@ providers = Bunch(
             min_zoom = 11,
             max_zoom = 18,
             bounds = [[1.56073, 104.11475], [1.16, 103.502]],
-            attribution = '<img src="https://docs.onemap.sg/maps/images/oneMap64-01.png" style="height:20px;width:20px;"/> New OneMap | Map data &copy; contributors, <a href="http://SLA.gov.sg">Singapore Land Authority</a>',
+            attribution = '![](https://docs.onemap.sg/maps/images/oneMap64-01.png) New OneMap | Map data (C) contributors, Singapore Land Authority',
             name = 'OneMapSG.Default'
         ),
         Night = TileProvider(
@@ -1447,7 +1447,7 @@ providers = Bunch(
             min_zoom = 11,
             max_zoom = 18,
             bounds = [[1.56073, 104.11475], [1.16, 103.502]],
-            attribution = '<img src="https://docs.onemap.sg/maps/images/oneMap64-01.png" style="height:20px;width:20px;"/> New OneMap | Map data &copy; contributors, <a href="http://SLA.gov.sg">Singapore Land Authority</a>',
+            attribution = '![](https://docs.onemap.sg/maps/images/oneMap64-01.png) New OneMap | Map data (C) contributors, Singapore Land Authority',
             name = 'OneMapSG.Night'
         ),
         Original = TileProvider(
@@ -1456,7 +1456,7 @@ providers = Bunch(
             min_zoom = 11,
             max_zoom = 18,
             bounds = [[1.56073, 104.11475], [1.16, 103.502]],
-            attribution = '<img src="https://docs.onemap.sg/maps/images/oneMap64-01.png" style="height:20px;width:20px;"/> New OneMap | Map data &copy; contributors, <a href="http://SLA.gov.sg">Singapore Land Authority</a>',
+            attribution = '![](https://docs.onemap.sg/maps/images/oneMap64-01.png) New OneMap | Map data (C) contributors, Singapore Land Authority',
             name = 'OneMapSG.Original'
         ),
         Grey = TileProvider(
@@ -1465,7 +1465,7 @@ providers = Bunch(
             min_zoom = 11,
             max_zoom = 18,
             bounds = [[1.56073, 104.11475], [1.16, 103.502]],
-            attribution = '<img src="https://docs.onemap.sg/maps/images/oneMap64-01.png" style="height:20px;width:20px;"/> New OneMap | Map data &copy; contributors, <a href="http://SLA.gov.sg">Singapore Land Authority</a>',
+            attribution = '![](https://docs.onemap.sg/maps/images/oneMap64-01.png) New OneMap | Map data (C) contributors, Singapore Land Authority',
             name = 'OneMapSG.Grey'
         ),
         LandLot = TileProvider(
@@ -1474,7 +1474,7 @@ providers = Bunch(
             min_zoom = 11,
             max_zoom = 18,
             bounds = [[1.56073, 104.11475], [1.16, 103.502]],
-            attribution = '<img src="https://docs.onemap.sg/maps/images/oneMap64-01.png" style="height:20px;width:20px;"/> New OneMap | Map data &copy; contributors, <a href="http://SLA.gov.sg">Singapore Land Authority</a>',
+            attribution = '![](https://docs.onemap.sg/maps/images/oneMap64-01.png) New OneMap | Map data (C) contributors, Singapore Land Authority',
             name = 'OneMapSG.LandLot'
         )
     )
