@@ -76,12 +76,6 @@ def add_basemap(
     **extra_imshow_args : dict
                           Other parameters to be passed to `imshow`.
 
-    Returns
-    -------
-    ax                  : AxesSubplot
-                          Matplotlib axis with `x_lim` and `y_lim` set in Web
-                          Mercator (EPSG=3857) containing the basemap
-
     Example
     -------
 
@@ -159,7 +153,7 @@ def add_basemap(
     if attribution:
         add_attribution(ax, attribution, font_size=attribution_size)
 
-    return img
+    return
 
 
 def _reproj_bb(left, right, bottom, top, s_crs, t_crs):
