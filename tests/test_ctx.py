@@ -247,9 +247,9 @@ def test_add_basemap():
     ax_extent = (x1, x2, y1, y2)
     assert ax.axis() == ax_extent
 
-    assert ax.images[0].get_array().sum() == 75853866
-    assert ax.images[0].get_array().shape == (256, 512, 3)
-    assert_array_almost_equal(ax.images[0].get_array().mean(), 192.90635681152344)
+    assert ax.images[0].get_array().sum() == 34840247
+    assert ax.images[0].get_array().shape == (256, 256, 3)
+    assert_array_almost_equal(ax.images[0].get_array().mean(), 177.20665995279947)
 
     # Test local source
     f, ax = matplotlib.pyplot.subplots(1)
@@ -277,14 +277,14 @@ def test_add_basemap():
 
     ax_extent = (
         -11740727.544603072,
-        -11691807.846500559,
-        4852834.0517692715,
+        -11701591.786121061,
+        4852834.051769271,
         4891969.810251278,
     )
     assert_array_almost_equal(ax_extent, ax.images[0].get_extent())
-    assert ax.images[0].get_array().sum() == 723918764
-    assert ax.images[0].get_array().shape == (1024, 1280, 3)
-    assert_array_almost_equal(ax.images[0].get_array().mean(), 184.10206197102863)
+    assert ax.images[0].get_array().sum() == 563185119
+    assert ax.images[0].get_array().shape == (1024, 1024, 3)
+    assert_array_almost_equal(ax.images[0].get_array().mean(), 179.03172779083252)
 
     # Test on-th-fly warping
     x1, x2 = -105.5, -105.00
