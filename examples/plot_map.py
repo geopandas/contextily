@@ -46,8 +46,7 @@ ctx.plot_map(loc2, ax=axs[1])
 # You can also grab tile information directly from a bounding box + zoom level.
 # This is demoed below:
 
-zoom = ctx.calculate_zoom(loc.w, loc.s, loc.e, loc.n)
-im2, bbox = ctx.bounds2img(loc.w, loc.s, loc.e, loc.n, zoom=zoom, ll=True)
+im2, bbox = ctx.bounds2img(loc.w, loc.s, loc.e, loc.n, zoom=loc.zoom, ll=True)
 ctx.plot_map(im2, bbox, ax=axs[2], title="Boulder, CO")
 
 plt.show()
