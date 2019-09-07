@@ -95,12 +95,13 @@ def test_warp_tiles():
     )
     img, ext = ctx.bounds2img(w, s, e, n, zoom=4, ll=True)
     wimg, wext = ctx.warp_tiles(img, ext)
-    assert wext == (
-        -112.54394531249996,
-        -90.07903186397023,
-        21.966726124122374,
-        41.013065787006276,
-    )
+    assert_array_almost_equal(np.array(wext), \
+                              np.array([-112.54394531249996,
+                                        -90.07903186397023,
+                                        21.966726124122374,
+                                        41.013065787006276
+                                        ])
+                              )
     assert wimg[100, 100, :].tolist() == [228, 221, 184]
     assert wimg[100, 200, :].tolist() == [213, 219, 177]
     assert wimg[200, 100, :].tolist() == [133, 130, 109]
