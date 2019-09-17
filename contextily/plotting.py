@@ -24,8 +24,7 @@ def add_basemap(
     reset_extent=True,
     crs=None,
     resampling=Resampling.bilinear,
-    **extra_imshow_args,
-):
+    **extra_imshow_args):
     """
     Add a (web/local) basemap to `ax`
     ...
