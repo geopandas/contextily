@@ -24,8 +24,7 @@ def add_basemap(
     reset_extent=True,
     crs=None,
     resampling=Resampling.bilinear,
-    **extra_imshow_args,
-):
+    **extra_imshow_args):
     """
     Add a (web/local) basemap to `ax`
     ...
@@ -73,7 +72,7 @@ def add_basemap(
                           [Optional. Default=Resampling.bilinear] Resampling 
                           method for executing warping, expressed as a 
                           `rasterio.enums.Resampling` method
-    **extra_imshow_args : dict
+    **extra_imshow_args :
                           Other parameters to be passed to `imshow`.
 
     Example
