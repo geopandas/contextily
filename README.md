@@ -32,11 +32,18 @@ the internet into geospatial raster files. Bounding boxes can be passed in both 
 
 ## Installation
 
-Python 3 only:
+**Python 3 only**
 
+[Latest released version](https://github.com/darribas/contextily/releases/tag/v0.99.0):
 ```sh
-pip3 install contextily
+pip3 install contextily # installs the latest released version (v0.99.0)
 ```
+
+Latest [release candidate](https://github.com/darribas/contextily/releases/tag/v1.0rc2) (includes functionality such as `add_basemap` coming in version 1.0:
+```sh
+pip3 install contextily==1.0rc2 # installs the latest release candidate (v1.0rc2) 
+```
+
 
 ## Contributors
 
