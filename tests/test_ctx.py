@@ -8,6 +8,7 @@ import mercantile as mt
 import rasterio as rio
 from contextily.tile import _calculate_zoom
 from numpy.testing import assert_array_almost_equal
+import pytest
 
 TOL = 7
 SEARCH = "boulder"
@@ -174,6 +175,15 @@ def test_autozoom():
     expected_zoom = 13
     zoom = _calculate_zoom(w, s, e, n)
     assert zoom == expected_zoom
+
+
+def test_validate_zoom():
+    w, s, e, n = (-106.649, 25.845, -93.507, 36.493)
+    with pytest.raises(ValueError):
+        ctx.bounds2img(w, s, e, n, ll=False)
+
+    with pytest.raises(ValueError):
+        ctx.bounds2img(w, s, e, n, zoom=23, ll=True)
 
 
 # Place
