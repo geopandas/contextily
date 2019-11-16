@@ -185,6 +185,11 @@ def test_validate_zoom():
     with pytest.raises(ValueError):
         ctx.bounds2img(w, s, e, n, zoom=23, ll=True)
 
+    # with specific string url (not dict) -> error when specified
+    url = 'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png'
+    with pytest.raises(ValueError):
+        ctx.bounds2img(w, s, e, n, zoom=33, url=url, ll=True)
+
 
 # Place
 
