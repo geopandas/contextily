@@ -361,3 +361,15 @@ def test_attribution():
     txt = ctx.add_attribution(ax, "Test", font_size=15, fontfamily="monospace")
     assert txt.get_size() == 15
     assert txt.get_fontfamily() == ["monospace"]
+
+
+def test_set_cache_dir(tmpdir):
+    # set cache directory manually
+    path = str(tmpdir.mkdir("cache"))
+    ctx.set_cache_dir(path)
+
+    # then check that plotting still works
+    extent = (-11945319, -10336026, 2910477, 4438236)
+    fig, ax = matplotlib.pyplot.subplots()
+    ax.axis(extent)
+    ctx.add_basemap(ax)

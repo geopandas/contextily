@@ -23,13 +23,37 @@ from rasterio.enums import Resampling
 from . import tile_providers as sources
 from . import providers
 
-__all__ = ["bounds2raster", "bounds2img", "warp_tiles", "warp_img_transform", "howmany"]
+__all__ = [
+    "bounds2raster",
+    "bounds2img",
+    "warp_tiles",
+    "warp_img_transform",
+    "howmany",
+    "set_cache_dir",
+]
 
 
 USER_AGENT = "contextily-" + uuid.uuid4().hex
 
 tmpdir = tempfile.mkdtemp()
 memory = _Memory(tmpdir, verbose=0)
+
+
+def set_cache_dir(path):
+    """
+    Set a cache directory to use in the current python session.
+
+    By default, contextily caches downloaded tiles per python session, but
+    will afterwards delete the cache directory. By setting it to a custom
+    path, you can avoid this, and re-use the same cache a next time by
+    again setting the cache dir to that directory.
+
+    Parameters
+    ----------
+    path : str
+        Path to the cache directory.
+    """
+    memory.store_backend.location = path
 
 
 def _clear_cache():
