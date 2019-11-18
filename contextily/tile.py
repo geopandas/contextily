@@ -105,7 +105,7 @@ def bounds2raster(
     resY = (y[-1] - y[0]) / h
     transform = from_origin(x[0] - resX / 2, y[-1] + resY / 2, resX, resY)
     # ---
-    raster = rio.open(
+    with rio.open(
         path,
         "w",
         driver="GTiff",
@@ -115,10 +115,9 @@ def bounds2raster(
         dtype=str(Z.dtype.name),
         crs="epsg:3857",
         transform=transform,
-    )
-    for band in range(b):
-        raster.write(Z[:, :, band], band + 1)
-    raster.close()
+    ) as raster:
+        for band in range(b):
+            raster.write(Z[:, :, band], band + 1)
     return Z, ext
 
 
@@ -229,8 +228,9 @@ def _fetch_tile(tile_url, wait, max_retries):
     request = _retryer(tile_url, wait, max_retries)
     with io.BytesIO(request.content) as image_stream:
         image = Image.open(image_stream).convert("RGB")
-        image = np.asarray(image)
-    return image
+        array = np.asarray(image)
+        image.close()
+    return array
 
 
 def warp_tiles(img, extent, t_crs="EPSG:4326", resampling=Resampling.bilinear):
