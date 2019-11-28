@@ -257,11 +257,13 @@ providers = Bunch(
         )
     ),
     MapBox = TileProvider(
-        url = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}{r}.png?access_token={accessToken}',
+        url = 'https://api.mapbox.com/styles/v1/{username}/{style_id}/tiles/{tilesize}/{z}/{x}/{y}?access_token={accessToken}',
         attribution = '(C) Mapbox (C) OpenStreetMap contributors Improve this map',
         subdomains = 'abcd',
-        id = 'mapbox.streets',
-        accessToken = '<insert your access token here>',
+        username: 'mapbox',
+        style_id = 'light-v10',
+        tilesize: 512,
+        accessToken = 'pk.eyJ1Ijoic2lzYW1hbiIsImEiOiJjazJ4ZHZpeDMwYXRyM3NvbXgycDA3ZzUxIn0.SJ7UI_Ha01Gn4apu37jgag',
         name = 'MapBox'
     ),
     Stamen = Bunch(
