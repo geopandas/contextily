@@ -34,11 +34,13 @@ def test_bounds2raster():
     )
     for i, j in zip(rtr.bounds, solu):
         assert round(i - j, TOL) == 0
-    assert img[100, 100, :].tolist() == [230, 229, 188]
-    assert img[100, 200, :].tolist() == [156, 180, 131]
-    assert img[200, 100, :].tolist() == [230, 225, 189]
-    assert img.sum() == 36926856
-    assert_array_almost_equal(img.mean(), 187.8197021484375)
+    assert img[100, 100, :].tolist() == [230, 229, 188, 255]
+    assert img[100, 200, :].tolist() == [156, 180, 131, 255]
+    assert img[200, 100, :].tolist() == [230, 225, 189, 255]
+    assert img[:,:,:3].sum() == 36926856
+    assert img.sum() == 53638536
+    assert_array_almost_equal(img[:,:,:3].mean(), 187.8197021484375)
+    assert_array_almost_equal(img.mean(), 204.614777)
 
     # multiple tiles for which result is not square
     w, s, e, n = (
@@ -81,9 +83,9 @@ def test_bounds2img():
     )
     for i, j in zip(ext, solu):
         assert round(i - j, TOL) == 0
-    assert img[100, 100, :].tolist() == [230, 229, 188]
-    assert img[100, 200, :].tolist() == [156, 180, 131]
-    assert img[200, 100, :].tolist() == [230, 225, 189]
+    assert img[100, 100, :].tolist() == [230, 229, 188, 255]
+    assert img[100, 200, :].tolist() == [156, 180, 131, 255]
+    assert img[200, 100, :].tolist() == [230, 225, 189, 255]
 
 
 def test_warp_tiles():
@@ -102,9 +104,9 @@ def test_warp_tiles():
                                         41.013065787006276
                                         ])
                               )
-    assert wimg[100, 100, :].tolist() == [228, 221, 184]
-    assert wimg[100, 200, :].tolist() == [213, 219, 177]
-    assert wimg[200, 100, :].tolist() == [133, 130, 109]
+    assert wimg[100, 100, :].tolist() == [228, 221, 184, 255]
+    assert wimg[100, 200, :].tolist() == [213, 219, 177, 255]
+    assert wimg[200, 100, :].tolist() == [133, 130, 109, 255]
 
 
 def test_warp_img_transform():
@@ -120,9 +122,9 @@ def test_warp_img_transform():
     wimg, wext = ctx.warp_img_transform(
         img, rtr.transform, rtr.crs, {"init": "epsg:4326"}
     )
-    assert wimg[:, 100, 100].tolist() == [228, 221, 184]
-    assert wimg[:, 100, 200].tolist() == [213, 219, 177]
-    assert wimg[:, 200, 100].tolist() == [133, 130, 109]
+    assert wimg[:, 100, 100].tolist() == [228, 221, 184, 255]
+    assert wimg[:, 100, 200].tolist() == [213, 219, 177, 255]
+    assert wimg[:, 200, 100].tolist() == [133, 130, 109, 255]
 
 
 def test_howmany():
@@ -189,7 +191,7 @@ def test_place():
     ]
     expected_zoom = 10
     loc = ctx.Place(SEARCH, zoom_adjust=ADJUST)
-    assert loc.im.shape == (256, 256, 3)
+    assert loc.im.shape == (256, 256, 4)
     loc  # Make sure repr works
 
     # Check auto picks are correct
@@ -248,9 +250,10 @@ def test_add_basemap():
     ax_extent = (x1, x2, y1, y2)
     assert ax.axis() == ax_extent
 
-    assert ax.images[0].get_array().sum() == 34840247
-    assert ax.images[0].get_array().shape == (256, 256, 3)
-    assert_array_almost_equal(ax.images[0].get_array().mean(), 177.20665995279947)
+    assert ax.images[0].get_array().sum() == 51551927
+    assert ax.images[0].get_array().shape == (256, 256, 4)
+    assert_array_almost_equal(ax.images[0].get_array()[:,:,:3].mean(), 177.20665995279947)
+    assert_array_almost_equal(ax.images[0].get_array().mean(), 196.654995)
 
     # Test local source
     f, ax = matplotlib.pyplot.subplots(1)
@@ -266,9 +269,11 @@ def test_add_basemap():
         4892046.247279563,
     )
     assert_array_almost_equal(raster_extent, ax.images[0].get_extent())
-    assert ax.images[0].get_array().sum() == 34840247
-    assert ax.images[0].get_array().shape == (256, 256, 3)
-    assert_array_almost_equal(ax.images[0].get_array().mean(), 177.20665995279947)
+    assert ax.images[0].get_array()[:,:,:3].sum() == 34840247
+    assert ax.images[0].get_array().sum() == 51551927
+    assert ax.images[0].get_array().shape == (256, 256, 4)
+    assert_array_almost_equal(ax.images[0].get_array()[:,:,:3].mean(), 177.20665995279947)
+    assert_array_almost_equal(ax.images[0].get_array().mean(), 196.654995)
 
     # Test with auto-zoom
     f, ax = matplotlib.pyplot.subplots(1)
@@ -283,9 +288,11 @@ def test_add_basemap():
         4891969.810251278,
     )
     assert_array_almost_equal(ax_extent, ax.images[0].get_extent())
-    assert ax.images[0].get_array().sum() == 563185119
-    assert ax.images[0].get_array().shape == (1024, 1024, 3)
-    assert_array_almost_equal(ax.images[0].get_array().mean(), 179.03172779083252)
+    assert ax.images[0].get_array()[:,:,:3].sum() == 563185119
+    assert ax.images[0].get_array().sum() == 830571999
+    assert ax.images[0].get_array().shape == (1024, 1024, 4)
+    assert_array_almost_equal(ax.images[0].get_array()[:,:,:3].mean(), 179.03172779083252)
+    assert_array_almost_equal(ax.images[0].get_array().mean(), 198.023796)
 
     # Test on-th-fly warping
     x1, x2 = -105.5, -105.00
@@ -296,9 +303,10 @@ def test_add_basemap():
     ctx.add_basemap(ax, crs={"init": "epsg:4326"}, attribution=None)
     assert ax.get_xlim() == (x1, x2)
     assert ax.get_ylim() == (y1, y2)
-    assert ax.images[0].get_array().sum() == 724238693
-    assert ax.images[0].get_array().shape == (1135, 1183, 3)
-    assert_array_almost_equal(ax.images[0].get_array().mean(), 179.79593258881636)
+    assert ax.images[0].get_array()[:,:,:3].sum() == 724238693
+    assert ax.images[0].get_array().shape == (1135, 1183, 4)
+    assert_array_almost_equal(ax.images[0].get_array()[:,:,:3].mean(), 179.79593258881636)
+    assert_array_almost_equal(ax.images[0].get_array().mean(), 198.596949)
     # Test local source warping
     _ = ctx.bounds2raster(x1, y1, x2, y2, "./test2.tif", ll=True)
     f, ax = matplotlib.pyplot.subplots(1)
@@ -307,9 +315,34 @@ def test_add_basemap():
     ctx.add_basemap(ax, url="./test2.tif", crs={"init": "epsg:4326"}, attribution=None)
     assert ax.get_xlim() == (x1, x2)
     assert ax.get_ylim() == (y1, y2)
-    assert ax.images[0].get_array().sum() == 724238693
-    assert ax.images[0].get_array().shape == (1135, 1183, 3)
-    assert_array_almost_equal(ax.images[0].get_array().mean(), 179.79593258881636)
+    assert ax.images[0].get_array()[:,:,:3].sum() == 724238693
+    assert ax.images[0].get_array().sum() == 1066628468
+    assert ax.images[0].get_array().shape == (1135, 1183, 4)
+    assert_array_almost_equal(ax.images[0].get_array()[:,:,:3].mean(), 179.79593258881636)
+    assert_array_almost_equal(ax.images[0].get_array().mean(), 198.596949)
+
+    x1, x2, y1, y2 = [
+        -11740727.544603072,
+        -11701591.786121061,
+        4852834.0517692715,
+        4891969.810251278,
+    ]
+
+    # Test web basemap with overlay layer
+    fig, ax = matplotlib.pyplot.subplots(1)
+    ax.set_xlim(x1, x2)
+    ax.set_ylim(y1, y2)
+
+    ctx.add_basemap(ax, zoom=10)
+    ctx.add_basemap(ax, zoom=10, url=ctx.providers.Stamen.TonerLabels)
+
+    # ensure add_basemap did not change the axis limits of ax
+    ax_extent = (x1, x2, y1, y2)
+    assert ax.axis() == ax_extent
+
+    assert ax.images[1].get_array().sum() == 1653387
+    assert ax.images[1].get_array().shape == (256, 256, 4)
+    assert_array_almost_equal(ax.images[1].get_array().mean(), 6.3071708679)
 
 
 def test_basemap_attribution():

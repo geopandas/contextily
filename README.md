@@ -52,6 +52,7 @@ pip3 install contextily==1.0rc2 # installs the latest release candidate (v1.0rc2
 * [Levi Wolf](http://ljwolf.org/) ([`@levijohnwolf`](https://twitter.com/levijohnwolf))
 * [Chris Holdgraf](http://chrisholdgraf.com/) ([`@choldgraf`](http://twitter.com/choldgraf))
 * [Filipe Fernandes](https://ocefpaf.github.io/python4oceanographers/) ([@ocefpaf](http://twitter.com/ocefpaf))
+* [Jeffrey Newman](https://www.newman.me) ([`@jpn`](http://twitter.com/jpn))
 
 ## License
 
