@@ -57,7 +57,7 @@ def bounds2raster(
     e       : float
               East edge
     n       : float
-              Noth edge
+              North edge
     zoom    : int
               Level of detail
     path    : str
@@ -137,7 +137,7 @@ def bounds2img(w, s, e, n, zoom="auto", url=None, ll=False, wait=0, max_retries=
     e       : float
               East edge
     n       : float
-              Noth edge
+              North edge
     zoom    : int
               Level of detail
     url     : str
@@ -393,13 +393,13 @@ def howmany(w, s, e, n, zoom, verbose=True, ll=False):
     Arguments
     ---------
     w       : float
-              West edge longitude
+              West edge
     s       : float
-              South edge latitude
+              South edge
     e       : float
-              East edge longitude
+              East edge
     n       : float
-              Noth edge latitude
+              North edge
     zoom    : int
               Level of detail
     verbose : Boolean
