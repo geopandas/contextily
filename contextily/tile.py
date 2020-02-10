@@ -23,7 +23,10 @@ from rasterio.enums import Resampling
 from . import tile_providers as sources
 from . import providers
 
-__all__ = ["bounds2raster", "bounds2img", "warp_tiles", "warp_img_transform", "howmany"]
+import projecttile as pt
+
+
+__all__ = ["bounds2raster", "bounds2img", "warp_tiles", "warp_img_transform", "howmany", "bounds2raster_wmts", "bounds2img_wmts"]
 
 
 USER_AGENT = "contextily-" + uuid.uuid4().hex
@@ -560,3 +563,199 @@ def _merge_tiles(tiles, arrays):
     )
 
     return img, (west, south, east, north)
+
+
+def _merge_tiles_wmts(tiles, arrays):
+    """
+    Merge a set of tiles into a single array.
+
+    Parameters
+    ---------
+    tiles  : list of mercantile.Tile objects
+             The tiles to merge.
+    arrays : list of numpy arrays
+             The corresponding arrays (image pixels) of the tiles. This list
+             has the same length and order as the `tiles` argument.
+
+    Returns
+    -------
+    img : np.ndarray
+        Merged arrays.
+    extent : tuple
+         Bounding box [west, south, east, north] of the returned image
+         in long/lat.
+    """
+    # create (n_tiles x 2) array with column for x and y coordinates
+    tile_xys = np.array([(t.x, t.y) for t in tiles])
+
+    # get indices starting at zero
+    indices = tile_xys - tile_xys.min(axis=0)
+
+    # the shape of individual tile images
+    h, w, d = arrays[0].shape
+
+    # number of rows and columns in the merged tile
+    n_x, n_y = (indices + 1).max(axis=0)
+
+    # empty merged tiles array to be filled in
+    img = np.zeros((h * n_y, w * n_x, d), dtype=np.uint8)
+
+    for ind, arr in zip(indices, arrays):
+        x, y = ind
+        img[y * h : (y + 1) * h, x * w : (x + 1) * w, :] = arr
+
+    bounds = np.array([pt.bounds(t) for t in tiles])  # mt => pt
+    west, south, east, north = (
+        min(bounds[:, 0]),
+        min(bounds[:, 1]),
+        max(bounds[:, 2]),
+        max(bounds[:, 3]),
+    )
+
+    return img, (west, south, east, north)
+
+
+def _calculate_zoom_wmts(w, s, e, n, provider_bounds):
+    """Automatically choose a zoom level given a desired number of tiles.
+
+    Parameters
+    ----------
+    w : float
+        The western bbox edge.
+    s : float
+        The southern bbox edge.
+    e : float
+        The eastern bbox edge.
+    n : float
+        The northern bbox edge.
+    provider_bounds : tuple of float 
+        Bounding values in cartesian coordinates: left, bottom, right, top
+        
+    Returns
+    -------
+    zoom : int
+        The zoom level to use in order to download this number of tiles.
+    """
+    # Calculate bounds of the bbox
+    lon_range = np.sort([e, w])[::-1]
+    lat_range = np.sort([s, n])[::-1]
+
+    lon_length = np.subtract(*lon_range)
+    lat_length = np.subtract(*lat_range)
+
+    left, bottom, right, top = provider_bounds
+
+    # Calculate the zoom
+    zoom_lon = np.ceil(np.log2((right - left) / lon_length))
+    zoom_lat = np.ceil(np.log2((top - bottom) / lat_length))
+    zoom = np.max([zoom_lon, zoom_lat])
+    return int(zoom)
+
+
+def _clamp_zoom_wmts(zoom, provider):
+    msg = "Zoom level is outside of available levels. Fetching nearest available instead."
+    if zoom < provider["min_zoom"]:
+        warnings.warn(msg)
+        return provider["min_zoom"]
+    elif zoom > provider["max_zoom"]:
+        warnings.warn(msg)
+        return provider["max_zoom"]
+    else:
+        return zoom
+
+
+def bounds2img_wmts(left, bottom, right, top, url, zoom="auto", wait=0, max_retries=2):
+    """
+    Arguments
+    ---------
+    left    : float
+              West edge
+    bottom  : float
+              South edge
+    right   : float
+              East edge
+    top     : float
+              North edge
+    url     : contextily.TileProvider
+    zoom    : int
+              Level of detail
+
+    Returns
+    -------
+    img     : ndarray
+              Image as a 3D array of RGB values
+    extent  : tuple
+              Bounding box [minX, maxX, minY, maxY] of the returned image
+    """
+    (_left, _bottom), (_right, _top) = url["bounds"]
+    provider_bounds = (_left, _bottom, _right, _top)
+    if zoom == "auto":
+        zoom = _calculate_zoom_wmts(left, bottom, right, top, provider_bounds)
+    zoom = _clamp_zoom_wmts(zoom, url)
+    tiles = []
+    arrays = []    
+    for t in pt.tiles(left, bottom, right, top, [zoom], provider_bounds):
+        x, y, z = t.x, t.y, t.z     
+        tile_url = _construct_tile_url(url, x, y, z)
+        image = _fetch_tile(tile_url, wait, max_retries)
+        tiles.append(t)
+        arrays.append(image)
+    merged, (left, bottom, right, top) = _merge_tiles_wmts(tiles, arrays)
+    # Matplotlib expents them in a different order ...
+    extent = (left, right, bottom, top)
+    return merged, extent
+
+
+def bounds2raster_wmts(
+    left, bottom, right, top, path, url, zoom="auto", wait=0, max_retries=2,
+):
+    """
+    Arguments
+    ---------
+    left    : float
+              West edge
+    bottom  : float
+              South edge
+    right   : float
+              East edge
+    top     : float
+              North edge
+    path    : str
+              Path to raster file to be written
+    url     : contextily.TileProvider
+    zoom    : int
+              Level of detail
+
+    Returns
+    -------
+    img     : ndarray
+              Image as a 3D array of RGB values
+    extent  : tuple
+              Bounding box [minX, maxX, minY, maxY] of the returned image
+    """
+    # Download
+    Z, ext = bounds2img_wmts(left, bottom, right, top, url, zoom, wait, max_retries)
+    # Write
+    # ---
+    h, w, b = Z.shape
+    # --- https://mapbox.github.io/rasterio/quickstart.html#opening-a-dataset-in-writing-mode
+    minX, maxX, minY, maxY = ext
+    x = np.linspace(minX, maxX, w)
+    y = np.linspace(minY, maxY, h)
+    resX = (x[-1] - x[0]) / w
+    resY = (y[-1] - y[0]) / h
+    transform = from_origin(x[0] - resX / 2, y[-1] + resY / 2, resX, resY)
+    # ---
+    with rio.open(
+        path,
+        "w",
+        driver="GTiff",
+        height=h,
+        width=w,
+        count=b,
+        dtype=str(Z.dtype.name),
+        transform=transform,
+    ) as raster:
+        for band in range(b):
+            raster.write(Z[:, :, band], band + 1)
+    return Z, ext

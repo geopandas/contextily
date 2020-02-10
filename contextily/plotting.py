@@ -3,7 +3,7 @@
 import numpy as np
 from . import tile_providers as sources
 from . import providers
-from .tile import _calculate_zoom, bounds2img, _sm2ll, warp_tiles, _warper
+from .tile import _calculate_zoom, bounds2img, _sm2ll, warp_tiles, _warper, bounds2img_wmts
 from rasterio.enums import Resampling
 from rasterio.warp import transform_bounds
 from matplotlib import patheffects
@@ -202,3 +202,40 @@ def add_attribution(ax, text, font_size=ATTRIBUTION_SIZE, **kwargs):
     wrap_width = ax.get_window_extent().width * 0.99
     text_artist._get_wrap_line_width = lambda: wrap_width
     return text_artist
+
+
+def add_basemap_wmts(
+    ax,
+    url,
+    zoom=ZOOM,
+    interpolation=INTERPOLATION,
+    attribution=None,
+    attribution_size=ATTRIBUTION_SIZE,
+    reset_extent=True,
+    resampling=Resampling.bilinear,
+    **extra_imshow_args
+):
+    xmin, xmax, ymin, ymax = ax.axis()
+    # Assume web source for now
+    # Extent
+    left, right, bottom, top = xmin, xmax, ymin, ymax
+    # Assume crs is consistent
+    # Zoom
+    image, extent = bounds2img_wmts(
+        left, bottom, right, top, url, zoom
+    )
+    # Plotting
+    img = ax.imshow(
+        image, extent=extent, interpolation=interpolation, **extra_imshow_args
+    )
+
+    if reset_extent:
+        ax.axis((xmin, xmax, ymin, ymax))
+
+    # Add attribution text
+    if attribution is None:
+        attribution = url.get("attribution")
+    if attribution:
+        add_attribution(ax, attribution, font_size=attribution_size)
+
+    return image
