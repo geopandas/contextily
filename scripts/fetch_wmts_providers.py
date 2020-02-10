@@ -110,7 +110,7 @@ if __name__ == "__main__":
     data, tilematrixsets = pt.wmts_metadata(url)
 
     base_url = (
-        "http://geodata.nationaalgeoregister.nl/wmts?"
+        "https://geodata.nationaalgeoregister.nl/tiles/service/wmts?"
         "SERVICE=WMTS"
         "&REQUEST=GetTile"
         "&VERSION=1.0.0"

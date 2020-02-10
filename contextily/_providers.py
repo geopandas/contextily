@@ -1164,7 +1164,7 @@ providers = Bunch(
             name = 'BasemapAT.orthofoto'
         )
     ),
-        nlmaps = Bunch(
+    nlmaps = Bunch(
         standaard = TileProvider(
             url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts/{variant}/EPSG:3857/{z}/{x}/{y}.png',
             min_zoom = 6,
@@ -1480,7 +1480,7 @@ providers = Bunch(
     ),
     PDOK = Bunch(
         brtachtergrondkaart_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -1493,7 +1493,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         brtachtergrondkaart_EPSG_3857 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 19,
             bounds = [[-184488.8572700502, 6113595.549897805], [1256825.7575465257, 7541243.309005486]],
@@ -1506,7 +1506,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         brtachtergrondkaart_EPSG_25831_RWS = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 11,
             bounds = [[209006.82664865535, 5354143.456760174], [1117699.0477674687, 6206271.809019262]],
@@ -1519,7 +1519,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         brtachtergrondkaartgrijs_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -1532,7 +1532,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         brtachtergrondkaartgrijs_EPSG_3857 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 19,
             bounds = [[-184488.8572700502, 6113595.549897805], [1256825.7575465257, 7541243.309005486]],
@@ -1545,7 +1545,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         brtachtergrondkaartgrijs_EPSG_25831_RWS = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 11,
             bounds = [[209006.82664865535, 5354143.456760174], [1117699.0477674687, 6206271.809019262]],
@@ -1558,7 +1558,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         brtachtergrondkaartpastel_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -1571,7 +1571,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         brtachtergrondkaartpastel_EPSG_3857 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 19,
             bounds = [[-184488.8572700502, 6113595.549897805], [1256825.7575465257, 7541243.309005486]],
@@ -1584,7 +1584,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         brtachtergrondkaartpastel_EPSG_25831_RWS = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 11,
             bounds = [[209006.82664865535, 5354143.456760174], [1117699.0477674687, 6206271.809019262]],
@@ -1597,7 +1597,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         brtachtergrondkaartwater_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -1610,7 +1610,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         brtachtergrondkaartwater_EPSG_3857 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 19,
             bounds = [[-184488.8572700502, 6113595.549897805], [1256825.7575465257, 7541243.309005486]],
@@ -1623,7 +1623,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         brtachtergrondkaartwater_EPSG_25831_RWS = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 11,
             bounds = [[209006.82664865535, 5354143.456760174], [1117699.0477674687, 6206271.809019262]],
@@ -1636,7 +1636,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         bodemkaart50000_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-283214.7350810917, 29993.466279334272], [680410.1621092468, 925272.8137449462]],
@@ -1649,7 +1649,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         geomorfologischekaart50000_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-283214.7350810917, 29993.466279334272], [680410.1621092468, 925272.8137449462]],
@@ -1662,7 +1662,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         top10nlv2_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -1675,7 +1675,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         kadastralekaartv3_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -1688,7 +1688,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         natura2000_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -1701,7 +1701,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         nok2011_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -1714,7 +1714,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         aan_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -1727,7 +1727,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         bag_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -1740,7 +1740,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         top25raster_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-283214.7350810917, 29993.466279334272], [680410.1621092468, 925272.8137449462]],
@@ -1753,7 +1753,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         top50raster_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-283214.7350810917, 29993.466279334272], [680410.1621092468, 925272.8137449462]],
@@ -1766,7 +1766,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         top100raster_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-283214.7350810917, 29993.466279334272], [680410.1621092468, 925272.8137449462]],
@@ -1779,7 +1779,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         top250raster_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-283214.7350810917, 29993.466279334272], [680410.1621092468, 925272.8137449462]],
@@ -1792,7 +1792,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         top500raster_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-283214.7350810917, 29993.466279334272], [680410.1621092468, 925272.8137449462]],
@@ -1805,7 +1805,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         top1000raster_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-283214.7350810917, 29993.466279334272], [680410.1621092468, 925272.8137449462]],
@@ -1818,7 +1818,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         brpgewaspercelen_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -1831,7 +1831,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         bgtstandaardv2_EPSG_28992_16 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 16,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -1844,7 +1844,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         bgtsymbolenv2_EPSG_28992_16 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 16,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -1857,7 +1857,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         bgtplaninformatie_EPSG_28992_16 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 16,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -1870,7 +1870,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         bgtstandaard_EPSG_28992_16 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 16,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -1883,7 +1883,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         bgtachtergrond_EPSG_28992_16 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 16,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -1896,7 +1896,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         bgtomtrekgericht_EPSG_28992_16 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 16,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -1909,7 +1909,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         bgtpastel_EPSG_28992_16 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 16,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -1922,7 +1922,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         ahn1_100m_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -1935,7 +1935,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         ahn1_25m_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -1948,7 +1948,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         ahn1_5m_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -1961,7 +1961,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         ahn2_5m_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -1974,7 +1974,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         ahn2_05m_non_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -1987,7 +1987,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         ahn2_05m_int_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -2000,7 +2000,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         ahn2_05m_ruw_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -2013,7 +2013,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         ahn3_5m_dsm_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -2026,7 +2026,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         ahn3_5m_dtm_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -2039,7 +2039,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         ahn3_05m_dsm_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -2052,7 +2052,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         ahn3_05m_dtm_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -2065,7 +2065,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         opentopo_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -2078,7 +2078,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         opentopoachtergrondkaart_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -2091,7 +2091,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         nl2016_ortho25_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -2104,7 +2104,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         nl2016_ortho25IR_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -2117,7 +2117,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         nl2017_ortho25_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -2130,7 +2130,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         nl2017_ortho25IR_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
@@ -2143,7 +2143,7 @@ providers = Bunch(
             attribution = 'Kaartgegevens (C) Kadaster'
         ),
         lufolabels_EPSG_28992 = TileProvider(
-            url = 'http://geodata.nationaalgeoregister.nl/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
+            url = 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={variant}&STYLE={style}&TILEMATRIXSET={tilematrixset}&TILEMATRIX={tilematrixset}:{z}&TILEROW={y}&TILECOL={x}&FORMAT={format}',
             min_zoom = 0,
             max_zoom = 14,
             bounds = [[-285401.92067705275, 22598.081978615082], [595401.9089015555, 903401.9209669305]],
