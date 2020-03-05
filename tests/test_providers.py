@@ -5,6 +5,7 @@ import pytest
 from numpy.testing import assert_allclose
 
 
+@pytest.mark.network
 def test_providers():
     # NOTE: only tests they download, does not check pixel values
     w, s, e, n = (
