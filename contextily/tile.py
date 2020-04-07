@@ -24,8 +24,7 @@ from . import tile_providers as sources
 from . import providers
 from ._providers import TileProvider
 
-__all__ = ["bounds2raster", "bounds2img",
-           "warp_tiles", "warp_img_transform", "howmany"]
+__all__ = ["bounds2raster", "bounds2img", "warp_tiles", "warp_img_transform", "howmany"]
 
 
 USER_AGENT = "contextily-" + uuid.uuid4().hex
@@ -41,8 +40,19 @@ def _clear_cache():
 atexit.register(_clear_cache)
 
 
-def bounds2raster(w, s, e, n, path, zoom="auto", source=None,
-                  ll=False, wait=0, max_retries=2, url=None):
+def bounds2raster(
+    w,
+    s,
+    e,
+    n,
+    path,
+    zoom="auto",
+    source=None,
+    ll=False,
+    wait=0,
+    max_retries=2,
+    url=None,
+):
     """
     Take bounding box and zoom, and write tiles into a raster file in
     the Spherical Mercator CRS (EPSG:3857)
@@ -125,8 +135,9 @@ def bounds2raster(w, s, e, n, path, zoom="auto", source=None,
     return Z, ext
 
 
-def bounds2img(w, s, e, n, zoom="auto", source=None,
-               ll=False, wait=0, max_retries=2, url=None):
+def bounds2img(
+    w, s, e, n, zoom="auto", source=None, ll=False, wait=0, max_retries=2, url=None
+):
     """
     Take bounding box and zoom and return an image with all the tiles
     that compose the map and its Spherical Mercator extent.
@@ -179,13 +190,20 @@ def bounds2img(w, s, e, n, zoom="auto", source=None,
         w, s = _sm2ll(w, s)
         e, n = _sm2ll(e, n)
     if url is not None and source is None:
-        warnings.warn('The "url" option is deprecated. Please use the "source"'
-                      ' argument instead.', FutureWarning, stacklevel=2)
+        warnings.warn(
+            'The "url" option is deprecated. Please use the "source"'
+            " argument instead.",
+            FutureWarning,
+            stacklevel=2,
+        )
         source = url
     elif url is not None and source is not None:
-        warnings.warn('The "url" argument is deprecated. Please use the "source"'
-                      ' argument. Do not supply a "url" argument. It will be ignored.',
-                      FutureWarning, stacklevel=2)
+        warnings.warn(
+            'The "url" argument is deprecated. Please use the "source"'
+            ' argument. Do not supply a "url" argument. It will be ignored.',
+            FutureWarning,
+            stacklevel=2,
+        )
     # get provider dict given the url
     provider = _process_source(source)
     # calculate and validate zoom level
@@ -222,8 +240,7 @@ def _url_from_string(url):
             FutureWarning,
         )
         url = (
-            url.replace("tileX", "{x}").replace(
-                "tileY", "{y}").replace("tileZ", "{z}")
+            url.replace("tileX", "{x}").replace("tileY", "{y}").replace("tileZ", "{z}")
         )
     return {"url": url}
 
@@ -234,8 +251,9 @@ def _process_source(source):
     elif isinstance(source, str):
         provider = _url_from_string(source)
     elif not isinstance(source, (dict, TileProvider)):
-        raise TypeError("The 'url' needs to be a contextily.providers object,"
-                        " a dict, or string")
+        raise TypeError(
+            "The 'url' needs to be a contextily.providers object," " a dict, or string"
+        )
     elif "url" not in source:
         raise ValueError("The 'url' dict should at least contain a 'url' key")
     else:
@@ -410,8 +428,7 @@ def _retryer(tile_url, wait, max_retries):
                 max_retries -= 1
                 request = _retryer(tile_url, wait, max_retries)
             else:
-                raise requests.HTTPError(
-                    "Connection reset by peer too many times.")
+                raise requests.HTTPError("Connection reset by peer too many times.")
     return request
 
 
@@ -473,8 +490,7 @@ def bb2wdw(bb, rtr):
     yi = np.linspace(rbb.bottom, rbb.top, rtr.shape[0])
 
     window = (
-        (rtr.shape[0] - yi.searchsorted(bb[3]),
-         rtr.shape[0] - yi.searchsorted(bb[1])),
+        (rtr.shape[0] - yi.searchsorted(bb[3]), rtr.shape[0] - yi.searchsorted(bb[1])),
         (xi.searchsorted(bb[0]), xi.searchsorted(bb[2])),
     )
     return window
@@ -504,8 +520,7 @@ def _sm2ll(x, y):
     shift = np.pi * rMajor
     lon = x / shift * 180.0
     lat = y / shift * 180.0
-    lat = 180.0 / np.pi * \
-        (2.0 * np.arctan(np.exp(lat * np.pi / 180.0)) - np.pi / 2.0)
+    lat = 180.0 / np.pi * (2.0 * np.arctan(np.exp(lat * np.pi / 180.0)) - np.pi / 2.0)
     return lon, lat
 
 
@@ -634,7 +649,7 @@ def _merge_tiles(tiles, arrays):
 
     for ind, arr in zip(indices, arrays):
         x, y = ind
-        img[y * h: (y + 1) * h, x * w: (x + 1) * w, :] = arr
+        img[y * h : (y + 1) * h, x * w : (x + 1) * w, :] = arr
 
     bounds = np.array([mt.bounds(t) for t in tiles])
     west, south, east, north = (
