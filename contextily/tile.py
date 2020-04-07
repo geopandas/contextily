@@ -183,12 +183,12 @@ def bounds2img(w, s, e, n, zoom="auto", source=None,
         zoom = _calculate_zoom(w, s, e, n)
     if url is not None and source is None:
         warnings.warn('The "url" option is deprecated. Please use the "source"'
-                      ' argument instead.', DeprecationWarning)
+                      ' argument instead.', FutureWarning)
         source = url
     elif url is not None and source is not None:
         warnings.warn('The "url" argument is deprecated. Please use the "source"'
                       ' argument. Do not supply a "url" argument. It will be ignored.',
-                      DeprecationWarning)
+                      FutureWarning)
     tiles = []
     arrays = []
     for t in mt.tiles(w, s, e, n, [zoom]):
@@ -214,7 +214,7 @@ def _url_from_string(url):
         warnings.warn(
             "The url format using 'tileX', 'tileY', 'tileZ' as placeholders "
             "is deprecated. Please use '{x}', '{y}', '{z}' instead.",
-            DeprecationWarning,
+            FutureWarning,
         )
         url = (
             url.replace("tileX", "{x}").replace(
