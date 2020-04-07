@@ -22,14 +22,14 @@ _OSM_A = "http://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
 _OSM_B = "http://b.tile.openstreetmap.org/{z}/{x}/{y}.png"
 _OSM_C = "http://c.tile.openstreetmap.org/{z}/{x}/{y}.png"
 
-deprecated_names = {k.lstrip('_') for k, v in locals().items()
-                    if (False if not isinstance(v, str)
-                        else (v.startswith('http')))
-                    }
+deprecated_sources = {k.lstrip('_') for k, v in locals().items()
+                      if (False if not isinstance(v, str)
+                          else (v.startswith('http')))
+                      }
 
 
 def __getattr__(name):
-    if name in deprecated_names:
+    if name in deprecated_sources:
         warnings.warn('The "contextily.tile_providers" module is deprecated and will be removed in '
                       'contextily v1.1. Please use "contextily.providers" instead.',
                       FutureWarning, stacklevel=2)
