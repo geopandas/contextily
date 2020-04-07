@@ -32,6 +32,6 @@ def __getattr__(name):
     if name in deprecated_names:
         warnings.warn('The "contextily.tile_providers" module is deprecated and will be removed in '
                       'contextily v1.1. Please use "contextily.providers" instead.',
-                      FutureWarning)
+                      FutureWarning, stacklevel=2)
         return globals()[f'_{name}']
     raise AttributeError(f'module {__name__} has no attribute {name}')
