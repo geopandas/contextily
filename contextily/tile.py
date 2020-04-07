@@ -22,6 +22,7 @@ from rasterio.vrt import WarpedVRT
 from rasterio.enums import Resampling
 from . import tile_providers as sources
 from . import providers
+from ._providers import TileProvider
 
 __all__ = ["bounds2raster", "bounds2img", "warp_tiles", "warp_img_transform", "howmany"]
 
@@ -40,7 +41,17 @@ atexit.register(_clear_cache)
 
 
 def bounds2raster(
-    w, s, e, n, path, zoom="auto", url=None, ll=False, wait=0, max_retries=2
+    w,
+    s,
+    e,
+    n,
+    path,
+    zoom="auto",
+    source=None,
+    ll=False,
+    wait=0,
+    max_retries=2,
+    url=None,
 ):
     """
     Take bounding box and zoom, and write tiles into a raster file in
@@ -60,11 +71,11 @@ def bounds2raster(
               Level of detail
     path    : str
               Path to raster file to be written
-    url     : str
-              [Optional. Default:
-              'http://tile.stamen.com/terrain/tileZ/tileX/tileY.png'] URL for
-              tile provider. The placeholders for the XYZ need to be `tileX`,
-              `tileY`, `tileZ`, respectively. See `cx.sources`.
+   source  : contextily.tile or str
+              [Optional. Default: 'http://tile.stamen.com/terrain/tileZ/tileX/tileY.png']
+              URL for tile provider. The placeholders for the XYZ need to be
+              `tileX`, `tileY`, `tileZ`, respectively. IMPORTANT: tiles are
+              assumed to be in the Spherical Mercator projection (EPSG:3857).
     ll      : Boolean
               [Optional. Default: False] If True, `w`, `s`, `e`, `n` are
               assumed to be lon/lat as opposed to Spherical Mercator.
@@ -76,6 +87,11 @@ def bounds2raster(
                  [Optional. Default: 2]
                  total number of rejected requests allowed before contextily
                  will stop trying to fetch more tiles from a rate-limited API.
+    url     : str [DEPRECATED]
+              [Optional. Default:
+              'http://tile.stamen.com/terrain/tileZ/tileX/tileY.png'] URL for
+              tile provider. The placeholders for the XYZ need to be `tileX`,
+              `tileY`, `tileZ`, respectively. See `cx.sources`.
 
     Returns
     -------
@@ -89,7 +105,7 @@ def bounds2raster(
         w, s = _sm2ll(w, s)
         e, n = _sm2ll(e, n)
     # Download
-    Z, ext = bounds2img(w, s, e, n, zoom=zoom, url=url, ll=True)
+    Z, ext = bounds2img(w, s, e, n, zoom=zoom, source=source, url=url, ll=True)
     # Write
     # ---
     h, w, b = Z.shape
@@ -117,7 +133,9 @@ def bounds2raster(
     return Z, ext
 
 
-def bounds2img(w, s, e, n, zoom="auto", url=None, ll=False, wait=0, max_retries=2):
+def bounds2img(
+    w, s, e, n, zoom="auto", source=None, ll=False, wait=0, max_retries=2, url=None
+):
     """
     Take bounding box and zoom and return an image with all the tiles
     that compose the map and its Spherical Mercator extent.
@@ -134,7 +152,7 @@ def bounds2img(w, s, e, n, zoom="auto", url=None, ll=False, wait=0, max_retries=
               North edge
     zoom    : int
               Level of detail
-    url     : str
+    source  : contextily.tile or str
               [Optional. Default: 'http://tile.stamen.com/terrain/tileZ/tileX/tileY.png']
               URL for tile provider. The placeholders for the XYZ need to be
               `tileX`, `tileY`, `tileZ`, respectively. IMPORTANT: tiles are
@@ -150,6 +168,11 @@ def bounds2img(w, s, e, n, zoom="auto", url=None, ll=False, wait=0, max_retries=
                  [Optional. Default: 2]
                  total number of rejected requests allowed before contextily
                  will stop trying to fetch more tiles from a rate-limited API.
+    url     : str [DEPRECATED]
+              [Optional. Default: 'http://tile.stamen.com/terrain/tileZ/tileX/tileY.png']
+              URL for tile provider. The placeholders for the XYZ need to be
+              `tileX`, `tileY`, `tileZ`, respectively. IMPORTANT: tiles are
+              assumed to be in the Spherical Mercator projection (EPSG:3857).
 
     Returns
     -------
@@ -162,8 +185,23 @@ def bounds2img(w, s, e, n, zoom="auto", url=None, ll=False, wait=0, max_retries=
         # Convert w, s, e, n into lon/lat
         w, s = _sm2ll(w, s)
         e, n = _sm2ll(e, n)
+    if url is not None and source is None:
+        warnings.warn(
+            'The "url" option is deprecated. Please use the "source"'
+            " argument instead.",
+            FutureWarning,
+            stacklevel=2,
+        )
+        source = url
+    elif url is not None and source is not None:
+        warnings.warn(
+            'The "url" argument is deprecated. Please use the "source"'
+            ' argument. Do not supply a "url" argument. It will be ignored.',
+            FutureWarning,
+            stacklevel=2,
+        )
     # get provider dict given the url
-    provider = _process_url(url)
+    provider = _process_source(source)
     # calculate and validate zoom level
     auto_zoom = zoom == "auto"
     if auto_zoom:
@@ -203,17 +241,19 @@ def _url_from_string(url):
     return {"url": url}
 
 
-def _process_url(url):
-    if url is None:
+def _process_source(source):
+    if source is None:
         provider = providers.Stamen.Terrain
-    elif isinstance(url, str):
-        provider = _url_from_string(url)
-    elif not isinstance(url, dict):
-        raise TypeError("The 'url' needs to be a dict or string")
-    elif "url" not in url:
+    elif isinstance(source, str):
+        provider = _url_from_string(source)
+    elif not isinstance(source, (dict, TileProvider)):
+        raise TypeError(
+            "The 'url' needs to be a contextily.providers object, a dict, or string"
+        )
+    elif "url" not in source:
         raise ValueError("The 'url' dict should at least contain a 'url' key")
     else:
-        provider = url
+        provider = source
     return provider
 
 
