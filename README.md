@@ -1,8 +1,10 @@
 `contextily`: context geo tiles in Python
 -----------------------------------------
 
-`contextily` is a small Python 3 package to retrieve and write to disk tile maps from
-the internet into geospatial raster files. Bounding boxes can be passed in both WGS84 (`EPSG:4326`) and Spheric Mercator (`EPSG:3857`). See the notebook
+`contextily` is a small Python 3 package to retrieve tile maps from the
+internet. It can add those tiles as basemap to matplotlib figures or write tile
+maps to disk into geospatial raster files. Bounding boxes can be passed in both
+WGS84 (`EPSG:4326`) and Spheric Mercator (`EPSG:3857`). See the notebook
 `contextily_guide.ipynb` for usage.
 
 [![Build Status](https://travis-ci.org/darribas/contextily.svg?branch=master)](https://travis-ci.org/darribas/contextily)
@@ -10,14 +12,12 @@ the internet into geospatial raster files. Bounding boxes can be passed in both 
 
 ![Tiles](tiles.png)
 
-* Toner and Terrain map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a
-  href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a
-  href="http://openstreetmap.org">OpenStreetMap</a>, under <a
-  href="http://www.openstreetmap.org/copyright">ODbL</a>.
-* Watercolor map tiles by <a href="http://stamen.com">Stamen Design</a>, under
-  <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by
-  <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a
-  href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.
+The current tile providers that are available in contextily are the providers
+defined in the [leaflet-providers](https://github.com/leaflet-extras/leaflet-providers)
+package. This includes some popular tile maps, such as:
+
+* The standard <a href="http://openstreetmap.org">OpenStreetMap</a> map tiles
+* Toner, Terrain and Watercolor map tiles by <a href="http://stamen.com">Stamen Design</a>
 
 ## Dependencies
 
