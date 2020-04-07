@@ -187,7 +187,7 @@ def bounds2img(w, s, e, n, zoom="auto", source=None,
                       ' argument. Do not supply a "url" argument. It will be ignored.',
                       FutureWarning, stacklevel=2)
     # get provider dict given the url
-    provider = _process_url(url)
+    provider = _process_source(source)
     # calculate and validate zoom level
     auto_zoom = zoom == "auto"
     if auto_zoom:
@@ -228,18 +228,18 @@ def _url_from_string(url):
     return {"url": url}
 
 
-def _process_url(url):
-    if url is None:
-        url = providers.Stamen.Terrain
-    if isinstance(url, str):
-        url = _url_from_string(url)
-    elif not isinstance(url, (dict, TileProvider)):
+def _process_source(source):
+    if source is None:
+        provider = providers.Stamen.Terrain
+    elif isinstance(source, str):
+        provider = _url_from_string(source)
+    elif not isinstance(source, (dict, TileProvider)):
         raise TypeError("The 'url' needs to be a contextily.providers object,"
                         " a dict, or string")
-    elif "url" not in url:
+    elif "url" not in source:
         raise ValueError("The 'url' dict should at least contain a 'url' key")
     else:
-        provider = url
+        provider = source
     return provider
 
 
