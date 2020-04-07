@@ -160,6 +160,10 @@ def add_basemap(
             bb = raster.bounds
             extent = bb.left, bb.right, bb.bottom, bb.top
     # Plotting
+    if image.shape[2] == 1:
+        image = image[:, :, 0]
+        print(image.shape)
+        print(extent)
     img = ax.imshow(
         image, extent=extent, interpolation=interpolation, **extra_imshow_args
     )
