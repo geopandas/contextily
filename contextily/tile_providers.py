@@ -30,7 +30,7 @@ deprecated_names = {k.lstrip('_') for k, v in locals().items()
 
 def __getattr__(name):
     if name in deprecated_names:
-        warnings.warn('The "contextily.tile_providers" module will be deprecated in'
+        warnings.warn('The "contextily.tile_providers" module is deprecated and will be removed in '
                       'contextily v1.1. Please use "contextily.providers" instead.',
                       FutureWarning)
         return globals()[f'_{name}']
