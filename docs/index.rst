@@ -10,6 +10,8 @@ Welcome to contextily's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   contextily_guide
+   warping_guide
    reference
 
 

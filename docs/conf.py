@@ -4,6 +4,11 @@
 # list see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
+import os
+import pathlib
+import shutil
+
+
 # -- Path setup --------------------------------------------------------------
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -32,7 +37,8 @@ release = '1.0.0'
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
-    "numpydoc"
+    "numpydoc",
+    "nbsphinx"
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -55,3 +61,20 @@ html_theme = 'alabaster'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+
+# ---------------------------------------------------------------------------
+
+# Copy notebooks into the docs/ directory so sphinx sees them
+
+HERE = pathlib.Path(os.path.abspath(os.path.dirname(__file__)))
+
+
+notebooks = [
+    "contextily_guide.ipynb",
+    "warping_guide.ipynb",
+]
+
+
+for notebook in notebooks:
+    shutil.copy(HERE / ".." / notebook, HERE)
