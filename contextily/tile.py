@@ -23,7 +23,8 @@ from rasterio.enums import Resampling
 from . import tile_providers as sources
 from . import providers
 
-__all__ = ["bounds2raster", "bounds2img", "warp_tiles", "warp_img_transform", "howmany"]
+__all__ = ["bounds2raster", "bounds2img",
+           "warp_tiles", "warp_img_transform", "howmany"]
 
 
 USER_AGENT = "contextily-" + uuid.uuid4().hex
@@ -39,9 +40,8 @@ def _clear_cache():
 atexit.register(_clear_cache)
 
 
-def bounds2raster(
-    w, s, e, n, path, zoom="auto", url=None, ll=False, wait=0, max_retries=2
-):
+def bounds2raster(w, s, e, n, path, zoom="auto", url=None, source=None,
+                  ll=False, wait=0, max_retries=2):
     """
     Take bounding box and zoom, and write tiles into a raster file in
     the Spherical Mercator CRS (EPSG:3857)
@@ -62,85 +62,12 @@ def bounds2raster(
               Level of detail
     path    : str
               Path to raster file to be written
-    url     : str
+    url     : str [DEPRECATED]
               [Optional. Default:
               'http://tile.stamen.com/terrain/tileZ/tileX/tileY.png'] URL for
               tile provider. The placeholders for the XYZ need to be `tileX`,
               `tileY`, `tileZ`, respectively. See `cx.sources`.
-    ll      : Boolean
-              [Optional. Default: False] If True, `w`, `s`, `e`, `n` are
-              assumed to be lon/lat as opposed to Spherical Mercator.
-    wait    : int
-              [Optional. Default: 0]
-              if the tile API is rate-limited, the number of seconds to wait
-              between a failed request and the next try
-    max_retries: int
-                 [Optional. Default: 2]
-                 total number of rejected requests allowed before contextily
-                 will stop trying to fetch more tiles from a rate-limited API.
-
-    Returns
-    -------
-    img     : ndarray
-              Image as a 3D array of RGB values
-    extent  : tuple
-              Bounding box [minX, maxX, minY, maxY] of the returned image
-    """
-    if not ll:
-        # Convert w, s, e, n into lon/lat
-        w, s = _sm2ll(w, s)
-        e, n = _sm2ll(e, n)
-    if zoom == "auto":
-        zoom = _calculate_zoom(w, s, e, n)
-    # Download
-    Z, ext = bounds2img(w, s, e, n, zoom=zoom, url=url, ll=True)
-    # Write
-    # ---
-    h, w, b = Z.shape
-    # --- https://mapbox.github.io/rasterio/quickstart.html#opening-a-dataset-in-writing-mode
-    minX, maxX, minY, maxY = ext
-    x = np.linspace(minX, maxX, w)
-    y = np.linspace(minY, maxY, h)
-    resX = (x[-1] - x[0]) / w
-    resY = (y[-1] - y[0]) / h
-    transform = from_origin(x[0] - resX / 2, y[-1] + resY / 2, resX, resY)
-    # ---
-    with rio.open(
-        path,
-        "w",
-        driver="GTiff",
-        height=h,
-        width=w,
-        count=b,
-        dtype=str(Z.dtype.name),
-        crs="epsg:3857",
-        transform=transform,
-    ) as raster:
-        for band in range(b):
-            raster.write(Z[:, :, band], band + 1)
-    return Z, ext
-
-
-def bounds2img(w, s, e, n, zoom="auto", url=None, ll=False, wait=0, max_retries=2):
-    """
-    Take bounding box and zoom and return an image with all the tiles
-    that compose the map and its Spherical Mercator extent.
-
-    ...
-
-    Arguments
-    ---------
-    w       : float
-              West edge
-    s       : float
-              South edge
-    e       : float
-              East edge
-    n       : float
-              North edge
-    zoom    : int
-              Level of detail
-    url     : str
+    source  : contextily.tile or str
               [Optional. Default: 'http://tile.stamen.com/terrain/tileZ/tileX/tileY.png']
               URL for tile provider. The placeholders for the XYZ need to be
               `tileX`, `tileY`, `tileZ`, respectively. IMPORTANT: tiles are
@@ -170,11 +97,103 @@ def bounds2img(w, s, e, n, zoom="auto", url=None, ll=False, wait=0, max_retries=
         e, n = _sm2ll(e, n)
     if zoom == "auto":
         zoom = _calculate_zoom(w, s, e, n)
+    # Download
+    Z, ext = bounds2img(w, s, e, n, zoom=zoom, source=source, url=url, ll=True)
+    # Write
+    # ---
+    h, w, b = Z.shape
+    # --- https://mapbox.github.io/rasterio/quickstart.html#opening-a-dataset-in-writing-mode
+    minX, maxX, minY, maxY = ext
+    x = np.linspace(minX, maxX, w)
+    y = np.linspace(minY, maxY, h)
+    resX = (x[-1] - x[0]) / w
+    resY = (y[-1] - y[0]) / h
+    transform = from_origin(x[0] - resX / 2, y[-1] + resY / 2, resX, resY)
+    # ---
+    with rio.open(
+        path,
+        "w",
+        driver="GTiff",
+        height=h,
+        width=w,
+        count=b,
+        dtype=str(Z.dtype.name),
+        crs="epsg:3857",
+        transform=transform,
+    ) as raster:
+        for band in range(b):
+            raster.write(Z[:, :, band], band + 1)
+    return Z, ext
+
+
+def bounds2img(w, s, e, n, zoom="auto", source=None,
+               url=None, ll=False, wait=0, max_retries=2):
+    """
+    Take bounding box and zoom and return an image with all the tiles
+    that compose the map and its Spherical Mercator extent.
+
+    ...
+
+    Arguments
+    ---------
+    w       : float
+              West edge
+    s       : float
+              South edge
+    e       : float
+              East edge
+    n       : float
+              North edge
+    zoom    : int
+              Level of detail
+    url     : str [DEPRECATED]
+              [Optional. Default: 'http://tile.stamen.com/terrain/tileZ/tileX/tileY.png']
+              URL for tile provider. The placeholders for the XYZ need to be
+              `tileX`, `tileY`, `tileZ`, respectively. IMPORTANT: tiles are
+              assumed to be in the Spherical Mercator projection (EPSG:3857).
+    source  : contextily.tile or str
+              [Optional. Default: 'http://tile.stamen.com/terrain/tileZ/tileX/tileY.png']
+              URL for tile provider. The placeholders for the XYZ need to be
+              `tileX`, `tileY`, `tileZ`, respectively. IMPORTANT: tiles are
+              assumed to be in the Spherical Mercator projection (EPSG:3857).
+    ll      : Boolean
+              [Optional. Default: False] If True, `w`, `s`, `e`, `n` are
+              assumed to be lon/lat as opposed to Spherical Mercator.
+    wait    : int
+              [Optional. Default: 0]
+              if the tile API is rate-limited, the number of seconds to wait
+              between a failed request and the next try
+    max_retries: int
+                 [Optional. Default: 2]
+                 total number of rejected requests allowed before contextily
+                 will stop trying to fetch more tiles from a rate-limited API.
+
+    Returns
+    -------
+    img     : ndarray
+              Image as a 3D array of RGB values
+    extent  : tuple
+              Bounding box [minX, maxX, minY, maxY] of the returned image
+    """
+    if not ll:
+        # Convert w, s, e, n into lon/lat
+        w, s = _sm2ll(w, s)
+        e, n = _sm2ll(e, n)
+    if zoom == "auto":
+        zoom = _calculate_zoom(w, s, e, n)
+    if url is not None and source is None:
+        warnings.warn('The "url" option is deprecated. Please use the "source"'
+                      ' argument instead.', DeprecationWarning)
+        source = url
+    elif url is not None and source is not None:
+        warnings.warn('The "url" argument is deprecated. Please use the "source"'
+                      ' argument. Do not supply a "url" argument. It will be ignored.',
+                      DeprecationWarning)
     tiles = []
     arrays = []
     for t in mt.tiles(w, s, e, n, [zoom]):
         x, y, z = t.x, t.y, t.z
-        tile_url = _construct_tile_url(url, x, y, z)
+        tile_url = _construct_tile_url(source, x, y, z)
         image = _fetch_tile(tile_url, wait, max_retries)
         tiles.append(t)
         arrays.append(image)
@@ -195,10 +214,11 @@ def _url_from_string(url):
         warnings.warn(
             "The url format using 'tileX', 'tileY', 'tileZ' as placeholders "
             "is deprecated. Please use '{x}', '{y}', '{z}' instead.",
-            FutureWarning,
+            DeprecationWarning,
         )
         url = (
-            url.replace("tileX", "{x}").replace("tileY", "{y}").replace("tileZ", "{z}")
+            url.replace("tileX", "{x}").replace(
+                "tileY", "{y}").replace("tileZ", "{z}")
         )
     return {"url": url}
 
@@ -381,7 +401,8 @@ def _retryer(tile_url, wait, max_retries):
                 max_retries -= 1
                 request = _retryer(tile_url, wait, max_retries)
             else:
-                raise requests.HTTPError("Connection reset by peer too many times.")
+                raise requests.HTTPError(
+                    "Connection reset by peer too many times.")
     return request
 
 
@@ -443,7 +464,8 @@ def bb2wdw(bb, rtr):
     yi = np.linspace(rbb.bottom, rbb.top, rtr.shape[0])
 
     window = (
-        (rtr.shape[0] - yi.searchsorted(bb[3]), rtr.shape[0] - yi.searchsorted(bb[1])),
+        (rtr.shape[0] - yi.searchsorted(bb[3]),
+         rtr.shape[0] - yi.searchsorted(bb[1])),
         (xi.searchsorted(bb[0]), xi.searchsorted(bb[2])),
     )
     return window
@@ -473,7 +495,8 @@ def _sm2ll(x, y):
     shift = np.pi * rMajor
     lon = x / shift * 180.0
     lat = y / shift * 180.0
-    lat = 180.0 / np.pi * (2.0 * np.arctan(np.exp(lat * np.pi / 180.0)) - np.pi / 2.0)
+    lat = 180.0 / np.pi * \
+        (2.0 * np.arctan(np.exp(lat * np.pi / 180.0)) - np.pi / 2.0)
     return lon, lat
 
 
@@ -549,7 +572,7 @@ def _merge_tiles(tiles, arrays):
 
     for ind, arr in zip(indices, arrays):
         x, y = ind
-        img[y * h : (y + 1) * h, x * w : (x + 1) * w, :] = arr
+        img[y * h: (y + 1) * h, x * w: (x + 1) * w, :] = arr
 
     bounds = np.array([mt.bounds(t) for t in tiles])
     west, south, east, north = (
