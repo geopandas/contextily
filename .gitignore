@@ -13,3 +13,6 @@ build/
 dist/
 .coverage
 .pytest_cache/
+
+# Sphinx documentation
+docs/_build/
