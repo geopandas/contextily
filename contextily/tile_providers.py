@@ -1,5 +1,6 @@
 """Common tile provider URLs."""
 import warnings
+import sys
 
 ### Tile provider sources ###
 
@@ -35,3 +36,7 @@ def __getattr__(name):
                       FutureWarning, stacklevel=2)
         return globals()[f'_{name}']
     raise AttributeError(f'module {__name__} has no attribute {name}')
+
+
+if (sys.version_info.major == 3 and sys.version_info.minor < 7):
+    globals().update({k: globals().get('_'+k) for k in deprecated_sources})
