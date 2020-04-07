@@ -48,8 +48,8 @@ pip3 install contextily==1.0rc2 # installs the latest release candidate (v1.0rc2
 ## Contributors
 
 * [Dani Arribas-Bel](http://darribas.org/) ([`@darribas`](http://twitter.com/darribas))
-* [Joris Van den Bossche](https://jorisvandenbossche.github.io/) ([`@levijohnwolf`](https://twitter.com/levijohnwolf))
-* [Levi Wolf](http://ljwolf.org/) [`@jorisvandenbossche`](https://twitter.com/jorisvdbossche))
+* [Joris Van den Bossche](https://jorisvandenbossche.github.io/) [`@jorisvandenbossche`](https://twitter.com/jorisvdbossche))
+* [Levi Wolf](http://ljwolf.org/) ([`@levijohnwolf`](https://twitter.com/levijohnwolf))
 * [Chris Holdgraf](http://chrisholdgraf.com/) ([`@choldgraf`](http://twitter.com/choldgraf))
 * [Filipe Fernandes](https://ocefpaf.github.io/python4oceanographers/) ([@ocefpaf](http://twitter.com/ocefpaf))
 

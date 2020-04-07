@@ -57,7 +57,7 @@ def bounds2raster(
     e       : float
               East edge
     n       : float
-              Noth edge
+              North edge
     zoom    : int
               Level of detail
     path    : str
@@ -103,7 +103,7 @@ def bounds2raster(
     resY = (y[-1] - y[0]) / h
     transform = from_origin(x[0] - resX / 2, y[-1] + resY / 2, resX, resY)
     # ---
-    raster = rio.open(
+    with rio.open(
         path,
         "w",
         driver="GTiff",
@@ -113,10 +113,9 @@ def bounds2raster(
         dtype=str(Z.dtype.name),
         crs="epsg:3857",
         transform=transform,
-    )
-    for band in range(b):
-        raster.write(Z[:, :, band], band + 1)
-    raster.close()
+    ) as raster:
+        for band in range(b):
+            raster.write(Z[:, :, band], band + 1)
     return Z, ext
 
 
@@ -136,7 +135,7 @@ def bounds2img(w, s, e, n, zoom="auto", url=None, ll=False, wait=0, max_retries=
     e       : float
               East edge
     n       : float
-              Noth edge
+              North edge
     zoom    : int
               Level of detail
     url     : str
@@ -236,8 +235,9 @@ def _fetch_tile(tile_url, wait, max_retries):
     request = _retryer(tile_url, wait, max_retries)
     with io.BytesIO(request.content) as image_stream:
         image = Image.open(image_stream).convert("RGB")
-        image = np.asarray(image)
-    return image
+        array = np.asarray(image)
+        image.close()
+    return array
 
 
 def warp_tiles(img, extent, t_crs="EPSG:4326", resampling=Resampling.bilinear):
@@ -400,13 +400,13 @@ def howmany(w, s, e, n, zoom, verbose=True, ll=False):
     Arguments
     ---------
     w       : float
-              West edge longitude
+              West edge
     s       : float
-              South edge latitude
+              South edge
     e       : float
-              East edge longitude
+              East edge
     n       : float
-              Noth edge latitude
+              North edge
     zoom    : int
               Level of detail
     verbose : Boolean

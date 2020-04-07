@@ -129,16 +129,16 @@ def add_basemap(
         import rasterio as rio
 
         # Read file
-        raster = rio.open(url)
-        image = np.array([band for band in raster.read()])
-        # Warp
-        if (crs is not None) and (raster.crs != crs):
-            image, raster = _warper(
-                image, raster.transform, raster.crs, crs, resampling
-            )
-        image = image.transpose(1, 2, 0)
-        bb = raster.bounds
-        extent = bb.left, bb.right, bb.bottom, bb.top
+        with rio.open(url) as raster:
+            image = np.array([band for band in raster.read()])
+            # Warp
+            if (crs is not None) and (raster.crs != crs):
+                image, raster = _warper(
+                    image, raster.transform, raster.crs, crs, resampling
+                )
+            image = image.transpose(1, 2, 0)
+            bb = raster.bounds
+            extent = bb.left, bb.right, bb.bottom, bb.top
     # Plotting
     img = ax.imshow(
         image, extent=extent, interpolation=interpolation, **extra_imshow_args
