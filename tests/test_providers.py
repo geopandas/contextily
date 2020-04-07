@@ -13,9 +13,10 @@ def test_sources():
         -93.50721740722656,
         36.49387741088867,
     )
-    sources = [i for i in dir(tilers) if i[0] != "_"]
+    sources = tilers.deprecated_sources
     for src in sources:
-        img, ext = ctx.bounds2img(w, s, e, n, 4, url=getattr(tilers, src), ll=True)
+        img, ext = ctx.bounds2img(
+            w, s, e, n, 4, url=getattr(tilers, src), ll=True)
 
 
 def test_deprecated_url_format():
