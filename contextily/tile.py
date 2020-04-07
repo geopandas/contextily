@@ -40,8 +40,8 @@ def _clear_cache():
 atexit.register(_clear_cache)
 
 
-def bounds2raster(w, s, e, n, path, zoom="auto", url=None, source=None,
-                  ll=False, wait=0, max_retries=2):
+def bounds2raster(w, s, e, n, path, zoom="auto", source=None,
+                  ll=False, wait=0, max_retries=2, url=None):
     """
     Take bounding box and zoom, and write tiles into a raster file in
     the Spherical Mercator CRS (EPSG:3857)
@@ -62,12 +62,7 @@ def bounds2raster(w, s, e, n, path, zoom="auto", url=None, source=None,
               Level of detail
     path    : str
               Path to raster file to be written
-    url     : str [DEPRECATED]
-              [Optional. Default:
-              'http://tile.stamen.com/terrain/tileZ/tileX/tileY.png'] URL for
-              tile provider. The placeholders for the XYZ need to be `tileX`,
-              `tileY`, `tileZ`, respectively. See `cx.sources`.
-    source  : contextily.tile or str
+   source  : contextily.tile or str
               [Optional. Default: 'http://tile.stamen.com/terrain/tileZ/tileX/tileY.png']
               URL for tile provider. The placeholders for the XYZ need to be
               `tileX`, `tileY`, `tileZ`, respectively. IMPORTANT: tiles are
@@ -83,6 +78,11 @@ def bounds2raster(w, s, e, n, path, zoom="auto", url=None, source=None,
                  [Optional. Default: 2]
                  total number of rejected requests allowed before contextily
                  will stop trying to fetch more tiles from a rate-limited API.
+    url     : str [DEPRECATED]
+              [Optional. Default:
+              'http://tile.stamen.com/terrain/tileZ/tileX/tileY.png'] URL for
+              tile provider. The placeholders for the XYZ need to be `tileX`,
+              `tileY`, `tileZ`, respectively. See `cx.sources`.
 
     Returns
     -------
@@ -127,7 +127,7 @@ def bounds2raster(w, s, e, n, path, zoom="auto", url=None, source=None,
 
 
 def bounds2img(w, s, e, n, zoom="auto", source=None,
-               url=None, ll=False, wait=0, max_retries=2):
+               ll=False, wait=0, max_retries=2, url=None):
     """
     Take bounding box and zoom and return an image with all the tiles
     that compose the map and its Spherical Mercator extent.
@@ -146,11 +146,6 @@ def bounds2img(w, s, e, n, zoom="auto", source=None,
               North edge
     zoom    : int
               Level of detail
-    url     : str [DEPRECATED]
-              [Optional. Default: 'http://tile.stamen.com/terrain/tileZ/tileX/tileY.png']
-              URL for tile provider. The placeholders for the XYZ need to be
-              `tileX`, `tileY`, `tileZ`, respectively. IMPORTANT: tiles are
-              assumed to be in the Spherical Mercator projection (EPSG:3857).
     source  : contextily.tile or str
               [Optional. Default: 'http://tile.stamen.com/terrain/tileZ/tileX/tileY.png']
               URL for tile provider. The placeholders for the XYZ need to be
@@ -167,6 +162,11 @@ def bounds2img(w, s, e, n, zoom="auto", source=None,
                  [Optional. Default: 2]
                  total number of rejected requests allowed before contextily
                  will stop trying to fetch more tiles from a rate-limited API.
+    url     : str [DEPRECATED]
+              [Optional. Default: 'http://tile.stamen.com/terrain/tileZ/tileX/tileY.png']
+              URL for tile provider. The placeholders for the XYZ need to be
+              `tileX`, `tileY`, `tileZ`, respectively. IMPORTANT: tiles are
+              assumed to be in the Spherical Mercator projection (EPSG:3857).
 
     Returns
     -------
