@@ -7,6 +7,7 @@
 import os
 import pathlib
 import shutil
+import subprocess
 
 
 # -- Path setup --------------------------------------------------------------
@@ -70,11 +71,17 @@ html_static_path = ['_static']
 HERE = pathlib.Path(os.path.abspath(os.path.dirname(__file__)))
 
 
-notebooks = [
+files_to_copy = [
     "contextily_guide.ipynb",
     "warping_guide.ipynb",
+    "tiles.png"
 ]
 
 
-for notebook in notebooks:
-    shutil.copy(HERE / ".." / notebook, HERE)
+for filename in files_to_copy:
+    shutil.copy(HERE / ".." / filename, HERE)
+
+
+# convert README to rst
+
+subprocess.check_output(['pandoc','--to', 'rst', '-o', 'README.rst', '../README.md'])
