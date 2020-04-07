@@ -71,7 +71,7 @@ def bounds2raster(
               Level of detail
     path    : str
               Path to raster file to be written
-   source  : contextily.tile or str
+    source  : contextily.tile or str
               [Optional. Default: 'http://tile.stamen.com/terrain/tileZ/tileX/tileY.png']
               URL for tile provider. The placeholders for the XYZ need to be
               `tileX`, `tileY`, `tileZ`, respectively. IMPORTANT: tiles are

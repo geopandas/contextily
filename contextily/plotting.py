@@ -3,6 +3,7 @@
 import numpy as np
 from . import tile_providers as sources
 from . import providers
+from ._providers import TileProvider
 from .tile import bounds2img, _sm2ll, warp_tiles, _warper
 from rasterio.enums import Resampling
 from rasterio.warp import transform_bounds
@@ -17,14 +18,16 @@ ATTRIBUTION_SIZE = 8
 def add_basemap(
     ax,
     zoom=ZOOM,
-    url=None,
+    source=None,
     interpolation=INTERPOLATION,
     attribution=None,
     attribution_size=ATTRIBUTION_SIZE,
     reset_extent=True,
     crs=None,
     resampling=Resampling.bilinear,
-    **extra_imshow_args):
+    url=None,
+    **extra_imshow_args
+):
     """
     Add a (web/local) basemap to `ax`.
 
@@ -36,21 +39,21 @@ def add_basemap(
     zoom                : int/'auto'
                           [Optional. Default='auto'] Level of detail for the
                           basemap. If 'auto', if calculates it automatically.
-                          Ignored if `url` is a local file.
-    url                 : str
-                          [Optional. Default: 'http://tile.stamen.com/terrain/tileZ/tileX/tileY.png']
-                          Source url for web tiles, or path to local file. If
-                          local, the file is read with `rasterio` and all
-                          bands are loaded into the basemap.
+                          Ignored if `source` is a local file.
+    source              : contextily.tile or str
+                          [Optional. Default: 'http://tile.stamen.com/terrain/{z}/{x}/{y}.png']
+                          URL for tile provider. The placeholders for the XYZ need to be
+                          `{x}`, `{y}`, `{z}`, respectively. IMPORTANT: tiles are
+                          assumed to be in the Spherical Mercator projection (EPSG:3857).
     interpolation       : str
                           [Optional. Default='bilinear'] Interpolation
                           algorithm to be passed to `imshow`. See
                           `matplotlib.pyplot.imshow` for further details.
     attribution         : str
-                          [Optional. Defaults to attribution specified by the url]
+                          [Optional. Defaults to attribution specified by the source]
                           Text to be added at the bottom of the axis. This
                           defaults to the attribution of the provider specified
-                          in `url` if available. Specify False to not
+                          in `source` if available. Specify False to not
                           automatically add an attribution, or a string to pass
                           a custom attribution.
     attribution_size    : int
@@ -71,6 +74,11 @@ def add_basemap(
                           [Optional. Default=Resampling.bilinear] Resampling 
                           method for executing warping, expressed as a 
                           `rasterio.enums.Resampling` method
+    url                 : str [DEPRECATED]
+                          [Optional. Default: 'http://tile.stamen.com/terrain/tileZ/tileX/tileY.png']
+                          Source url for web tiles, or path to local file. If
+                          local, the file is read with `rasterio` and all
+                          bands are loaded into the basemap.
     **extra_imshow_args :
                           Other parameters to be passed to `imshow`.
 
@@ -83,24 +91,39 @@ def add_basemap(
     Add a web basemap:
 
     >>> ax = db.plot(alpha=0.5, color='k', figsize=(6, 6))
-    >>> ctx.add_basemap(ax, url=url)
+    >>> ctx.add_basemap(ax, source=url)
     >>> plt.show()
 
     Or download a basemap to a local file and then plot it:
 
-    >>> url = 'virginia.tiff'
-    >>> _ = ctx.bounds2raster(*db.total_bounds, zoom=6, path=url)
+    >>> source = 'virginia.tiff'
+    >>> _ = ctx.bounds2raster(*db.total_bounds, zoom=6, source=source)
     >>> ax = db.plot(alpha=0.5, color='k', figsize=(6, 6))
-    >>> ctx.add_basemap(ax, url=url)
+    >>> ctx.add_basemap(ax, source=source)
     >>> plt.show()
 
     """
     xmin, xmax, ymin, ymax = ax.axis()
+    if url is not None and source is None:
+        warnings.warn(
+            'The "url" option is deprecated. Please use the "source"'
+            " argument instead.",
+            FutureWarning,
+            stacklevel=2,
+        )
+        source = url
+    elif url is not None and source is not None:
+        warnings.warn(
+            'The "url" argument is deprecated. Please use the "source"'
+            ' argument. Do not supply a "url" argument. It will be ignored.',
+            FutureWarning,
+            stacklevel=2,
+        )
     # If web source
     if (
-        url is None
-        or isinstance(url, dict)
-        or (isinstance(url, str) and url[:4] == "http")
+        source is None
+        or isinstance(source, (dict, TileProvider))
+        or (isinstance(source, str) and source[:4] == "http")
     ):
         # Extent
         left, right, bottom, top = xmin, xmax, ymin, ymax
@@ -111,7 +134,7 @@ def add_basemap(
             )
         # Download image
         image, extent = bounds2img(
-            left, bottom, right, top, zoom=zoom, url=url, ll=False
+            left, bottom, right, top, zoom=zoom, source=source, ll=False
         )
         # Warping
         if crs is not None:
@@ -121,7 +144,7 @@ def add_basemap(
         import rasterio as rio
 
         # Read file
-        with rio.open(url) as raster:
+        with rio.open(source) as raster:
             image = np.array([band for band in raster.read()])
             # Warp
             if (crs is not None) and (raster.crs != crs):
@@ -140,10 +163,10 @@ def add_basemap(
         ax.axis((xmin, xmax, ymin, ymax))
 
     # Add attribution text
-    if url is None:
-        url = providers.Stamen.Terrain
-    if isinstance(url, dict) and attribution is None:
-        attribution = url.get("attribution")
+    if source is None:
+        source = providers.Stamen.Terrain
+    if isinstance(source, (dict, TileProvider)) and attribution is None:
+        attribution = source.get("attribution")
     if attribution:
         add_attribution(ax, attribution, font_size=attribution_size)
 

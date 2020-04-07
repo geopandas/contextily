@@ -6,6 +6,7 @@ from warnings import warn
 from .tile import howmany, bounds2raster, bounds2img, _sm2ll, _calculate_zoom
 from .plotting import INTERPOLATION, ZOOM, add_attribution
 from . import providers
+from ._providers import TileProvider
 
 
 class Place(object):
@@ -18,18 +19,28 @@ class Place(object):
     ----------
     search : string
         The location to be searched.
-    zoom : int | None
-        The level of detail to include in the map. Higher levels mean more
-        tiles and thus longer download time. If None, the zoom level will be
-        automatically determined.
-    path : string | None
-        Path to a raster file that will be created after getting the place map.
-        If None, no raster file will be downloaded.
-    zoom_adjust : int | None
-        The amount to adjust a chosen zoom level if it is chosen automatically.
-    url : string
-        The URL to use for downloading map tiles. See the ``cx.tile_providers`` module
-        for some options, as well as ``cx.bounds2image`` for guidance.
+    zoom : int or None
+           [Optional. Default: None]
+           The level of detail to include in the map. Higher levels mean more
+           tiles and thus longer download time. If None, the zoom level will be
+           automatically determined.
+    path : str or None
+           [Optional. Default: None]
+           Path to a raster file that will be created after getting the place map.
+           If None, no raster file will be downloaded.
+    zoom_adjust : int or None
+                  [Optional. Default: None]
+                  The amount to adjust a chosen zoom level if it is chosen automatically.
+    source : contextily.tile or str
+             [Optional. Default: 'http://tile.stamen.com/terrain/{z}/{x}/{y}.png']
+             URL for tile provider. The placeholders for the XYZ need to be
+             `{x}`, `{y}`, `{z}`, respectively. IMPORTANT: tiles are
+             assumed to be in the Spherical Mercator projection (EPSG:3857).
+    url    : str [DEPRECATED]
+             [Optional. Default: 'http://tile.stamen.com/terrain/tileZ/tileX/tileY.png']
+             Source url for web tiles, or path to local file. If
+             local, the file is read with `rasterio` and all
+             bands are loaded into the basemap.
 
     Attributes
     ----------
@@ -53,11 +64,28 @@ class Place(object):
         following order: [minX, minY, maxX, maxY]
     """
 
-    def __init__(self, search, zoom=None, path=None, zoom_adjust=None, url=None):
+    def __init__(
+        self, search, zoom=None, path=None, zoom_adjust=None, source=None, url=None
+    ):
         self.path = path
-        if url is None:
-            url = providers.Stamen.Terrain
-        self.url = url
+        if url is not None and source is None:
+            warnings.warn(
+                'The "url" option is deprecated. Please use the "source"'
+                " argument instead.",
+                FutureWarning,
+                stacklevel=2,
+            )
+            source = url
+        elif url is not None and source is not None:
+            warnings.warn(
+                'The "url" argument is deprecated. Please use the "source"'
+                ' argument. Do not supply a "url" argument. It will be ignored.',
+                FutureWarning,
+                stacklevel=2,
+            )
+        if source is None:
+            source = providers.Stamen.Terrain
+        self.source = source
         self.zoom_adjust = zoom_adjust
 
         # Get geocoded values
@@ -92,8 +120,8 @@ class Place(object):
 
     def _get_map(self):
         kwargs = {"ll": True}
-        if self.url is not None:
-            kwargs["url"] = self.url
+        if self.source is not None:
+            kwargs["source"] = self.source
 
         try:
             if isinstance(self.path, str):
@@ -130,16 +158,16 @@ class Place(object):
         zoom                : int/'auto'
                               [Optional. Default='auto'] Level of detail for the
                               basemap. If 'auto', if calculates it automatically.
-                              Ignored if `url` is a local file.
+                              Ignored if `source` is a local file.
         interpolation       : str
                               [Optional. Default='bilinear'] Interpolation
                               algorithm to be passed to `imshow`. See
                               `matplotlib.pyplot.imshow` for further details.
         attribution         : str
-                              [Optional. Defaults to attribution specified by the url]
+                              [Optional. Defaults to attribution specified by the source of the map tiles]
                               Text to be added at the bottom of the axis. This
                               defaults to the attribution of the provider specified
-                              in `url` if available. Specify False to not
+                              in `source` if available. Specify False to not
                               automatically add an attribution, or a string to pass
                               a custom attribution.
 
@@ -167,8 +195,8 @@ class Place(object):
             axisoff = True
         ax.imshow(im, extent=bbox, interpolation=interpolation)
         ax.set(xlabel="X", ylabel="Y")
-        if isinstance(self.url, dict) and attribution is None:
-            attribution = self.url.get("attribution")
+        if isinstance(self.source, (dict, TileProvider)) and attribution is None:
+            attribution = self.source.get("attribution")
         if attribution:
             add_attribution(ax, attribution)
         if title is not None:
