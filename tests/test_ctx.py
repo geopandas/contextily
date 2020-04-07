@@ -8,6 +8,7 @@ import mercantile as mt
 import rasterio as rio
 from contextily.tile import _calculate_zoom
 from numpy.testing import assert_array_almost_equal
+import pytest
 
 TOL = 7
 SEARCH = "boulder"
@@ -174,6 +175,28 @@ def test_autozoom():
     expected_zoom = 13
     zoom = _calculate_zoom(w, s, e, n)
     assert zoom == expected_zoom
+
+
+def test_validate_zoom():
+    # tiny extent to trigger large calculated zoom
+    w, s, e, n = (0, 0, 0.001, 0.001)
+
+    # automatically inferred -> set to known max but warn
+    with pytest.warns(UserWarning, match="inferred zoom level"):
+        ctx.bounds2img(w, s, e, n)
+
+    # specify manually -> raise an error
+    with pytest.raises(ValueError):
+        ctx.bounds2img(w, s, e, n, zoom=23)
+
+    # with specific string url (not dict) -> error when specified
+    url = "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    with pytest.raises(ValueError):
+        ctx.bounds2img(w, s, e, n, zoom=33, url=url)
+
+    # but also when inferred (no max zoom know to set to)
+    with pytest.raises(ValueError):
+        ctx.bounds2img(w, s, e, n, url=url)
 
 
 # Place

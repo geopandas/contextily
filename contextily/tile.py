@@ -96,8 +96,6 @@ def bounds2raster(w, s, e, n, path, zoom="auto", source=None,
         # Convert w, s, e, n into lon/lat
         w, s = _sm2ll(w, s)
         e, n = _sm2ll(e, n)
-    if zoom == "auto":
-        zoom = _calculate_zoom(w, s, e, n)
     # Download
     Z, ext = bounds2img(w, s, e, n, zoom=zoom, source=source, url=url, ll=True)
     # Write
@@ -180,8 +178,6 @@ def bounds2img(w, s, e, n, zoom="auto", source=None,
         # Convert w, s, e, n into lon/lat
         w, s = _sm2ll(w, s)
         e, n = _sm2ll(e, n)
-    if zoom == "auto":
-        zoom = _calculate_zoom(w, s, e, n)
     if url is not None and source is None:
         warnings.warn('The "url" option is deprecated. Please use the "source"'
                       ' argument instead.', FutureWarning, stacklevel=2)
@@ -190,11 +186,19 @@ def bounds2img(w, s, e, n, zoom="auto", source=None,
         warnings.warn('The "url" argument is deprecated. Please use the "source"'
                       ' argument. Do not supply a "url" argument. It will be ignored.',
                       FutureWarning, stacklevel=2)
+    # get provider dict given the url
+    provider = _process_url(url)
+    # calculate and validate zoom level
+    auto_zoom = zoom == "auto"
+    if auto_zoom:
+        zoom = _calculate_zoom(w, s, e, n)
+    zoom = _validate_zoom(zoom, provider, auto=auto_zoom)
+    # download and merge tiles
     tiles = []
     arrays = []
     for t in mt.tiles(w, s, e, n, [zoom]):
         x, y, z = t.x, t.y, t.z
-        tile_url = _construct_tile_url(source, x, y, z)
+        tile_url = _construct_tile_url(provider, x, y, z)
         image = _fetch_tile(tile_url, wait, max_retries)
         tiles.append(t)
         arrays.append(image)
@@ -224,7 +228,7 @@ def _url_from_string(url):
     return {"url": url}
 
 
-def _construct_tile_url(url, x, y, z):
+def _process_url(url):
     if url is None:
         url = providers.Stamen.Terrain
     if isinstance(url, str):
@@ -235,12 +239,16 @@ def _construct_tile_url(url, x, y, z):
     elif "url" not in url:
         raise ValueError("The 'url' dict should at least contain a 'url' key")
     else:
-        url = url.copy()
+        provider = url
+    return provider
 
-    tile_url = url.pop("url")
-    subdomains = url.pop("subdomains", "abc")
-    r = url.pop("r", "")
-    tile_url = tile_url.format(x=x, y=y, z=z, s=subdomains[0], r=r, **url)
+
+def _construct_tile_url(provider, x, y, z):
+    provider = provider.copy()
+    tile_url = provider.pop("url")
+    subdomains = provider.pop("subdomains", "abc")
+    r = provider.pop("r", "")
+    tile_url = tile_url.format(x=x, y=y, z=z, s=subdomains[0], r=r, **provider)
     return tile_url
 
 
@@ -534,6 +542,59 @@ def _calculate_zoom(w, s, e, n):
     zoom_lat = np.ceil(np.log2(360 * 2.0 / lat_length))
     zoom = np.max([zoom_lon, zoom_lat])
     return int(zoom)
+
+
+def _validate_zoom(zoom, provider, auto=True):
+    """
+    Validate the zoom level and if needed raise informative error message.
+    Returns the validated zoom.
+
+    Parameters
+    ----------
+    zoom : int
+        The specified or calculated zoom level
+    provider : dict
+    auto : bool
+        Indicating if zoom was specified or calculated (to have specific
+        error message for each case).
+
+    Returns
+    -------
+    int
+        Validated zoom level.
+
+    """
+    min_zoom = provider.get("min_zoom", 0)
+    if "max_zoom" in provider:
+        max_zoom = provider.get("max_zoom")
+        max_zoom_known = True
+    else:
+        # 22 is known max in existing providers, taking some margin
+        max_zoom = 30
+        max_zoom_known = False
+
+    if min_zoom <= zoom <= max_zoom:
+        return zoom
+
+    mode = "inferred" if auto else "specified"
+    msg = "The {0} zoom level of {1} is not valid for the current tile provider".format(
+        mode, zoom
+    )
+    if max_zoom_known:
+        msg += " (valid zooms: {0} - {1}).".format(min_zoom, max_zoom)
+    else:
+        msg += "."
+    if auto:
+        # automatically inferred zoom: clip to max zoom if that is known ...
+        if zoom > max_zoom and max_zoom_known:
+            warnings.warn(msg)
+            return max_zoom
+        # ... otherwise extend the error message with possible reasons
+        msg += (
+            " This can indicate that the extent of your figure is wrong (e.g. too "
+            "small extent, or in the wrong coordinate reference system)"
+        )
+    raise ValueError(msg)
 
 
 def _merge_tiles(tiles, arrays):

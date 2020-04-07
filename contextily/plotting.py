@@ -3,7 +3,7 @@
 import numpy as np
 from . import tile_providers as sources
 from . import providers
-from .tile import _calculate_zoom, bounds2img, _sm2ll, warp_tiles, _warper
+from .tile import bounds2img, _sm2ll, warp_tiles, _warper
 from rasterio.enums import Resampling
 from rasterio.warp import transform_bounds
 from matplotlib import patheffects
@@ -110,11 +110,7 @@ def add_basemap(
             left, right, bottom, top = _reproj_bb(
                 left, right, bottom, top, crs, {"init": "epsg:3857"}
             )
-        # Zoom
-        if isinstance(zoom, str) and (zoom.lower() == "auto"):
-            min_ll = _sm2ll(left, bottom)
-            max_ll = _sm2ll(right, top)
-            zoom = _calculate_zoom(*min_ll, *max_ll)
+        # Download image
         image, extent = bounds2img(
             left, bottom, right, top, zoom=zoom, url=url, ll=False
         )
