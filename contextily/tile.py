@@ -22,6 +22,7 @@ from rasterio.vrt import WarpedVRT
 from rasterio.enums import Resampling
 from . import tile_providers as sources
 from . import providers
+from ._providers import TileProvider
 
 __all__ = ["bounds2raster", "bounds2img",
            "warp_tiles", "warp_img_transform", "howmany"]
@@ -226,11 +227,11 @@ def _url_from_string(url):
 def _construct_tile_url(url, x, y, z):
     if url is None:
         url = providers.Stamen.Terrain
-
     if isinstance(url, str):
         url = _url_from_string(url)
-    elif not isinstance(url, dict):
-        raise TypeError("The 'url' needs to be a dict or string")
+    elif not isinstance(url, (dict, TileProvider)):
+        raise TypeError("The 'url' needs to be a contextily.providers object,"
+                        " a dict, or string")
     elif "url" not in url:
         raise ValueError("The 'url' dict should at least contain a 'url' key")
     else:
