@@ -252,7 +252,7 @@ def _process_source(source):
         provider = _url_from_string(source)
     elif not isinstance(source, (dict, TileProvider)):
         raise TypeError(
-            "The 'url' needs to be a contextily.providers object," " a dict, or string"
+            "The 'url' needs to be a contextily.providers object, a dict, or string"
         )
     elif "url" not in source:
         raise ValueError("The 'url' dict should at least contain a 'url' key")
