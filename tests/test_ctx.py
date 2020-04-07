@@ -178,17 +178,25 @@ def test_autozoom():
 
 
 def test_validate_zoom():
-    w, s, e, n = (-106.649, 25.845, -93.507, 36.493)
-    with pytest.raises(ValueError):
-        ctx.bounds2img(w, s, e, n, ll=False)
+    # tiny extent to trigger large calculated zoom
+    w, s, e, n = (0, 0, 0.001, 0.001)
 
+    # automatically inferred -> set to known max but warn
+    with pytest.warns(UserWarning, match="inferred zoom level"):
+        ctx.bounds2img(w, s, e, n)
+
+    # specify manually -> raise an error
     with pytest.raises(ValueError):
-        ctx.bounds2img(w, s, e, n, zoom=23, ll=True)
+        ctx.bounds2img(w, s, e, n, zoom=23)
 
     # with specific string url (not dict) -> error when specified
-    url = 'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png'
+    url = "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
     with pytest.raises(ValueError):
-        ctx.bounds2img(w, s, e, n, zoom=33, url=url, ll=True)
+        ctx.bounds2img(w, s, e, n, zoom=33, url=url)
+
+    # but also when inferred (no max zoom know to set to)
+    with pytest.raises(ValueError):
+        ctx.bounds2img(w, s, e, n, url=url)
 
 
 # Place

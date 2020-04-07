@@ -172,7 +172,7 @@ def bounds2img(w, s, e, n, zoom="auto", url=None, ll=False, wait=0, max_retries=
     auto_zoom = zoom == "auto"
     if auto_zoom:
         zoom = _calculate_zoom(w, s, e, n)
-    _validate_zoom(zoom, provider, auto=auto_zoom)
+    zoom = _validate_zoom(zoom, provider, auto=auto_zoom)
     # download and merge tiles
     tiles = []
     arrays = []
@@ -522,6 +522,7 @@ def _calculate_zoom(w, s, e, n):
 def _validate_zoom(zoom, provider, auto=True):
     """
     Validate the zoom level and if needed raise informative error message.
+    Returns the validated zoom.
 
     Parameters
     ----------
@@ -531,6 +532,11 @@ def _validate_zoom(zoom, provider, auto=True):
     auto : bool
         Indicating if zoom was specified or calculated (to have specific
         error message for each case).
+
+    Returns
+    -------
+    int
+        Validated zoom level.
 
     """
     min_zoom = provider.get("min_zoom", 0)
@@ -543,7 +549,7 @@ def _validate_zoom(zoom, provider, auto=True):
         max_zoom_known = False
 
     if min_zoom <= zoom <= max_zoom:
-        return
+        return zoom
 
     mode = "inferred" if auto else "specified"
     msg = "The {0} zoom level of {1} is not valid for the current tile provider".format(
@@ -554,7 +560,11 @@ def _validate_zoom(zoom, provider, auto=True):
     else:
         msg += "."
     if auto:
-        # automatically inferred zoom: extend error message with possible reasons
+        # automatically inferred zoom: clip to max zoom if that is known ...
+        if zoom > max_zoom and max_zoom_known:
+            warnings.warn(msg)
+            return max_zoom
+        # ... otherwise extend the error message with possible reasons
         msg += (
             " This can indicate that the extent of your figure is wrong (e.g. too "
             "small extent, or in the wrong coordinate reference system)"

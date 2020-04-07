@@ -3,14 +3,7 @@
 import numpy as np
 from . import tile_providers as sources
 from . import providers
-from .tile import (
-    _calculate_zoom,
-    bounds2img,
-    _sm2ll,
-    warp_tiles,
-    _warper,
-    _validate_zoom,
-)
+from .tile import bounds2img, _sm2ll, warp_tiles, _warper
 from rasterio.enums import Resampling
 from rasterio.warp import transform_bounds
 from matplotlib import patheffects
