@@ -16,7 +16,7 @@ def test_sources():
     sources = tilers.deprecated_sources
     for src in sources:
         img, ext = ctx.bounds2img(
-            w, s, e, n, 4, url=getattr(tilers, '_'+src), ll=True)
+            w, s, e, n, 4, url=getattr(tilers, src), ll=True)
 
 
 def test_deprecated_url_format():
