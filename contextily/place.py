@@ -120,8 +120,8 @@ class Place(object):
         Plot a `Place` object
         ...
 
-        Arguments
-        ---------
+        Parameters
+        ----------
         ax                  : AxesSubplot
                               Matplotlib axis with `x_lim` and `y_lim` set in Web
                               Mercator (EPSG=3857). If not provided, a new
@@ -149,8 +149,8 @@ class Place(object):
                               Matplotlib axis with `x_lim` and `y_lim` set in Web
                               Mercator (EPSG=3857) containing the basemap
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> lvl = ctx.Place('Liverpool')
         >>> lvl.plot()

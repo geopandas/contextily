@@ -26,11 +26,10 @@ def add_basemap(
     resampling=Resampling.bilinear,
     **extra_imshow_args):
     """
-    Add a (web/local) basemap to `ax`
-    ...
+    Add a (web/local) basemap to `ax`.
 
-    Arguments
-    ---------
+    Parameters
+    ----------
     ax                  : AxesSubplot
                           Matplotlib axis with `x_lim` and `y_lim` set in Web
                           Mercator (EPSG=3857)
@@ -75,8 +74,8 @@ def add_basemap(
     **extra_imshow_args :
                           Other parameters to be passed to `imshow`.
 
-    Example
-    -------
+    Examples
+    --------
 
     >>> db = gpd.read_file(ps.examples.get_path('virginia.shp'))\
                 .to_crs(epsg=3857)
@@ -160,8 +159,8 @@ def add_attribution(ax, text, font_size=ATTRIBUTION_SIZE, **kwargs):
     """
     Utility to add attribution text.
 
-    Arguments
-    ---------
+    Parameters
+    ----------
     ax                  : AxesSubplot
                           Matplotlib axis with `x_lim` and `y_lim` set in Web
                           Mercator (EPSG=3857)

@@ -46,10 +46,8 @@ def bounds2raster(
     Take bounding box and zoom, and write tiles into a raster file in
     the Spherical Mercator CRS (EPSG:3857)
 
-    ...
-
-    Arguments
-    ---------
+    Parameters
+    ----------
     w       : float
               West edge
     s       : float
@@ -124,10 +122,8 @@ def bounds2img(w, s, e, n, zoom="auto", url=None, ll=False, wait=0, max_retries=
     Take bounding box and zoom and return an image with all the tiles
     that compose the map and its Spherical Mercator extent.
 
-    ...
-
-    Arguments
-    ---------
+    Parameters
+    ----------
     w       : float
               West edge
     s       : float
@@ -246,10 +242,9 @@ def warp_tiles(img, extent, t_crs="EPSG:4326", resampling=Resampling.bilinear):
 
     NOTE: this method works well with contextily's `bounds2img` approach to
           raster dimensions (h, w, b)
-    ...
 
-    Arguments
-    ---------
+    Parameters
+    ----------
     img         : ndarray
                   Image as a 3D array (h, w, b) of RGB values (e.g. as
                   returned from `contextily.bounds2img`)
@@ -261,7 +256,7 @@ def warp_tiles(img, extent, t_crs="EPSG:4326", resampling=Resampling.bilinear):
                   format permitted by rasterio. Defaults to WGS84 (lon/lat)
     resampling  : <enum 'Resampling'>
                   [Optional. Default=Resampling.bilinear] Resampling method for
-                  executing warping, expressed as a `rasterio.enums.Resampling
+                  executing warping, expressed as a `rasterio.enums.Resampling`
                   method
 
     Returns
@@ -296,11 +291,10 @@ def warp_img_transform(img, transform, s_crs, t_crs, resampling=Resampling.bilin
     different `t_crs`
 
     NOTE: this method works well with rasterio's `.read()` approach to
-          raster's dimensions (b, h, w)
-    ...
+    raster's dimensions (b, h, w)
 
-    Arguments
-    ---------
+    Parameters
+    ----------
     img         : ndarray
                   Image as a 3D array (b, h, w) of RGB values (e.g. as
                   returned from rasterio's `.read()` method)
@@ -314,7 +308,7 @@ def warp_img_transform(img, transform, s_crs, t_crs, resampling=Resampling.bilin
                   Target CRS, expressed in any format permitted by rasterio.
     resampling  : <enum 'Resampling'>
                   [Optional. Default=Resampling.bilinear] Resampling method for
-                  executing warping, expressed as a `rasterio.enums.Resampling
+                  executing warping, expressed as a `rasterio.enums.Resampling`
                   method
 
     Returns
@@ -395,10 +389,9 @@ def _retryer(tile_url, wait, max_retries):
 def howmany(w, s, e, n, zoom, verbose=True, ll=False):
     """
     Number of tiles required for a given bounding box and a zoom level
-    ...
 
-    Arguments
-    ---------
+    Parameters
+    ----------
     w       : float
               West edge
     s       : float
@@ -431,10 +424,9 @@ def howmany(w, s, e, n, zoom, verbose=True, ll=False):
 def bb2wdw(bb, rtr):
     """
     Convert XY bounding box into the window of the tile raster
-    ...
 
-    Arguments
-    ---------
+    Parameters
+    ----------
     bb      : tuple
               (left, bottom, right, top) in the CRS of `rtr`
     rtr     : RasterReader
