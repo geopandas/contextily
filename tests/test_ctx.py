@@ -280,11 +280,36 @@ def test_add_basemap():
     assert_array_almost_equal(ax.images[0].get_array().mean(), 177.20665995279947)
 
     # Test local source
+    ## Windowed read
+    subset = (
+        -11730803.981631357,
+        -11711668.223149346,
+        4862910.488797557,
+        4882046.247279563,
+    )
+
+    f, ax = matplotlib.pyplot.subplots(1)
+    ax.set_xlim(subset[0], subset[1])
+    ax.set_ylim(subset[2], subset[3])
+    loc = ctx.Place(SEARCH, path="./test2.tif", zoom_adjust=ADJUST)
+    ctx.add_basemap(ax, url="./test2.tif", reset_extent=True)
+
+    raster_extent = (
+        -11740803.981631357,
+        -11701668.223149346,
+        4852910.488797556,
+        4892046.247279563,
+    )
+    assert_array_almost_equal(raster_extent, ax.images[0].get_extent())
+    assert ax.images[0].get_array().sum() == 8440966
+    assert ax.images[0].get_array().shape == (126, 126, 3)
+    assert_array_almost_equal(ax.images[0].get_array().mean(), 177.22696733014195)
+    ## Full read
     f, ax = matplotlib.pyplot.subplots(1)
     ax.set_xlim(x1, x2)
     ax.set_ylim(y1, y2)
     loc = ctx.Place(SEARCH, path="./test2.tif", zoom_adjust=ADJUST)
-    ctx.add_basemap(ax, source="./test2.tif")
+    ctx.add_basemap(ax, source="./test2.tif", reset_extent=False)
 
     raster_extent = (
         -11740803.981631357,
@@ -336,9 +361,9 @@ def test_add_basemap():
     )
     assert ax.get_xlim() == (x1, x2)
     assert ax.get_ylim() == (y1, y2)
-    assert ax.images[0].get_array().sum() == 724238693
-    assert ax.images[0].get_array().shape == (1135, 1183, 3)
-    assert_array_almost_equal(ax.images[0].get_array().mean(), 179.79593258881636)
+    assert ax.images[0].get_array().sum() == 464751694
+    assert ax.images[0].get_array().shape == (980, 862, 3)
+    assert_array_almost_equal(ax.images[0].get_array().mean(), 183.38608756727749)
 
 
 def test_basemap_attribution():

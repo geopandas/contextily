@@ -1,5 +1,6 @@
 """Tools to plot basemaps"""
 
+import warnings
 import numpy as np
 from . import tile_providers as sources
 from . import providers
@@ -145,22 +146,60 @@ def add_basemap(
 
         # Read file
         with rio.open(source) as raster:
-            image = np.array([band for band in raster.read()])
+            if reset_extent:
+                from rasterio.mask import mask as riomask
+
+                # Read window
+                if crs:
+                    left, bottom, right, top = rio.warp.transform_bounds(
+                        crs, raster.crs, xmin, ymin, xmax, ymax
+                    )
+                else:
+                    left, bottom, right, top = xmin, ymin, xmax, ymax
+                window = [
+                    {
+                        "type": "Polygon",
+                        "coordinates": (
+                            (
+                                (left, bottom),
+                                (right, bottom),
+                                (right, top),
+                                (left, top),
+                                (left, bottom),
+                            ),
+                        ),
+                    }
+                ]
+                image, img_transform = riomask(raster, window, crop=True)
+            else:
+                # Read full
+                image = np.array([band for band in raster.read()])
+                img_transform = raster.transform
             # Warp
             if (crs is not None) and (raster.crs != crs):
                 image, raster = _warper(
-                    image, raster.transform, raster.crs, crs, resampling
+                    image, img_transform, raster.crs, crs, resampling
                 )
             image = image.transpose(1, 2, 0)
             bb = raster.bounds
             extent = bb.left, bb.right, bb.bottom, bb.top
     # Plotting
+    if image.shape[2] == 1:
+        image = image[:, :, 0]
     img = ax.imshow(
         image, extent=extent, interpolation=interpolation, **extra_imshow_args
     )
 
     if reset_extent:
         ax.axis((xmin, xmax, ymin, ymax))
+    else:
+        max_bounds = (
+            min(xmin, extent[0]),
+            max(xmax, extent[1]),
+            min(ymin, extent[2]),
+            max(ymax, extent[3]),
+        )
+        ax.axis(max_bounds)
 
     # Add attribution text
     if source is None:
