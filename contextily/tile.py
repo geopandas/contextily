@@ -95,11 +95,15 @@ def bounds2raster(
         Level of detail
     path : str
         Path to raster file to be written
-    source : contextily.tile or str
-        [Optional. Default: 'http://tile.stamen.com/terrain/{z}/{z}/{y}.png']
-        URL for tile provider. The placeholders for the XYZ need to be
-        `{x}`, `{y}`, `{z}`, respectively. IMPORTANT: tiles are
-        assumed to be in the Spherical Mercator projection (EPSG:3857).
+    source : contextily.providers object or str
+        [Optional. Default: Stamen Terrain web tiles]
+        The tile source: web tile provider or path to local file. The web tile
+        provider can be in the form of a `contextily.providers` object or a
+        URL. The placeholders for the XYZ in the URL need to be `{x}`, `{y}`,
+        `{z}`, respectively. For local file paths, the file is read with
+        `rasterio` and all bands are loaded into the basemap.
+        IMPORTANT: tiles are assumed to be in the Spherical Mercator
+        projection (EPSG:3857), unless the `crs` keyword is specified.
     ll : Boolean
         [Optional. Default: False] If True, `w`, `s`, `e`, `n` are
         assumed to be lon/lat as opposed to Spherical Mercator.
@@ -176,11 +180,15 @@ def bounds2img(
         North edge
     zoom : int
         Level of detail
-    source : contextily.tile or str
-        [Optional. Default: 'http://tile.stamen.com/terrain/{z}/{x}/{y}.png']
-        URL for tile provider. The placeholders for the XYZ need to be
-        `{x}`, `{y}`, `{z}`, respectively. IMPORTANT: tiles are
-        assumed to be in the Spherical Mercator projection (EPSG:3857).
+    source : contextily.providers object or str
+        [Optional. Default: Stamen Terrain web tiles]
+        The tile source: web tile provider or path to local file. The web tile
+        provider can be in the form of a `contextily.providers` object or a
+        URL. The placeholders for the XYZ in the URL need to be `{x}`, `{y}`,
+        `{z}`, respectively. For local file paths, the file is read with
+        `rasterio` and all bands are loaded into the basemap.
+        IMPORTANT: tiles are assumed to be in the Spherical Mercator
+        projection (EPSG:3857), unless the `crs` keyword is specified.
     ll : Boolean
         [Optional. Default: False] If True, `w`, `s`, `e`, `n` are
         assumed to be lon/lat as opposed to Spherical Mercator.

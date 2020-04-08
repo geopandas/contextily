@@ -35,21 +35,24 @@ def add_basemap(
     Parameters
     ----------
     ax : AxesSubplot
-        Matplotlib axis with `x_lim` and `y_lim` set in Web
-        Mercator (EPSG=3857)
+        Matplotlib axes object on which to add the basemap. The extent of the
+        axes is assumed to be in Spherical Mercator (EPSG:3857), unless the `crs`
+        keyword is specified.
     zoom : int or 'auto'
-        [Optional. Default='auto'] Level of detail for the
-        basemap. If 'auto', if calculates it automatically.
-        Ignored if `source` is a local file.
-    source : contextily.tile or str
-        [Optional. Default: 'http://tile.stamen.com/terrain/{z}/{x}/{y}.png']
-        URL for tile provider. The placeholders for the XYZ need to be
-        `{x}`, `{y}`, `{z}`, respectively. IMPORTANT: tiles are
-        assumed to be in the Spherical Mercator projection (EPSG:3857).
+        [Optional. Default='auto'] Level of detail for the basemap. If 'auto',
+        it is calculated automatically. Ignored if `source` is a local file.
+    source : contextily.providers object or str
+        [Optional. Default: Stamen Terrain web tiles]
+        The tile source: web tile provider or path to local file. The web tile
+        provider can be in the form of a `contextily.providers` object or a
+        URL. The placeholders for the XYZ in the URL need to be `{x}`, `{y}`,
+        `{z}`, respectively. For local file paths, the file is read with
+        `rasterio` and all bands are loaded into the basemap.
+        IMPORTANT: tiles are assumed to be in the Spherical Mercator
+        projection (EPSG:3857), unless the `crs` keyword is specified.
     interpolation : str
-        [Optional. Default='bilinear'] Interpolation
-        algorithm to be passed to `imshow`. See
-        `matplotlib.pyplot.imshow` for further details.
+        [Optional. Default='bilinear'] Interpolation algorithm to be passed
+        to `imshow`. See `matplotlib.pyplot.imshow` for further details.
     attribution : str
         [Optional. Defaults to attribution specified by the source]
         Text to be added at the bottom of the axis. This
@@ -66,14 +69,12 @@ def add_basemap(
         ylim) of `ax`
     crs : None or str or CRS
         [Optional. Default=None] coordinate reference system (CRS),
-        expressed in any format permitted by rasterio, to
-        use for the resulting basemap. If
-        None (default), no warping is performed and the
-        original Web Mercator (`EPSG:3857`, 
-        {'init' :'epsg:3857'}) is used.
+        expressed in any format permitted by rasterio, to use for the
+        resulting basemap. If None (default), no warping is performed
+        and the original Spherical Mercator (EPSG:3857) is used.
     resampling : <enum 'Resampling'>
-        [Optional. Default=Resampling.bilinear] Resampling 
-        method for executing warping, expressed as a 
+        [Optional. Default=Resampling.bilinear] Resampling
+        method for executing warping, expressed as a
         `rasterio.enums.Resampling` method
     url : str [DEPRECATED]
         [Optional. Default: 'http://tile.stamen.com/terrain/{z}/{x}/{y}.png']
@@ -86,8 +87,13 @@ def add_basemap(
     Examples
     --------
 
-    >>> db = gpd.read_file(ps.examples.get_path('virginia.shp'))\
-                .to_crs(epsg=3857)
+    >>> import geopandas
+    >>> import contextily as ctx
+    >>> db = geopandas.read_file(ps.examples.get_path('virginia.shp'))
+
+    Ensure the data is in Spherical Mercator:
+
+    >>> db = db.to_crs(epsg=3857)
 
     Add a web basemap:
 
@@ -224,8 +230,7 @@ def add_attribution(ax, text, font_size=ATTRIBUTION_SIZE, **kwargs):
     Parameters
     ----------
     ax : AxesSubplot
-        Matplotlib axis with `x_lim` and `y_lim` set in Web
-        Mercator (EPSG=3857)
+        Matplotlib axes object on which to add the attribution text.
     text : str
         Text to be added at the bottom of the axis.
     font_size : int
