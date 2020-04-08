@@ -96,13 +96,17 @@ def test_warp_tiles():
     )
     img, ext = ctx.bounds2img(w, s, e, n, zoom=4, ll=True)
     wimg, wext = ctx.warp_tiles(img, ext)
-    assert_array_almost_equal(np.array(wext), \
-                              np.array([-112.54394531249996,
-                                        -90.07903186397023,
-                                        21.966726124122374,
-                                        41.013065787006276
-                                        ])
-                              )
+    assert_array_almost_equal(
+        np.array(wext),
+        np.array(
+            [
+                -112.54394531249996,
+                -90.07903186397023,
+                21.966726124122374,
+                41.013065787006276,
+            ]
+        ),
+    )
     assert wimg[100, 100, :].tolist() == [228, 221, 184]
     assert wimg[100, 200, :].tolist() == [213, 219, 177]
     assert wimg[200, 100, :].tolist() == [133, 130, 109]
@@ -192,11 +196,11 @@ def test_validate_zoom():
     # with specific string url (not dict) -> error when specified
     url = "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
     with pytest.raises(ValueError):
-        ctx.bounds2img(w, s, e, n, zoom=33, url=url)
+        ctx.bounds2img(w, s, e, n, zoom=33, source=url)
 
     # but also when inferred (no max zoom know to set to)
     with pytest.raises(ValueError):
-        ctx.bounds2img(w, s, e, n, url=url)
+        ctx.bounds2img(w, s, e, n, source=url)
 
 
 # Place
@@ -294,7 +298,7 @@ def test_add_basemap():
         -11740803.981631357,
         -11701668.223149346,
         4852910.488797556,
-        4892046.247279563
+        4892046.247279563,
     )
     assert_array_almost_equal(raster_extent, ax.images[0].get_extent())
     assert ax.images[0].get_array().sum() == 8440966
@@ -305,7 +309,7 @@ def test_add_basemap():
     ax.set_xlim(x1, x2)
     ax.set_ylim(y1, y2)
     loc = ctx.Place(SEARCH, path="./test2.tif", zoom_adjust=ADJUST)
-    ctx.add_basemap(ax, url="./test2.tif", reset_extent=False)
+    ctx.add_basemap(ax, source="./test2.tif", reset_extent=False)
 
     raster_extent = (
         -11740803.981631357,
@@ -352,7 +356,9 @@ def test_add_basemap():
     f, ax = matplotlib.pyplot.subplots(1)
     ax.set_xlim(x1, x2)
     ax.set_ylim(y1, y2)
-    ctx.add_basemap(ax, url="./test2.tif", crs={"init": "epsg:4326"}, attribution=None)
+    ctx.add_basemap(
+        ax, source="./test2.tif", crs={"init": "epsg:4326"}, attribution=None
+    )
     assert ax.get_xlim() == (x1, x2)
     assert ax.get_ylim() == (y1, y2)
     assert ax.images[0].get_array().sum() == 464751694
@@ -374,14 +380,14 @@ def test_basemap_attribution():
     fig, ax = matplotlib.pyplot.subplots()
     ax.axis(extent)
     ctx.add_basemap(ax)
-    txt, = get_attr(ax)
+    (txt,) = get_attr(ax)
     assert txt.get_text() == ctx.providers.Stamen.Terrain["attribution"]
 
     # override attribution
     fig, ax = matplotlib.pyplot.subplots()
     ax.axis(extent)
     ctx.add_basemap(ax, attribution="custom text")
-    txt, = get_attr(ax)
+    (txt,) = get_attr(ax)
     assert txt.get_text() == "custom text"
 
     # disable attribution
@@ -393,8 +399,8 @@ def test_basemap_attribution():
     # specified provider
     fig, ax = matplotlib.pyplot.subplots()
     ax.axis(extent)
-    ctx.add_basemap(ax, url=ctx.providers.OpenStreetMap.Mapnik)
-    txt, = get_attr(ax)
+    ctx.add_basemap(ax, source=ctx.providers.OpenStreetMap.Mapnik)
+    (txt,) = get_attr(ax)
     assert txt.get_text() == ctx.providers.OpenStreetMap.Mapnik["attribution"]
 
 
