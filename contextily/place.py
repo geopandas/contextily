@@ -35,9 +35,9 @@ class Place(object):
         [Optional. Default: Stamen Terrain web tiles]
         The tile source: web tile provider or path to local file. The web tile
         provider can be in the form of a `contextily.providers` object or a
-        URL. The placeholders for the XYZ need to be `{x}`, `{y}`, `{z}`,
-        respectively. For local file paths, the file is read with `rasterio`
-        and all bands are loaded into the basemap.
+        URL. The placeholders for the XYZ in the URL need to be `{x}`, `{y}`,
+        `{z}`, respectively. For local file paths, the file is read with
+        `rasterio` and all bands are loaded into the basemap.
         IMPORTANT: tiles are assumed to be in the Spherical Mercator
         projection (EPSG:3857), unless the `crs` keyword is specified.
     url : str [DEPRECATED]
