@@ -6,7 +6,6 @@ from . import providers
 from .tile import _calculate_zoom, bounds2img, _sm2ll, warp_tiles, _warper
 from rasterio.enums import Resampling
 from rasterio.warp import transform_bounds
-from shapely.geometry import Polygon
 from matplotlib import patheffects
 from matplotlib.pyplot import draw
 
@@ -162,8 +161,6 @@ def add_basemap(
     # Plotting
     if image.shape[2] == 1:
         image = image[:, :, 0]
-        print(image.shape)
-        print(extent)
     img = ax.imshow(
         image, extent=extent, interpolation=interpolation, **extra_imshow_args
     )
