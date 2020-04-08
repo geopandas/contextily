@@ -72,9 +72,9 @@ def bounds2raster(
     path    : str
               Path to raster file to be written
     source  : contextily.tile or str
-              [Optional. Default: 'http://tile.stamen.com/terrain/tileZ/tileX/tileY.png']
+              [Optional. Default: 'http://tile.stamen.com/terrain/{z}/{z}/{y}.png']
               URL for tile provider. The placeholders for the XYZ need to be
-              `tileX`, `tileY`, `tileZ`, respectively. IMPORTANT: tiles are
+              `{x}`, `{y}`, `{z}`, respectively. IMPORTANT: tiles are
               assumed to be in the Spherical Mercator projection (EPSG:3857).
     ll      : Boolean
               [Optional. Default: False] If True, `w`, `s`, `e`, `n` are
@@ -89,9 +89,9 @@ def bounds2raster(
                  will stop trying to fetch more tiles from a rate-limited API.
     url     : str [DEPRECATED]
               [Optional. Default:
-              'http://tile.stamen.com/terrain/tileZ/tileX/tileY.png'] URL for
-              tile provider. The placeholders for the XYZ need to be `tileX`,
-              `tileY`, `tileZ`, respectively. See `cx.sources`.
+              'http://tile.stamen.com/terrain/{z}/{x}/{y}.png'] URL for
+              tile provider. The placeholders for the XYZ need to be `{x}`,
+              `{y}`, `{z}`, respectively. See `cx.sources`.
 
     Returns
     -------
@@ -153,9 +153,9 @@ def bounds2img(
     zoom    : int
               Level of detail
     source  : contextily.tile or str
-              [Optional. Default: 'http://tile.stamen.com/terrain/tileZ/tileX/tileY.png']
+              [Optional. Default: 'http://tile.stamen.com/terrain/{z}/{x}/{y}.png']
               URL for tile provider. The placeholders for the XYZ need to be
-              `tileX`, `tileY`, `tileZ`, respectively. IMPORTANT: tiles are
+              `{x}`, `{y}`, `{z}`, respectively. IMPORTANT: tiles are
               assumed to be in the Spherical Mercator projection (EPSG:3857).
     ll      : Boolean
               [Optional. Default: False] If True, `w`, `s`, `e`, `n` are
@@ -169,9 +169,9 @@ def bounds2img(
                  total number of rejected requests allowed before contextily
                  will stop trying to fetch more tiles from a rate-limited API.
     url     : str [DEPRECATED]
-              [Optional. Default: 'http://tile.stamen.com/terrain/tileZ/tileX/tileY.png']
+              [Optional. Default: 'http://tile.stamen.com/terrain/{z}/{x}/{y}.png']
               URL for tile provider. The placeholders for the XYZ need to be
-              `tileX`, `tileY`, `tileZ`, respectively. IMPORTANT: tiles are
+              `{x}`, `{y}`, `{z}`, respectively. IMPORTANT: tiles are
               assumed to be in the Spherical Mercator projection (EPSG:3857).
 
     Returns

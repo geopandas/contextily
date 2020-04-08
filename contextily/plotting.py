@@ -75,7 +75,7 @@ def add_basemap(
                           method for executing warping, expressed as a 
                           `rasterio.enums.Resampling` method
     url                 : str [DEPRECATED]
-                          [Optional. Default: 'http://tile.stamen.com/terrain/tileZ/tileX/tileY.png']
+                          [Optional. Default: 'http://tile.stamen.com/terrain/{z}/{x}/{y}.png']
                           Source url for web tiles, or path to local file. If
                           local, the file is read with `rasterio` and all
                           bands are loaded into the basemap.
