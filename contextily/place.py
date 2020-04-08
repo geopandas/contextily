@@ -20,27 +20,27 @@ class Place(object):
     search : string
         The location to be searched.
     zoom : int or None
-           [Optional. Default: None]
-           The level of detail to include in the map. Higher levels mean more
-           tiles and thus longer download time. If None, the zoom level will be
-           automatically determined.
+        [Optional. Default: None]
+        The level of detail to include in the map. Higher levels mean more
+        tiles and thus longer download time. If None, the zoom level will be
+        automatically determined.
     path : str or None
-           [Optional. Default: None]
-           Path to a raster file that will be created after getting the place map.
-           If None, no raster file will be downloaded.
+        [Optional. Default: None]
+        Path to a raster file that will be created after getting the place map.
+        If None, no raster file will be downloaded.
     zoom_adjust : int or None
-                  [Optional. Default: None]
-                  The amount to adjust a chosen zoom level if it is chosen automatically.
+        [Optional. Default: None]
+        The amount to adjust a chosen zoom level if it is chosen automatically.
     source : contextily.tile or str
-             [Optional. Default: 'http://tile.stamen.com/terrain/{z}/{x}/{y}.png']
-             URL for tile provider. The placeholders for the XYZ need to be
-             `{x}`, `{y}`, `{z}`, respectively. IMPORTANT: tiles are
-             assumed to be in the Spherical Mercator projection (EPSG:3857).
-    url    : str [DEPRECATED]
-             [Optional. Default: 'http://tile.stamen.com/terrain/{z}/{x}/{y}.png']
-             Source url for web tiles, or path to local file. If
-             local, the file is read with `rasterio` and all
-             bands are loaded into the basemap.
+        [Optional. Default: 'http://tile.stamen.com/terrain/{z}/{x}/{y}.png']
+        URL for tile provider. The placeholders for the XYZ need to be
+        `{x}`, `{y}`, `{z}`, respectively. IMPORTANT: tiles are
+        assumed to be in the Spherical Mercator projection (EPSG:3857).
+    url : str [DEPRECATED]
+        [Optional. Default: 'http://tile.stamen.com/terrain/{z}/{x}/{y}.png']
+        Source url for web tiles, or path to local file. If
+        local, the file is read with `rasterio` and all
+        bands are loaded into the basemap.
 
     Attributes
     ----------
@@ -150,32 +150,32 @@ class Place(object):
 
         Parameters
         ----------
-        ax                  : AxesSubplot
-                              Matplotlib axis with `x_lim` and `y_lim` set in Web
-                              Mercator (EPSG=3857). If not provided, a new
-                              12x12 figure will be set and the name of the place
-                              will be added as title
-        zoom                : int/'auto'
-                              [Optional. Default='auto'] Level of detail for the
-                              basemap. If 'auto', if calculates it automatically.
-                              Ignored if `source` is a local file.
-        interpolation       : str
-                              [Optional. Default='bilinear'] Interpolation
-                              algorithm to be passed to `imshow`. See
-                              `matplotlib.pyplot.imshow` for further details.
-        attribution         : str
-                              [Optional. Defaults to attribution specified by the source of the map tiles]
-                              Text to be added at the bottom of the axis. This
-                              defaults to the attribution of the provider specified
-                              in `source` if available. Specify False to not
-                              automatically add an attribution, or a string to pass
-                              a custom attribution.
+        ax : AxesSubplot
+            Matplotlib axis with `x_lim` and `y_lim` set in Web
+            Mercator (EPSG=3857). If not provided, a new
+            12x12 figure will be set and the name of the place
+            will be added as title
+        zoom : int/'auto'
+            [Optional. Default='auto'] Level of detail for the
+            basemap. If 'auto', if calculates it automatically.
+            Ignored if `source` is a local file.
+        interpolation : str
+            [Optional. Default='bilinear'] Interpolation
+            algorithm to be passed to `imshow`. See
+            `matplotlib.pyplot.imshow` for further details.
+        attribution : str
+            [Optional. Defaults to attribution specified by the source of the map tiles]
+            Text to be added at the bottom of the axis. This
+            defaults to the attribution of the provider specified
+            in `source` if available. Specify False to not
+            automatically add an attribution, or a string to pass
+            a custom attribution.
 
         Returns
         -------
-        ax                  : AxesSubplot
-                              Matplotlib axis with `x_lim` and `y_lim` set in Web
-                              Mercator (EPSG=3857) containing the basemap
+        ax : AxesSubplot
+            Matplotlib axis with `x_lim` and `y_lim` set in Web
+            Mercator (EPSG=3857) containing the basemap
 
         Examples
         --------
@@ -219,21 +219,21 @@ def plot_map(
 
     Parameters
     ----------
-    place : instance of Place | ndarray
+    place : instance of Place or ndarray
         The map to plot. If an ndarray, this must be an image corresponding
         to a map. If an instance of ``Place``, the extent of the image and name
         will be inferred from the bounding box.
-    ax : instance of matplotlib Axes object | None
+    ax : instance of matplotlib Axes object or None
         The axis on which to plot. If None, one will be created.
     axis_off : bool
         Whether to turn off the axis border and ticks before plotting.
     attribution : str
-                  [Optional. Default to standard `ATTRIBUTION`] Text to be added at the
-                  bottom of the axis.
+        [Optional. Default to standard `ATTRIBUTION`] Text to be added at the
+        bottom of the axis.
 
     Returns
     -------
-    ax : instance of matplotlib Axes object | None
+    ax : instance of matplotlib Axes object or None
         The axis on the map is plotted.
     """
     warn(

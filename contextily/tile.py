@@ -59,46 +59,46 @@ def bounds2raster(
 
     Parameters
     ----------
-    w       : float
-              West edge
-    s       : float
-              South edge
-    e       : float
-              East edge
-    n       : float
-              North edge
-    zoom    : int
-              Level of detail
-    path    : str
-              Path to raster file to be written
-    source  : contextily.tile or str
-              [Optional. Default: 'http://tile.stamen.com/terrain/{z}/{z}/{y}.png']
-              URL for tile provider. The placeholders for the XYZ need to be
-              `{x}`, `{y}`, `{z}`, respectively. IMPORTANT: tiles are
-              assumed to be in the Spherical Mercator projection (EPSG:3857).
-    ll      : Boolean
-              [Optional. Default: False] If True, `w`, `s`, `e`, `n` are
-              assumed to be lon/lat as opposed to Spherical Mercator.
-    wait    : int
-              [Optional. Default: 0]
-              if the tile API is rate-limited, the number of seconds to wait
-              between a failed request and the next try
+    w : float
+        West edge
+    s : float
+        South edge
+    e : float
+        East edge
+    n : float
+        North edge
+    zoom : int
+        Level of detail
+    path : str
+        Path to raster file to be written
+    source : contextily.tile or str
+        [Optional. Default: 'http://tile.stamen.com/terrain/{z}/{z}/{y}.png']
+        URL for tile provider. The placeholders for the XYZ need to be
+        `{x}`, `{y}`, `{z}`, respectively. IMPORTANT: tiles are
+        assumed to be in the Spherical Mercator projection (EPSG:3857).
+    ll : Boolean
+        [Optional. Default: False] If True, `w`, `s`, `e`, `n` are
+        assumed to be lon/lat as opposed to Spherical Mercator.
+    wait : int
+        [Optional. Default: 0]
+        if the tile API is rate-limited, the number of seconds to wait
+        between a failed request and the next try
     max_retries: int
-                 [Optional. Default: 2]
-                 total number of rejected requests allowed before contextily
-                 will stop trying to fetch more tiles from a rate-limited API.
-    url     : str [DEPRECATED]
-              [Optional. Default:
-              'http://tile.stamen.com/terrain/{z}/{x}/{y}.png'] URL for
-              tile provider. The placeholders for the XYZ need to be `{x}`,
-              `{y}`, `{z}`, respectively. See `cx.sources`.
+        [Optional. Default: 2]
+        total number of rejected requests allowed before contextily
+        will stop trying to fetch more tiles from a rate-limited API.
+    url : str [DEPRECATED]
+        [Optional. Default:
+        'http://tile.stamen.com/terrain/{z}/{x}/{y}.png'] URL for
+        tile provider. The placeholders for the XYZ need to be `{x}`,
+        `{y}`, `{z}`, respectively. See `cx.sources`.
 
     Returns
     -------
-    img     : ndarray
-              Image as a 3D array of RGB values
-    extent  : tuple
-              Bounding box [minX, maxX, minY, maxY] of the returned image
+    img : ndarray
+        Image as a 3D array of RGB values
+    extent : tuple
+        Bounding box [minX, maxX, minY, maxY] of the returned image
     """
     if not ll:
         # Convert w, s, e, n into lon/lat
@@ -142,44 +142,44 @@ def bounds2img(
 
     Parameters
     ----------
-    w       : float
-              West edge
-    s       : float
-              South edge
-    e       : float
-              East edge
-    n       : float
-              North edge
-    zoom    : int
-              Level of detail
-    source  : contextily.tile or str
-              [Optional. Default: 'http://tile.stamen.com/terrain/{z}/{x}/{y}.png']
-              URL for tile provider. The placeholders for the XYZ need to be
-              `{x}`, `{y}`, `{z}`, respectively. IMPORTANT: tiles are
-              assumed to be in the Spherical Mercator projection (EPSG:3857).
-    ll      : Boolean
-              [Optional. Default: False] If True, `w`, `s`, `e`, `n` are
-              assumed to be lon/lat as opposed to Spherical Mercator.
-    wait    : int
-              [Optional. Default: 0]
-              if the tile API is rate-limited, the number of seconds to wait
-              between a failed request and the next try
+    w : float
+        West edge
+    s : float
+        South edge
+    e : float
+        East edge
+    n : float
+        North edge
+    zoom : int
+        Level of detail
+    source : contextily.tile or str
+        [Optional. Default: 'http://tile.stamen.com/terrain/{z}/{x}/{y}.png']
+        URL for tile provider. The placeholders for the XYZ need to be
+        `{x}`, `{y}`, `{z}`, respectively. IMPORTANT: tiles are
+        assumed to be in the Spherical Mercator projection (EPSG:3857).
+    ll : Boolean
+        [Optional. Default: False] If True, `w`, `s`, `e`, `n` are
+        assumed to be lon/lat as opposed to Spherical Mercator.
+    wait : int
+        [Optional. Default: 0]
+        if the tile API is rate-limited, the number of seconds to wait
+        between a failed request and the next try
     max_retries: int
-                 [Optional. Default: 2]
-                 total number of rejected requests allowed before contextily
-                 will stop trying to fetch more tiles from a rate-limited API.
-    url     : str [DEPRECATED]
-              [Optional. Default: 'http://tile.stamen.com/terrain/{z}/{x}/{y}.png']
-              URL for tile provider. The placeholders for the XYZ need to be
-              `{x}`, `{y}`, `{z}`, respectively. IMPORTANT: tiles are
-              assumed to be in the Spherical Mercator projection (EPSG:3857).
+        [Optional. Default: 2]
+        total number of rejected requests allowed before contextily
+        will stop trying to fetch more tiles from a rate-limited API.
+    url : str [DEPRECATED]
+        [Optional. Default: 'http://tile.stamen.com/terrain/{z}/{x}/{y}.png']
+        URL for tile provider. The placeholders for the XYZ need to be
+        `{x}`, `{y}`, `{z}`, respectively. IMPORTANT: tiles are
+        assumed to be in the Spherical Mercator projection (EPSG:3857).
 
     Returns
     -------
-    img     : ndarray
-              Image as a 3D array of RGB values
-    extent  : tuple
-              Bounding box [minX, maxX, minY, maxY] of the returned image
+    img : ndarray
+        Image as a 3D array of RGB values
+    extent : tuple
+        Bounding box [minX, maxX, minY, maxY] of the returned image
     """
     if not ll:
         # Convert w, s, e, n into lon/lat
@@ -285,28 +285,28 @@ def warp_tiles(img, extent, t_crs="EPSG:4326", resampling=Resampling.bilinear):
 
     Parameters
     ----------
-    img         : ndarray
-                  Image as a 3D array (h, w, b) of RGB values (e.g. as
-                  returned from `contextily.bounds2img`)
-    extent      : tuple
-                  Bounding box [minX, maxX, minY, maxY] of the returned image,
-                  expressed in Web Mercator (`EPSG:3857`)
-    t_crs       : str/CRS
-                  [Optional. Default='EPSG:4326'] Target CRS, expressed in any
-                  format permitted by rasterio. Defaults to WGS84 (lon/lat)
-    resampling  : <enum 'Resampling'>
-                  [Optional. Default=Resampling.bilinear] Resampling method for
-                  executing warping, expressed as a `rasterio.enums.Resampling`
-                  method
+    img : ndarray
+        Image as a 3D array (h, w, b) of RGB values (e.g. as
+        returned from `contextily.bounds2img`)
+    extent : tuple
+        Bounding box [minX, maxX, minY, maxY] of the returned image,
+        expressed in Web Mercator (`EPSG:3857`)
+    t_crs : str/CRS
+        [Optional. Default='EPSG:4326'] Target CRS, expressed in any
+        format permitted by rasterio. Defaults to WGS84 (lon/lat)
+    resampling : <enum 'Resampling'>
+        [Optional. Default=Resampling.bilinear] Resampling method for
+        executing warping, expressed as a `rasterio.enums.Resampling`
+        method
 
     Returns
     -------
-    img         : ndarray
-                  Image as a 3D array (h, w, b) of RGB values (e.g. as
-                  returned from `contextily.bounds2img`)
-    ext         : tuple
-                  Bounding box [minX, maxX, minY, maxY] of the returned (warped)
-                  image
+    img : ndarray
+        Image as a 3D array (h, w, b) of RGB values (e.g. as
+        returned from `contextily.bounds2img`)
+    ext : tuple
+        Bounding box [minX, maxX, minY, maxY] of the returned (warped)
+        image
     """
     h, w, b = img.shape
     # --- https://rasterio.readthedocs.io/en/latest/quickstart.html#opening-a-dataset-in-writing-mode
@@ -335,30 +335,30 @@ def warp_img_transform(img, transform, s_crs, t_crs, resampling=Resampling.bilin
 
     Parameters
     ----------
-    img         : ndarray
-                  Image as a 3D array (b, h, w) of RGB values (e.g. as
-                  returned from rasterio's `.read()` method)
-    transform   : affine.Affine
-                  Transform of the input image as expressed by `rasterio` and
-                  the `affine` package
-    s_crs       : str/CRS
-                  Source CRS in which `img` is passed, expressed in any format
-                  permitted by rasterio.
-    t_crs       : str/CRS
-                  Target CRS, expressed in any format permitted by rasterio.
-    resampling  : <enum 'Resampling'>
-                  [Optional. Default=Resampling.bilinear] Resampling method for
-                  executing warping, expressed as a `rasterio.enums.Resampling`
-                  method
+    img : ndarray
+        Image as a 3D array (b, h, w) of RGB values (e.g. as
+        returned from rasterio's `.read()` method)
+    transform : affine.Affine
+        Transform of the input image as expressed by `rasterio` and
+        the `affine` package
+    s_crs : str/CRS
+        Source CRS in which `img` is passed, expressed in any format
+        permitted by rasterio.
+    t_crs : str/CRS
+        Target CRS, expressed in any format permitted by rasterio.
+    resampling : <enum 'Resampling'>
+        [Optional. Default=Resampling.bilinear] Resampling method for
+        executing warping, expressed as a `rasterio.enums.Resampling`
+        method
 
     Returns
     -------
-    w_img       : ndarray
-                  Warped image as a 3D array (b, h, w) of RGB values (e.g. as
-                  returned from rasterio's `.read()` method)
+    w_img : ndarray
+        Warped image as a 3D array (b, h, w) of RGB values (e.g. as
+        returned from rasterio's `.read()` method)
     w_transform : affine.Affine
-                  Transform of the input image as expressed by `rasterio` and
-                  the `affine` package
+        Transform of the input image as expressed by `rasterio` and
+        the `affine` package
     """
     w_img, vrt = _warper(img, transform, s_crs, t_crs, resampling)
     return w_img, vrt.transform
@@ -393,15 +393,15 @@ def _retryer(tile_url, wait, max_retries):
 
     Arguments
     ---------
-    tile_url: str
-              string that is the target of the web request. Should be
-              a properly-formatted url for a tile provider.
-    wait    : int
-              if the tile API is rate-limited, the number of seconds to wait
-              between a failed request and the next try
-    max_retries: int
-                 total number of rejected requests allowed before contextily
-                 will stop trying to fetch more tiles from a rate-limited API.
+    tile_url : str
+        string that is the target of the web request. Should be
+        a properly-formatted url for a tile provider.
+    wait : int
+        if the tile API is rate-limited, the number of seconds to wait
+        between a failed request and the next try
+    max_retries : int
+        total number of rejected requests allowed before contextily
+        will stop trying to fetch more tiles from a rate-limited API.
 
     Returns
     -------
@@ -432,22 +432,22 @@ def howmany(w, s, e, n, zoom, verbose=True, ll=False):
 
     Parameters
     ----------
-    w       : float
-              West edge
-    s       : float
-              South edge
-    e       : float
-              East edge
-    n       : float
-              North edge
-    zoom    : int
-              Level of detail
+    w : float
+        West edge
+    s : float
+        South edge
+    e : float
+        East edge
+    n : float
+        North edge
+    zoom : int
+        Level of detail
     verbose : Boolean
-              [Optional. Default=True] If True, print short message with
-              number of tiles and zoom.
-    ll      : Boolean
-              [Optional. Default: False] If True, `w`, `s`, `e`, `n` are
-              assumed to be lon/lat as opposed to Spherical Mercator.
+        [Optional. Default=True] If True, print short message with
+        number of tiles and zoom.
+    ll : Boolean
+        [Optional. Default: False] If True, `w`, `s`, `e`, `n` are
+        assumed to be lon/lat as opposed to Spherical Mercator.
     """
     if not ll:
         # Convert w, s, e, n into lon/lat
@@ -467,15 +467,15 @@ def bb2wdw(bb, rtr):
 
     Parameters
     ----------
-    bb      : tuple
-              (left, bottom, right, top) in the CRS of `rtr`
-    rtr     : RasterReader
-              Open rasterio raster from which the window will be extracted
+    bb : tuple
+        (left, bottom, right, top) in the CRS of `rtr`
+    rtr : RasterReader
+        Open rasterio raster from which the window will be extracted
 
     Returns
     -------
-    window  : tuple
-              ((row_start, row_stop), (col_start, col_stop))
+    window : tuple
+        ((row_start, row_stop), (col_start, col_stop))
     """
     rbb = rtr.bounds
     xi = np.linspace(rbb.left, rbb.right, rtr.shape[1])
@@ -498,15 +498,15 @@ def _sm2ll(x, y):
 
     Arguments
     ---------
-    x       : float
-              Easting
-    y       : float
-              Northing
+    x : float
+        Easting
+    y : float
+        Northing
 
     Returns
     -------
-    ll      : tuple
-              lon/lat coordinates
+    ll : tuple
+        lon/lat coordinates
     """
     rMajor = 6378137.0  # Equatorial Radius, QGS84
     shift = np.pi * rMajor
@@ -610,19 +610,19 @@ def _merge_tiles(tiles, arrays):
 
     Parameters
     ---------
-    tiles  : list of mercantile.Tile objects
-             The tiles to merge.
+    tiles : list of mercantile.Tile objects
+        The tiles to merge.
     arrays : list of numpy arrays
-             The corresponding arrays (image pixels) of the tiles. This list
-             has the same length and order as the `tiles` argument.
+        The corresponding arrays (image pixels) of the tiles. This list
+        has the same length and order as the `tiles` argument.
 
     Returns
     -------
     img : np.ndarray
         Merged arrays.
     extent : tuple
-         Bounding box [west, south, east, north] of the returned image
-         in long/lat.
+        Bounding box [west, south, east, north] of the returned image
+        in long/lat.
     """
     # create (n_tiles x 2) array with column for x and y coordinates
     tile_xys = np.array([(t.x, t.y) for t in tiles])
