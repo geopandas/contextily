@@ -20,7 +20,12 @@ Cutting a release and updating to `pypi` requires the following steps (from
     * `setuptools`
     * `wheel`
 * Make sure tests pass locally and on CI.
-* Update the version on `setup.py`
-* Run `python setup.py sdist bdist_wheel`.
+* Update the version on `setup.py` and `__init__.py`
+* Commit those changes as `git commit 'RLS: v1.0.0'
+* Tag the commit using an annotated tag. ``git tag -a v1.0.0 -m "Version 1.0.0"``
+* Push the RLS commit ``git push upstream master``
+* Also push the tag! ``git push upstream --tags``
+* Create sdist and wheel: `python setup.py sdist bdist_wheel`
+* Make github release from the tag (also add the sdist as asset)
 * When ready to push up, run `twine upload dist/*`.
 
