@@ -24,7 +24,8 @@ def add_basemap(
     reset_extent=True,
     crs=None,
     resampling=Resampling.bilinear,
-    **extra_imshow_args):
+    **extra_imshow_args
+):
     """
     Add a (web/local) basemap to `ax`
     ...
@@ -124,27 +125,33 @@ def add_basemap(
     # If local source
     else:
         import rasterio as rio
+
         # Read file
         with rio.open(url) as raster:
             if reset_extent:
                 from rasterio.mask import mask as riomask
+
                 # Read window
                 if crs:
-                    left, bottom, right, top = rio.warp.transform_bounds(crs,
-                                                                         raster.crs,
-                                                                         xmin,
-                                                                         ymin,
-                                                                         xmax,
-                                                                         ymax
-                                                                         )
+                    left, bottom, right, top = rio.warp.transform_bounds(
+                        crs, raster.crs, xmin, ymin, xmax, ymax
+                    )
                 else:
                     left, bottom, right, top = xmin, ymin, xmax, ymax
-                window = [{'type': 'Polygon',
-                          'coordinates': (((left, bottom),
-                                           (right, bottom),
-                                           (right, top),
-                                           (left, top),
-                                           (left, bottom)),)}]
+                window = [
+                    {
+                        "type": "Polygon",
+                        "coordinates": (
+                            (
+                                (left, bottom),
+                                (right, bottom),
+                                (right, top),
+                                (left, top),
+                                (left, bottom),
+                            ),
+                        ),
+                    }
+                ]
                 image, img_transform = riomask(raster, window, crop=True)
             else:
                 # Read full
@@ -168,10 +175,12 @@ def add_basemap(
     if reset_extent:
         ax.axis((xmin, xmax, ymin, ymax))
     else:
-        max_bounds = (min(xmin, extent[0]),
-                      max(xmax, extent[1]),
-                      min(ymin, extent[2]),
-                      max(ymax, extent[3]))
+        max_bounds = (
+            min(xmin, extent[0]),
+            max(xmax, extent[1]),
+            min(ymin, extent[2]),
+            max(ymax, extent[3]),
+        )
         ax.axis(max_bounds)
 
     # Add attribution text
