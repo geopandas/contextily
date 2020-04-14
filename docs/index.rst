@@ -6,10 +6,11 @@
 
 .. include:: README.rst
 
+Contents
+--------
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
 
    contextily_guide
    warping_guide
@@ -17,7 +18,7 @@
 
 
 Indices and tables
-==================
+------------------
 
 * :ref:`genindex`
 * :ref:`modindex`
