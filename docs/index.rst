@@ -12,8 +12,12 @@ Contents
 .. toctree::
    :maxdepth: 2
 
-   contextily_guide
+   intro_guide
+   places_guide
    warping_guide
+   add_basemap_deepdive
+   working_with_local_files
+   providers_deepdive
    reference
 
 
