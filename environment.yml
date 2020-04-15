@@ -1,0 +1,17 @@
+channels:
+- conda-forge
+dependencies:
+- python=3.7
+# dependencies
+- numpy
+- geopy
+- matplotlib-base
+- mercantile
+- pillow
+- rasterio
+- requests
+- joblib
+# additional
+- geopandas
+- pip:
+  - git+https://github.com/geopandas/contextily.git@master
