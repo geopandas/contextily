@@ -79,8 +79,12 @@ HERE = pathlib.Path(os.path.abspath(os.path.dirname(__file__)))
 
 
 files_to_copy = [
-    "contextily_guide.ipynb",
-    "warping_guide.ipynb",
+    "notebooks/add_basemap_deepdive.ipynb",
+    "notebooks/intro_guide.ipynb",
+    "notebooks/places_guide.ipynb",
+    "notebooks/providers_deepdive.ipynb",
+    "notebooks/warping_guide.ipynb",
+    "notebooks/working_with_local_files.ipynb",
     "tiles.png"
 ]
 
