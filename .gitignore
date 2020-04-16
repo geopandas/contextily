@@ -13,3 +13,11 @@ build/
 dist/
 .coverage
 .pytest_cache/
+notebooks/warp_tst.tif
+notebooks/*.tif
+
+# Sphinx documentation
+docs/_build/
+docs/*.ipynb
+docs/README.rst
+docs/tiles.png

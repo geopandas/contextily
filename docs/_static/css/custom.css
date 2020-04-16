@@ -1,0 +1,50 @@
+/* Override some aspects of the pydata-sphinx-theme */
+
+body {
+  padding-top: 0px;
+}
+
+h1,
+h2 {
+  color: #333;
+}
+
+@media (min-width: 768px) {
+  @supports (position: -webkit-sticky) or (position: sticky) {
+    .bd-sidebar {
+      top: 40px;
+    }
+  }
+}
+
+/* no pink for code */
+code {
+  color: #3b444b;
+}
+
+/* Default link color for active + larger font size for sidebar*/
+.bd-sidebar .nav > li > a {
+  font-size: 1em;
+}
+
+.bd-sidebar .nav>li>a:hover,
+.bd-sidebar .nav > .active:hover > a,
+.bd-sidebar .nav > .active > a {
+  color: #005b81;
+}
+.toc-entry > .nav-link.active {
+  color: #005b81;
+  border-left:2px solid #005b81;
+}
+
+
+/* New element: brand text instead of logo */
+
+/* .navbar-brand-text {
+  padding: 1rem;
+} */
+
+a.navbar-brand-text {
+  color: #333;
+  font-size: xx-large;
+}

@@ -8,6 +8,7 @@ import mercantile as mt
 import rasterio as rio
 from contextily.tile import _calculate_zoom
 from numpy.testing import assert_array_almost_equal
+import pytest
 
 TOL = 7
 SEARCH = "boulder"
@@ -97,13 +98,17 @@ def test_warp_tiles():
     )
     img, ext = ctx.bounds2img(w, s, e, n, zoom=4, ll=True)
     wimg, wext = ctx.warp_tiles(img, ext)
-    assert_array_almost_equal(np.array(wext), \
-                              np.array([-112.54394531249996,
-                                        -90.07903186397023,
-                                        21.966726124122374,
-                                        41.013065787006276
-                                        ])
-                              )
+    assert_array_almost_equal(
+        np.array(wext),
+        np.array(
+            [
+                -112.54394531249996,
+                -90.07903186397023,
+                21.966726124122374,
+                41.013065787006276,
+            ]
+        ),
+    )
     assert wimg[100, 100, :].tolist() == [228, 221, 184, 255]
     assert wimg[100, 200, :].tolist() == [213, 219, 177, 255]
     assert wimg[200, 100, :].tolist() == [133, 130, 109, 255]
@@ -176,6 +181,28 @@ def test_autozoom():
     expected_zoom = 13
     zoom = _calculate_zoom(w, s, e, n)
     assert zoom == expected_zoom
+
+
+def test_validate_zoom():
+    # tiny extent to trigger large calculated zoom
+    w, s, e, n = (0, 0, 0.001, 0.001)
+
+    # automatically inferred -> set to known max but warn
+    with pytest.warns(UserWarning, match="inferred zoom level"):
+        ctx.bounds2img(w, s, e, n)
+
+    # specify manually -> raise an error
+    with pytest.raises(ValueError):
+        ctx.bounds2img(w, s, e, n, zoom=23)
+
+    # with specific string url (not dict) -> error when specified
+    url = "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    with pytest.raises(ValueError):
+        ctx.bounds2img(w, s, e, n, zoom=33, source=url)
+
+    # but also when inferred (no max zoom know to set to)
+    with pytest.raises(ValueError):
+        ctx.bounds2img(w, s, e, n, source=url)
 
 
 # Place
@@ -256,11 +283,38 @@ def test_add_basemap():
     assert_array_almost_equal(ax.images[0].get_array().mean(), 196.654995)
 
     # Test local source
+    ## Windowed read
+    subset = (
+        -11730803.981631357,
+        -11711668.223149346,
+        4862910.488797557,
+        4882046.247279563,
+    )
+
+    f, ax = matplotlib.pyplot.subplots(1)
+    ax.set_xlim(subset[0], subset[1])
+    ax.set_ylim(subset[2], subset[3])
+    loc = ctx.Place(SEARCH, path="./test2.tif", zoom_adjust=ADJUST)
+    ctx.add_basemap(ax, source="./test2.tif", reset_extent=True)
+
+    raster_extent = (
+        -11740803.981631357,
+        -11701668.223149346,
+        4852910.488797556,
+        4892046.247279563,
+    )
+    assert_array_almost_equal(raster_extent, ax.images[0].get_extent())
+    assert ax.images[0].get_array().sum() == 12489346
+    assert ax.images[0].get_array()[:,:,:3].sum() == 8440966
+    assert ax.images[0].get_array().shape == (126, 126, 4)
+    assert_array_almost_equal(ax.images[0].get_array()[:,:,:3].mean(), 177.22696733014195)
+    assert_array_almost_equal(ax.images[0].get_array().mean(), 196.670225)
+    ## Full read
     f, ax = matplotlib.pyplot.subplots(1)
     ax.set_xlim(x1, x2)
     ax.set_ylim(y1, y2)
     loc = ctx.Place(SEARCH, path="./test2.tif", zoom_adjust=ADJUST)
-    ctx.add_basemap(ax, url="./test2.tif")
+    ctx.add_basemap(ax, source="./test2.tif", reset_extent=False)
 
     raster_extent = (
         -11740803.981631357,
@@ -312,14 +366,19 @@ def test_add_basemap():
     f, ax = matplotlib.pyplot.subplots(1)
     ax.set_xlim(x1, x2)
     ax.set_ylim(y1, y2)
-    ctx.add_basemap(ax, url="./test2.tif", crs={"init": "epsg:4326"}, attribution=None)
+    ctx.add_basemap(
+        ax, source="./test2.tif", crs={"init": "epsg:4326"}, attribution=None
+    )
     assert ax.get_xlim() == (x1, x2)
     assert ax.get_ylim() == (y1, y2)
-    assert ax.images[0].get_array()[:,:,:3].sum() == 724238693
-    assert ax.images[0].get_array().sum() == 1066628468
-    assert ax.images[0].get_array().shape == (1135, 1183, 4)
-    assert_array_almost_equal(ax.images[0].get_array()[:,:,:3].mean(), 179.79593258881636)
-    assert_array_almost_equal(ax.images[0].get_array().mean(), 198.596949)
+
+    assert ax.images[0].get_array()[:,:,:3].sum() == 464536503
+    assert ax.images[0].get_array().shape == (980, 862, 4)
+    assert_array_almost_equal(ax.images[0].get_array()[:,:,:3].mean(), 183.301175)
+
+	#<<<<<<< HEAD
+    assert ax.images[0].get_array().sum() == 678981558
+    assert_array_almost_equal(ax.images[0].get_array().mean(), 200.939189)
 
     x1, x2, y1, y2 = [
         -11740727.544603072,
@@ -334,7 +393,7 @@ def test_add_basemap():
     ax.set_ylim(y1, y2)
 
     ctx.add_basemap(ax, zoom=10)
-    ctx.add_basemap(ax, zoom=10, url=ctx.providers.Stamen.TonerLabels)
+    ctx.add_basemap(ax, zoom=10, source=ctx.providers.Stamen.TonerLabels)
 
     # ensure add_basemap did not change the axis limits of ax
     ax_extent = (x1, x2, y1, y2)
@@ -343,6 +402,11 @@ def test_add_basemap():
     assert ax.images[1].get_array().sum() == 1653387
     assert ax.images[1].get_array().shape == (256, 256, 4)
     assert_array_almost_equal(ax.images[1].get_array().mean(), 6.3071708679)
+	#=======
+    #assert ax.images[0].get_array()[:,:,:3].sum() == 464751694
+    #assert ax.images[0].get_array().shape == (980, 862, 4)
+    #assert_array_almost_equal(ax.images[0].get_array().mean(), 183.38608756727749)
+	#>>>>>>> be7ab8b35dd3fed262964f28317a2da5f232809f
 
 
 def test_basemap_attribution():
@@ -359,14 +423,14 @@ def test_basemap_attribution():
     fig, ax = matplotlib.pyplot.subplots()
     ax.axis(extent)
     ctx.add_basemap(ax)
-    txt, = get_attr(ax)
+    (txt,) = get_attr(ax)
     assert txt.get_text() == ctx.providers.Stamen.Terrain["attribution"]
 
     # override attribution
     fig, ax = matplotlib.pyplot.subplots()
     ax.axis(extent)
     ctx.add_basemap(ax, attribution="custom text")
-    txt, = get_attr(ax)
+    (txt,) = get_attr(ax)
     assert txt.get_text() == "custom text"
 
     # disable attribution
@@ -378,8 +442,8 @@ def test_basemap_attribution():
     # specified provider
     fig, ax = matplotlib.pyplot.subplots()
     ax.axis(extent)
-    ctx.add_basemap(ax, url=ctx.providers.OpenStreetMap.Mapnik)
-    txt, = get_attr(ax)
+    ctx.add_basemap(ax, source=ctx.providers.OpenStreetMap.Mapnik)
+    (txt,) = get_attr(ax)
     assert txt.get_text() == ctx.providers.OpenStreetMap.Mapnik["attribution"]
 
 
@@ -394,3 +458,15 @@ def test_attribution():
     txt = ctx.add_attribution(ax, "Test", font_size=15, fontfamily="monospace")
     assert txt.get_size() == 15
     assert txt.get_fontfamily() == ["monospace"]
+
+
+def test_set_cache_dir(tmpdir):
+    # set cache directory manually
+    path = str(tmpdir.mkdir("cache"))
+    ctx.set_cache_dir(path)
+
+    # then check that plotting still works
+    extent = (-11945319, -10336026, 2910477, 4438236)
+    fig, ax = matplotlib.pyplot.subplots()
+    ax.axis(extent)
+    ctx.add_basemap(ax)

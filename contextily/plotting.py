@@ -1,9 +1,11 @@
 """Tools to plot basemaps"""
 
+import warnings
 import numpy as np
 from . import tile_providers as sources
 from . import providers
-from .tile import _calculate_zoom, bounds2img, _sm2ll, warp_tiles, _warper
+from ._providers import TileProvider
+from .tile import bounds2img, _sm2ll, warp_tiles, _warper
 from rasterio.enums import Resampling
 from rasterio.warp import transform_bounds
 from matplotlib import patheffects
@@ -17,91 +19,118 @@ ATTRIBUTION_SIZE = 8
 def add_basemap(
     ax,
     zoom=ZOOM,
-    url=None,
+    source=None,
     interpolation=INTERPOLATION,
     attribution=None,
     attribution_size=ATTRIBUTION_SIZE,
     reset_extent=True,
     crs=None,
     resampling=Resampling.bilinear,
-    **extra_imshow_args):
+    url=None,
+    **extra_imshow_args
+):
     """
-    Add a (web/local) basemap to `ax`
-    ...
+    Add a (web/local) basemap to `ax`.
 
-    Arguments
-    ---------
-    ax                  : AxesSubplot
-                          Matplotlib axis with `x_lim` and `y_lim` set in Web
-                          Mercator (EPSG=3857)
-    zoom                : int/'auto'
-                          [Optional. Default='auto'] Level of detail for the
-                          basemap. If 'auto', if calculates it automatically.
-                          Ignored if `url` is a local file.
-    url                 : str
-                          [Optional. Default: 'http://tile.stamen.com/terrain/tileZ/tileX/tileY.png']
-                          Source url for web tiles, or path to local file. If
-                          local, the file is read with `rasterio` and all
-                          bands are loaded into the basemap.
-    interpolation       : str
-                          [Optional. Default='bilinear'] Interpolation
-                          algorithm to be passed to `imshow`. See
-                          `matplotlib.pyplot.imshow` for further details.
-    attribution         : str
-                          [Optional. Defaults to attribution specified by the url]
-                          Text to be added at the bottom of the axis. This
-                          defaults to the attribution of the provider specified
-                          in `url` if available. Specify False to not
-                          automatically add an attribution, or a string to pass
-                          a custom attribution.
-    attribution_size    : int
-                          [Optional. Defaults to `ATTRIBUTION_SIZE`].
-                          Font size to render attribution text with.
-    reset_extent        : Boolean
-                          [Optional. Default=True] If True, the extent of the
-                          basemap added is reset to the original extent (xlim,
-                          ylim) of `ax`
-    crs                 : None/str/CRS
-                          [Optional. Default=None] CRS,
-                          expressed in any format permitted by rasterio, to
-                          use for the resulting basemap. If
-                          None (default), no warping is performed and the
-                          original Web Mercator (`EPSG:3857`, 
-                          {'init' :'epsg:3857'}) is used.
-    resampling          : <enum 'Resampling'>
-                          [Optional. Default=Resampling.bilinear] Resampling 
-                          method for executing warping, expressed as a 
-                          `rasterio.enums.Resampling` method
+    Parameters
+    ----------
+    ax : AxesSubplot
+        Matplotlib axes object on which to add the basemap. The extent of the
+        axes is assumed to be in Spherical Mercator (EPSG:3857), unless the `crs`
+        keyword is specified.
+    zoom : int or 'auto'
+        [Optional. Default='auto'] Level of detail for the basemap. If 'auto',
+        it is calculated automatically. Ignored if `source` is a local file.
+    source : contextily.providers object or str
+        [Optional. Default: Stamen Terrain web tiles]
+        The tile source: web tile provider or path to local file. The web tile
+        provider can be in the form of a `contextily.providers` object or a
+        URL. The placeholders for the XYZ in the URL need to be `{x}`, `{y}`,
+        `{z}`, respectively. For local file paths, the file is read with
+        `rasterio` and all bands are loaded into the basemap.
+        IMPORTANT: tiles are assumed to be in the Spherical Mercator
+        projection (EPSG:3857), unless the `crs` keyword is specified.
+    interpolation : str
+        [Optional. Default='bilinear'] Interpolation algorithm to be passed
+        to `imshow`. See `matplotlib.pyplot.imshow` for further details.
+    attribution : str
+        [Optional. Defaults to attribution specified by the source]
+        Text to be added at the bottom of the axis. This
+        defaults to the attribution of the provider specified
+        in `source` if available. Specify False to not
+        automatically add an attribution, or a string to pass
+        a custom attribution.
+    attribution_size : int
+        [Optional. Defaults to `ATTRIBUTION_SIZE`].
+        Font size to render attribution text with.
+    reset_extent : bool
+        [Optional. Default=True] If True, the extent of the
+        basemap added is reset to the original extent (xlim,
+        ylim) of `ax`
+    crs : None or str or CRS
+        [Optional. Default=None] coordinate reference system (CRS),
+        expressed in any format permitted by rasterio, to use for the
+        resulting basemap. If None (default), no warping is performed
+        and the original Spherical Mercator (EPSG:3857) is used.
+    resampling : <enum 'Resampling'>
+        [Optional. Default=Resampling.bilinear] Resampling
+        method for executing warping, expressed as a
+        `rasterio.enums.Resampling` method
+    url : str [DEPRECATED]
+        [Optional. Default: 'http://tile.stamen.com/terrain/{z}/{x}/{y}.png']
+        Source url for web tiles, or path to local file. If
+        local, the file is read with `rasterio` and all
+        bands are loaded into the basemap.
     **extra_imshow_args :
-                          Other parameters to be passed to `imshow`.
+        Other parameters to be passed to `imshow`.
 
-    Example
-    -------
+    Examples
+    --------
 
-    >>> db = gpd.read_file(ps.examples.get_path('virginia.shp'))\
-                .to_crs(epsg=3857)
+    >>> import geopandas
+    >>> import contextily as ctx
+    >>> db = geopandas.read_file(ps.examples.get_path('virginia.shp'))
+
+    Ensure the data is in Spherical Mercator:
+
+    >>> db = db.to_crs(epsg=3857)
 
     Add a web basemap:
 
     >>> ax = db.plot(alpha=0.5, color='k', figsize=(6, 6))
-    >>> ctx.add_basemap(ax, url=url)
+    >>> ctx.add_basemap(ax, source=url)
     >>> plt.show()
 
     Or download a basemap to a local file and then plot it:
 
-    >>> url = 'virginia.tiff'
-    >>> _ = ctx.bounds2raster(*db.total_bounds, zoom=6, path=url)
+    >>> source = 'virginia.tiff'
+    >>> _ = ctx.bounds2raster(*db.total_bounds, zoom=6, source=source)
     >>> ax = db.plot(alpha=0.5, color='k', figsize=(6, 6))
-    >>> ctx.add_basemap(ax, url=url)
+    >>> ctx.add_basemap(ax, source=source)
     >>> plt.show()
 
     """
     xmin, xmax, ymin, ymax = ax.axis()
+    if url is not None and source is None:
+        warnings.warn(
+            'The "url" option is deprecated. Please use the "source"'
+            " argument instead.",
+            FutureWarning,
+            stacklevel=2,
+        )
+        source = url
+    elif url is not None and source is not None:
+        warnings.warn(
+            'The "url" argument is deprecated. Please use the "source"'
+            ' argument. Do not supply a "url" argument. It will be ignored.',
+            FutureWarning,
+            stacklevel=2,
+        )
     # If web source
     if (
-        url is None
-        or isinstance(url, dict)
-        or (isinstance(url, str) and url[:4] == "http")
+        source is None
+        or isinstance(source, (dict, TileProvider))
+        or (isinstance(source, str) and source[:4] == "http")
     ):
         # Extent
         left, right, bottom, top = xmin, xmax, ymin, ymax
@@ -110,13 +139,9 @@ def add_basemap(
             left, right, bottom, top = _reproj_bb(
                 left, right, bottom, top, crs, {"init": "epsg:3857"}
             )
-        # Zoom
-        if isinstance(zoom, str) and (zoom.lower() == "auto"):
-            min_ll = _sm2ll(left, bottom)
-            max_ll = _sm2ll(right, top)
-            zoom = _calculate_zoom(*min_ll, *max_ll)
+        # Download image
         image, extent = bounds2img(
-            left, bottom, right, top, zoom=zoom, url=url, ll=False
+            left, bottom, right, top, zoom=zoom, source=source, ll=False
         )
         # Warping
         if crs is not None:
@@ -130,29 +155,67 @@ def add_basemap(
         import rasterio as rio
 
         # Read file
-        with rio.open(url) as raster:
-            image = np.array([band for band in raster.read()])
+        with rio.open(source) as raster:
+            if reset_extent:
+                from rasterio.mask import mask as riomask
+
+                # Read window
+                if crs:
+                    left, bottom, right, top = rio.warp.transform_bounds(
+                        crs, raster.crs, xmin, ymin, xmax, ymax
+                    )
+                else:
+                    left, bottom, right, top = xmin, ymin, xmax, ymax
+                window = [
+                    {
+                        "type": "Polygon",
+                        "coordinates": (
+                            (
+                                (left, bottom),
+                                (right, bottom),
+                                (right, top),
+                                (left, top),
+                                (left, bottom),
+                            ),
+                        ),
+                    }
+                ]
+                image, img_transform = riomask(raster, window, crop=True)
+            else:
+                # Read full
+                image = np.array([band for band in raster.read()])
+                img_transform = raster.transform
             # Warp
             if (crs is not None) and (raster.crs != crs):
                 image, raster = _warper(
-                    image, raster.transform, raster.crs, crs, resampling
+                    image, img_transform, raster.crs, crs, resampling
                 )
             image = image.transpose(1, 2, 0)
             bb = raster.bounds
             extent = bb.left, bb.right, bb.bottom, bb.top
     # Plotting
+    if image.shape[2] == 1:
+        image = image[:, :, 0]
     img = ax.imshow(
         image, extent=extent, interpolation=interpolation, **extra_imshow_args
     )
 
     if reset_extent:
         ax.axis((xmin, xmax, ymin, ymax))
+    else:
+        max_bounds = (
+            min(xmin, extent[0]),
+            max(xmax, extent[1]),
+            min(ymin, extent[2]),
+            max(ymax, extent[3]),
+        )
+        ax.axis(max_bounds)
 
     # Add attribution text
-    if url is None:
-        url = providers.Stamen.Terrain
-    if isinstance(url, dict) and attribution is None:
-        attribution = url.get("attribution")
+    if source is None:
+        source = providers.Stamen.Terrain
+    if isinstance(source, (dict, TileProvider)) and attribution is None:
+        attribution = source.get("attribution")
     if attribution:
         add_attribution(ax, attribution, font_size=attribution_size)
 
@@ -206,18 +269,16 @@ def add_attribution(ax, text, font_size=ATTRIBUTION_SIZE, **kwargs):
     """
     Utility to add attribution text.
 
-    Arguments
-    ---------
-    ax                  : AxesSubplot
-                          Matplotlib axis with `x_lim` and `y_lim` set in Web
-                          Mercator (EPSG=3857)
-    text                : str
-                          Text to be added at the bottom of the axis.
-    font_size           : int
-                          [Optional. Defaults to 8] Font size in which to render
-                          the attribution text.
-    **kwargs            : Additional keywords to pass to the matplotlib `text`
-                          method.
+    Parameters
+    ----------
+    ax : AxesSubplot
+        Matplotlib axes object on which to add the attribution text.
+    text : str
+        Text to be added at the bottom of the axis.
+    font_size : int
+        [Optional. Defaults to 8] Font size in which to render
+        the attribution text.
+    **kwargs : Additional keywords to pass to the matplotlib `text` method.
 
     Returns
     -------
