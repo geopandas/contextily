@@ -147,7 +147,7 @@ def add_basemap(
         if crs is not None:
             image, extent = warp_tiles(image, extent, t_crs=crs, resampling=resampling)
         # Check if overlay
-        if _is_overlay(url) and 'zorder' not in extra_imshow_args:
+        if _is_overlay(source) and 'zorder' not in extra_imshow_args:
             # If zorder was not set then make it 9 otherwise leave it
             extra_imshow_args['zorder'] = 9
     # If local source
