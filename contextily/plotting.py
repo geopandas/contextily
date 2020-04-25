@@ -226,10 +226,28 @@ def _reproj_bb(left, right, bottom, top, s_crs, t_crs):
     n_l, n_b, n_r, n_t = transform_bounds(s_crs, t_crs, left, bottom, right, top)
     return n_l, n_r, n_b, n_t
 
-def _is_overlay(url):
-    if not isinstance(url, dict):
+def _is_overlay(source):
+    """
+    Check if the identified source is an overlay (partially transparent) layer.
+
+    Parameters
+    ----------
+    source : dict
+        The tile source: web tile provider.  Must be preprocessed as
+        into a dictionary, not just a string.
+
+    Returns
+    -------
+    bool
+
+    Notes
+    -----
+    This function is based on a very similar javascript version found in leaflet:
+    https://github.com/leaflet-extras/leaflet-providers/blob/9eb968f8442ea492626c9c8f0dac8ede484e6905/preview/preview.js#L56-L70
+    """
+    if not isinstance(source, dict):
         return False
-    if url.get('opacity', 1.0) < 1.0:
+    if source.get('opacity', 1.0) < 1.0:
         return True
     overlayPatterns = [
         '^(OpenWeatherMap|OpenSeaMap)',
@@ -243,26 +261,7 @@ def _is_overlay(url):
         'SafeCast'
     ]
     import re
-    return bool(re.match('(' + '|'.join(overlayPatterns) + ')', url.get('name','')))
-
-
-# if (layer.options.opacity && layer.options.opacity < 1) {
-# 	return true;
-# }
-# var overlayPatterns = [
-# 	'^(OpenWeatherMap|OpenSeaMap)',
-# 	'OpenMapSurfer.(Hybrid|AdminBounds|ContourLines|Hillshade|ElementsAtRisk)',
-# 	'Stamen.Toner(Hybrid|Lines|Labels)',
-# 	'Hydda.RoadsAndLabels',
-# 	'^JusticeMap',
-# 	'OpenPtMap',
-# 	'OpenRailwayMap',
-# 	'OpenFireMap',
-# 	'SafeCast'
-# ];
-#
-# return providerName.match('(' + overlayPatterns.join('|') + ')') !== null;
-
+    return bool(re.match('(' + '|'.join(overlayPatterns) + ')', source.get('name', '')))
 
 
 def add_attribution(ax, text, font_size=ATTRIBUTION_SIZE, **kwargs):
