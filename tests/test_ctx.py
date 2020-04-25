@@ -376,7 +376,6 @@ def test_add_basemap():
     assert ax.images[0].get_array().shape == (980, 862, 4)
     assert_array_almost_equal(ax.images[0].get_array()[:,:,:3].mean(), 183.301175)
 
-	#<<<<<<< HEAD
     assert ax.images[0].get_array().sum() == 678981558
     assert_array_almost_equal(ax.images[0].get_array().mean(), 200.939189)
 
@@ -387,11 +386,18 @@ def test_add_basemap():
         4891969.810251278,
     ]
 
-    # Test web basemap with overlay layer
+def test_add_basemap_overlay():
+    x1, x2, y1, y2 = [
+        -11740727.544603072,
+        -11701591.786121061,
+        4852834.0517692715,
+        4891969.810251278,
+    ]
     fig, ax = matplotlib.pyplot.subplots(1)
     ax.set_xlim(x1, x2)
     ax.set_ylim(y1, y2)
 
+    # Draw two layers, the 2nd of which is an overlay.
     ctx.add_basemap(ax, zoom=10)
     ctx.add_basemap(ax, zoom=10, source=ctx.providers.Stamen.TonerLabels)
 
@@ -399,14 +405,32 @@ def test_add_basemap():
     ax_extent = (x1, x2, y1, y2)
     assert ax.axis() == ax_extent
 
+    # check totals on lowest (opaque terrain) base layer
+    assert_array_almost_equal(ax_extent, ax.images[0].get_extent())
+    assert ax.images[0].get_array()[:, :, :3].sum() == 34840247
+    assert ax.images[0].get_array().sum() == 51551927
+    assert ax.images[0].get_array().shape == (256, 256, 4)
+    assert_array_almost_equal(ax.images[0].get_array()[:, :, :3].mean(), 177.20665995279947)
+    assert_array_almost_equal(ax.images[0].get_array().mean(), 196.654995)
+
+    # check totals on overaly (mostly transparent labels) layer
     assert ax.images[1].get_array().sum() == 1653387
     assert ax.images[1].get_array().shape == (256, 256, 4)
     assert_array_almost_equal(ax.images[1].get_array().mean(), 6.3071708679)
-	#=======
-    #assert ax.images[0].get_array()[:,:,:3].sum() == 464751694
-    #assert ax.images[0].get_array().shape == (980, 862, 4)
-    #assert_array_almost_equal(ax.images[0].get_array().mean(), 183.38608756727749)
-	#>>>>>>> be7ab8b35dd3fed262964f28317a2da5f232809f
+
+    # create a new map
+    fig, ax = matplotlib.pyplot.subplots(1)
+    ax.set_xlim(x1, x2)
+    ax.set_ylim(y1, y2)
+
+    # Draw two layers, the 1st of which is an overlay.
+    ctx.add_basemap(ax, zoom=10, source=ctx.providers.Stamen.TonerLabels)
+    ctx.add_basemap(ax, zoom=10)
+
+    # check that z-order of overlay is higher than that of base layer
+    assert ax.images[0].zorder > ax.images[1].zorder
+    assert ax.images[0].get_array().sum() == 1653387
+    assert ax.images[1].get_array().sum() == 51551927
 
 
 def test_basemap_attribution():
