@@ -49,11 +49,7 @@ conda install contextily
 
 ## Contributors
 
-* [Dani Arribas-Bel](http://darribas.org/) ([@darribas](http://twitter.com/darribas))
-* [Joris Van den Bossche](https://jorisvandenbossche.github.io/) [@jorisvandenbossche](https://twitter.com/jorisvdbossche))
-* [Levi Wolf](http://ljwolf.org/) ([@levijohnwolf](https://twitter.com/levijohnwolf))
-* [Chris Holdgraf](http://chrisholdgraf.com/) ([@choldgraf](http://twitter.com/choldgraf))
-* [Filipe Fernandes](https://ocefpaf.github.io/python4oceanographers/) ([@ocefpaf](http://twitter.com/ocefpaf))
+`contextily` is developed by a community of enthusiastic volunteers. You can see a full list [here](https://github.com/geopandas/contextily/graphs/contributors).
 
 ## License
 
