@@ -13,9 +13,7 @@ Contents
    :maxdepth: 2
 
    intro_guide
-   places_guide
    warping_guide
-   add_basemap_deepdive
    working_with_local_files
    providers_deepdive
    reference
