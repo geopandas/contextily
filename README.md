@@ -51,6 +51,8 @@ conda install contextily
 
 `contextily` is developed by a community of enthusiastic volunteers. You can see a full list [here](https://github.com/geopandas/contextily/graphs/contributors).
 
+If you would like to contribute to the project, have a look at the list of [open issues](https://github.com/geopandas/contextily/issues), particularly those labeled as [good first contributions](https://github.com/geopandas/contextily/issues?q=is%3Aissue+is%3Aopen+label%3Agood-first-contribution).
+
 ## License
 
 BSD compatible. See `LICENSE.txt`
