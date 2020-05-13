@@ -85,6 +85,7 @@ files_to_copy = [
     "notebooks/providers_deepdive.ipynb",
     "notebooks/warping_guide.ipynb",
     "notebooks/working_with_local_files.ipynb",
+    "notebooks/friends_gee.ipynb",
     "tiles.png"
 ]
 

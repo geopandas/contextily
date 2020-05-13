@@ -16,6 +16,7 @@ Contents
    warping_guide
    working_with_local_files
    providers_deepdive
+   friends_gee
    reference
 
 
