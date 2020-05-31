@@ -28,6 +28,7 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: Implementation :: CPython",
+        "Framework :: Matplotlib",
     ],
     python_requires=">=3.6",
     install_requires=install_requires,
