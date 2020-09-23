@@ -8,6 +8,11 @@ from .plotting import INTERPOLATION, ZOOM, add_attribution
 from . import providers
 from ._providers import TileProvider
 
+# Set user ID for Nominatim
+rng = np.random.default_rng()
+val = rng.integers(1000000)
+gp.geocoders.options.default_user_agent = f"contextily_user_{val}"
+
 
 class Place(object):
     """Geocode a place by name and get its map.
@@ -45,6 +50,8 @@ class Place(object):
         Source url for web tiles, or path to local file. If
         local, the file is read with `rasterio` and all
         bands are loaded into the basemap.
+    geocoder : geopy.geocoders
+        [Optional. Default: geopy.geocoders.Nominatim()] Geocoder method to process `search`
 
     Attributes
     ----------
@@ -69,7 +76,14 @@ class Place(object):
     """
 
     def __init__(
-        self, search, zoom=None, path=None, zoom_adjust=None, source=None, url=None
+        self,
+        search,
+        zoom=None,
+        path=None,
+        zoom_adjust=None,
+        source=None,
+        url=None,
+        geocoder=gp.geocoders.Nominatim(),
     ):
         self.path = path
         if url is not None and source is None:
@@ -93,7 +107,7 @@ class Place(object):
         self.zoom_adjust = zoom_adjust
 
         # Get geocoded values
-        resp = gp.geocoders.Nominatim().geocode(search)
+        resp = geocoder.geocode(search)
         bbox = np.array([float(ii) for ii in resp.raw["boundingbox"]])
 
         if "display_name" in resp.raw.keys():
