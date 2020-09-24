@@ -400,7 +400,7 @@ def warp_img_transform(img, transform, s_crs, t_crs, resampling=Resampling.bilin
 
 def _warper(img, transform, s_crs, t_crs, resampling):
     """
-    Warp an image returning it as a virtual file
+    Warp an image. Returns the warped image and updated bounds and transform.
     """
     b, h, w = img.shape
     with MemoryFile() as memfile:
