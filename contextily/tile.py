@@ -349,9 +349,11 @@ def warp_tiles(img, extent, t_crs="EPSG:4326", resampling=Resampling.bilinear):
     resY = (y[-1] - y[0]) / h
     transform = from_origin(x[0] - resX / 2, y[-1] + resY / 2, resX, resY)
     # ---
-    w_img, bounds, _ = _warper(
+    w_img, bounds, w_transform = _warper(
         img.transpose(2, 0, 1), transform, "EPSG:3857", t_crs, resampling
     )
+    breakpoint()
+    
     # ---
     extent = bounds.left, bounds.right, bounds.bottom, bounds.top
     return w_img.transpose(1, 2, 0), extent
@@ -414,10 +416,10 @@ def _warper(img, transform, s_crs, t_crs, resampling):
             for band in range(b):
                 mraster.write(img[band, :, :], band + 1)
             # --- Virtual Warp
-            vrt = WarpedVRT(mraster, crs=t_crs, resampling=resampling)
-            img = vrt.read()
-            bounds = vrt.bounds
-            transform = vrt.transform
+            with WarpedVRT(mraster, crs=t_crs, resampling=resampling) as vrt:
+                img = vrt.read()
+                bounds = vrt.bounds
+                transform = vrt.transform
     return img, bounds, transform
 
 
