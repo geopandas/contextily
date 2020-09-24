@@ -349,11 +349,11 @@ def warp_tiles(img, extent, t_crs="EPSG:4326", resampling=Resampling.bilinear):
     resY = (y[-1] - y[0]) / h
     transform = from_origin(x[0] - resX / 2, y[-1] + resY / 2, resX, resY)
     # ---
-    w_img, vrt = _warper(
+    w_img, bounds, _ = _warper(
         img.transpose(2, 0, 1), transform, "EPSG:3857", t_crs, resampling
     )
     # ---
-    extent = vrt.bounds.left, vrt.bounds.right, vrt.bounds.bottom, vrt.bounds.top
+    extent = bounds.left, bounds.right, bounds.bottom, bounds.top
     return w_img.transpose(1, 2, 0), extent
 
 
@@ -392,13 +392,13 @@ def warp_img_transform(img, transform, s_crs, t_crs, resampling=Resampling.bilin
         Transform of the input image as expressed by `rasterio` and
         the `affine` package
     """
-    w_img, vrt = _warper(img, transform, s_crs, t_crs, resampling)
-    return w_img, vrt.transform
+    w_img, _, w_transform = _warper(img, transform, s_crs, t_crs, resampling)
+    return w_img, w_transform
 
 
 def _warper(img, transform, s_crs, t_crs, resampling):
     """
-    Warp an image returning it as a virtual file
+    Warp an image. Returns the warped image and updated bounds and transform.
     """
     b, h, w = img.shape
     with MemoryFile() as memfile:
@@ -414,9 +414,11 @@ def _warper(img, transform, s_crs, t_crs, resampling):
             for band in range(b):
                 mraster.write(img[band, :, :], band + 1)
             # --- Virtual Warp
-            vrt = WarpedVRT(mraster, crs=t_crs, resampling=resampling)
-            img = vrt.read()
-    return img, vrt
+            with WarpedVRT(mraster, crs=t_crs, resampling=resampling) as vrt:
+                img = vrt.read()
+                bounds = vrt.bounds
+                transform = vrt.transform
+    return img, bounds, transform
 
 
 def _retryer(tile_url, wait, max_retries):

@@ -183,12 +183,11 @@ def add_basemap(
                 img_transform = raster.transform
             # Warp
             if (crs is not None) and (raster.crs != crs):
-                image, raster = _warper(
+                image, bounds, _ = _warper(
                     image, img_transform, raster.crs, crs, resampling
                 )
             image = image.transpose(1, 2, 0)
-            bb = raster.bounds
-            extent = bb.left, bb.right, bb.bottom, bb.top
+            extent = bounds.left, bounds.right, bounds.bottom, bounds.top
     # Plotting
     if image.shape[2] == 1:
         image = image[:, :, 0]
