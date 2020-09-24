@@ -401,21 +401,21 @@ def _warper(img, transform, s_crs, t_crs, resampling):
     Warp an image returning it as a virtual file
     """
     b, h, w = img.shape
-    with MemoryFile() as memfile:
-        with memfile.open(
-            driver="GTiff",
-            height=h,
-            width=w,
-            count=b,
-            dtype=str(img.dtype.name),
-            crs=s_crs,
-            transform=transform,
-        ) as mraster:
-            for band in range(b):
-                mraster.write(img[band, :, :], band + 1)
-            # --- Virtual Warp
-            vrt = WarpedVRT(mraster, crs=t_crs, resampling=resampling)
-            img = vrt.read()
+    memfile = MemoryFile()
+    with memfile.open(
+        driver="GTiff",
+        height=h,
+        width=w,
+        count=b,
+        dtype=str(img.dtype.name),
+        crs=s_crs,
+        transform=transform,
+    ) as mraster:
+        for band in range(b):
+            mraster.write(img[band, :, :], band + 1)
+        # --- Virtual Warp
+        vrt = WarpedVRT(mraster, crs=t_crs, resampling=resampling)
+        img = vrt.read()
     return img, vrt
 
 
