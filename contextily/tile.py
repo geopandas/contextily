@@ -413,7 +413,7 @@ def _warper(img, transform, s_crs, t_crs, resampling):
         ) as mraster:
             mraster.write(np.moveaxis(img, 0, -1))
     
-        with memfile.open() as mraster
+        with memfile.open() as mraster:
             with WarpedVRT(mraster, crs=t_crs, resampling=resampling) as vrt:
                 img = vrt.read()
                 bounds = vrt.bounds
