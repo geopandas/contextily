@@ -9,9 +9,8 @@ from . import providers
 from ._providers import TileProvider
 
 # Set user ID for Nominatim
-rng = np.random.default_rng()
-val = rng.integers(1000000)
-gp.geocoders.options.default_user_agent = f"contextily_user_{val}"
+_val = np.random.randint(1000000)
+gp.geocoders.options.default_user_agent = f"contextily_user_{_val}"
 
 
 class Place(object):
