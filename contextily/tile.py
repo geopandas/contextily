@@ -411,13 +411,14 @@ def _warper(img, transform, s_crs, t_crs, resampling):
             crs=s_crs,
             transform=transform,
         ) as mraster:
-            for band in range(b):
-                mraster.write(img[band, :, :], band + 1)
-            # --- Virtual Warp
+            mraster.write(img)
+    
+        with memfile.open() as mraster:
             with WarpedVRT(mraster, crs=t_crs, resampling=resampling) as vrt:
                 img = vrt.read()
                 bounds = vrt.bounds
                 transform = vrt.transform
+    
     return img, bounds, transform
 
 
