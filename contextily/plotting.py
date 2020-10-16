@@ -177,19 +177,21 @@ def add_basemap(
                     }
                 ]
                 image, img_transform = riomask(raster, window, crop=True)
+                extent = left, right, bottom, top
             else:
                 # Read full
                 image = np.array([band for band in raster.read()])
                 img_transform = raster.transform
+                bb = raster.bounds
+                extent = bb.left, bb.right, bb.bottom, bb.top 
             # Warp
             if (crs is not None) and (raster.crs != crs):
                 image, bounds, _ = _warper(
                     image, img_transform, raster.crs, crs, resampling
                 )
-            else:
-                bounds = raster.bounds
+                extent = bounds.left, bounds.right, bounds.bottom, bounds.top
             image = image.transpose(1, 2, 0)
-            extent = bounds.left, bounds.right, bounds.bottom, bounds.top
+
     # Plotting
     if image.shape[2] == 1:
         image = image[:, :, 0]

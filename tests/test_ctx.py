@@ -294,13 +294,7 @@ def test_add_basemap():
     loc = ctx.Place(SEARCH, path="./test2.tif", zoom_adjust=ADJUST)
     ctx.add_basemap(ax, url="./test2.tif", reset_extent=True)
 
-    raster_extent = (
-        -11740803.981631357,
-        -11701668.223149346,
-        4852910.488797556,
-        4892046.247279563,
-    )
-    assert_array_almost_equal(raster_extent, ax.images[0].get_extent())
+    assert_array_almost_equal(subset, ax.images[0].get_extent())
     assert ax.images[0].get_array().sum() == 8440966
     assert ax.images[0].get_array().shape == (126, 126, 3)
     assert_array_almost_equal(ax.images[0].get_array().mean(), 177.22696733014195)
