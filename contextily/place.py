@@ -2,11 +2,16 @@
 import geopy as gp
 import numpy as np
 import matplotlib.pyplot as plt
-from warnings import warn
+import warnings
+
 from .tile import howmany, bounds2raster, bounds2img, _sm2ll, _calculate_zoom
 from .plotting import INTERPOLATION, ZOOM, add_attribution
 from . import providers
 from ._providers import TileProvider
+
+# Set user ID for Nominatim
+_val = np.random.randint(1000000)
+_default_user_agent = f"contextily_user_{_val}"
 
 
 class Place(object):
@@ -45,6 +50,8 @@ class Place(object):
         Source url for web tiles, or path to local file. If
         local, the file is read with `rasterio` and all
         bands are loaded into the basemap.
+    geocoder : geopy.geocoders
+        [Optional. Default: geopy.geocoders.Nominatim()] Geocoder method to process `search`
 
     Attributes
     ----------
@@ -69,7 +76,14 @@ class Place(object):
     """
 
     def __init__(
-        self, search, zoom=None, path=None, zoom_adjust=None, source=None, url=None
+        self,
+        search,
+        zoom=None,
+        path=None,
+        zoom_adjust=None,
+        source=None,
+        url=None,
+        geocoder=gp.geocoders.Nominatim(user_agent=_default_user_agent),
     ):
         self.path = path
         if url is not None and source is None:
@@ -93,7 +107,7 @@ class Place(object):
         self.zoom_adjust = zoom_adjust
 
         # Get geocoded values
-        resp = gp.geocoders.Nominatim().geocode(search)
+        resp = geocoder.geocode(search)
         bbox = np.array([float(ii) for ii in resp.raw["boundingbox"]])
 
         if "display_name" in resp.raw.keys():
@@ -240,7 +254,7 @@ def plot_map(
     ax : instance of matplotlib Axes object or None
         The axis on the map is plotted.
     """
-    warn(
+    warnings.warn(
         (
             "The method `plot_map` is deprecated and will be removed from the"
             " library in future versions. Please use either `add_basemap` or"
