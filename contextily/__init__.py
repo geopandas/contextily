@@ -8,4 +8,4 @@ from .place import Place, plot_map
 from .tile import *
 from .plotting import add_basemap, add_attribution
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
