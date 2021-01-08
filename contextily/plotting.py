@@ -256,6 +256,7 @@ def _is_overlay(source):
         '^(OpenWeatherMap|OpenSeaMap)',
         'OpenMapSurfer.(Hybrid|AdminBounds|ContourLines|Hillshade|ElementsAtRisk)',
         'Stamen.Toner(Hybrid|Lines|Labels)',
+        'CartoDB.(Positron|DarkMatter|Voyager)OnlyLabels',
         'Hydda.RoadsAndLabels',
         '^JusticeMap',
         'OpenPtMap',
