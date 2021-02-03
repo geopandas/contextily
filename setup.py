@@ -10,7 +10,7 @@ with open("README.md") as f:
 
 setup(
     name="contextily",
-    version="1.0.0",
+    version="1.0.1",
     description="Context geo-tiles in Python",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -28,6 +28,7 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: Implementation :: CPython",
+        "Framework :: Matplotlib",
     ],
     python_requires=">=3.6",
     install_requires=install_requires,

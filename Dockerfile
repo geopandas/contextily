@@ -1,7 +1,7 @@
 FROM darribas/gds_py:4.1
 
 # Install contextily master
-RUN pip install -U git+https://github.com/geopandas/contextily.git@master
+RUN pip install -U earthengine-api git+https://github.com/geopandas/contextily.git@master
 # Add notebooks
 RUN rm -R work/
 COPY ./README.md ${HOME}/README.md
