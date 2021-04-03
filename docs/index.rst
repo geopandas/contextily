@@ -11,12 +11,18 @@ Contents
 
 .. toctree::
    :maxdepth: 2
+   :caption: User Guide
 
    intro_guide
    warping_guide
    working_with_local_files
    providers_deepdive
    friends_gee
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Reference Guide
+
    reference
 
 
