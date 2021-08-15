@@ -2,9 +2,8 @@
 
 import warnings
 import numpy as np
-from . import tile_providers as sources
 from . import providers
-from ._providers import TileProvider
+from xyzservices import TileProvider
 from .tile import bounds2img, _sm2ll, warp_tiles, _warper
 from rasterio.enums import Resampling
 from rasterio.warp import transform_bounds

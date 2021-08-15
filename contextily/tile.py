@@ -20,9 +20,8 @@ from rasterio.transform import from_origin
 from rasterio.io import MemoryFile
 from rasterio.vrt import WarpedVRT
 from rasterio.enums import Resampling
-from . import tile_providers as sources
 from . import providers
-from ._providers import TileProvider
+from xyzservices import TileProvider
 
 __all__ = [
     "bounds2raster",
@@ -115,11 +114,6 @@ def bounds2raster(
         [Optional. Default: 2]
         total number of rejected requests allowed before contextily
         will stop trying to fetch more tiles from a rate-limited API.
-    url : str [DEPRECATED]
-        [Optional. Default:
-        'http://tile.stamen.com/terrain/{z}/{x}/{y}.png'] URL for
-        tile provider. The placeholders for the XYZ need to be `{x}`,
-        `{y}`, `{z}`, respectively. See `cx.sources`.
 
     Returns
     -------
@@ -244,7 +238,7 @@ def bounds2img(
     arrays = []
     for t in mt.tiles(w, s, e, n, [zoom]):
         x, y, z = t.x, t.y, t.z
-        tile_url = _construct_tile_url(provider, x, y, z)
+        tile_url = provider.build_url(x=x, y=y, z=z)
         image = _fetch_tile(tile_url, wait, max_retries)
         tiles.append(t)
         arrays.append(image)
@@ -270,7 +264,7 @@ def _url_from_string(url):
         url = (
             url.replace("tileX", "{x}").replace("tileY", "{y}").replace("tileZ", "{z}")
         )
-    return {"url": url}
+    return TileProvider(url=url, attribution="", name="url")
 
 
 def _process_source(source):
@@ -287,15 +281,6 @@ def _process_source(source):
     else:
         provider = source
     return provider
-
-
-def _construct_tile_url(provider, x, y, z):
-    provider = provider.copy()
-    tile_url = provider.pop("url")
-    subdomains = provider.pop("subdomains", "abc")
-    r = provider.pop("r", "")
-    tile_url = tile_url.format(x=x, y=y, z=z, s=subdomains[0], r=r, **provider)
-    return tile_url
 
 
 @memory.cache
@@ -412,13 +397,13 @@ def _warper(img, transform, s_crs, t_crs, resampling):
             transform=transform,
         ) as mraster:
             mraster.write(img)
-    
+
         with memfile.open() as mraster:
             with WarpedVRT(mraster, crs=t_crs, resampling=resampling) as vrt:
                 img = vrt.read()
                 bounds = vrt.bounds
                 transform = vrt.transform
-    
+
     return img, bounds, transform
 
 

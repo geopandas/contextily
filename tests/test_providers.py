@@ -1,21 +1,9 @@
+import xyzservices
 import contextily as ctx
-import contextily.tile_providers as tilers
 
 import pytest
 from numpy.testing import assert_allclose
 
-
-def test_sources():
-    # NOTE: only tests they download, does not check pixel values
-    w, s, e, n = (
-        -106.6495132446289,
-        25.845197677612305,
-        -93.50721740722656,
-        36.49387741088867,
-    )
-    sources = tilers.deprecated_sources
-    for src in sources:
-        img, ext = ctx.bounds2img(w, s, e, n, 4, source=getattr(tilers, src), ll=True)
 
 
 def test_deprecated_url_format():
@@ -56,12 +44,12 @@ def test_providers():
 def test_providers_callable():
     # only testing the callable functionality to override a keyword, as we
     # cannot test the actual providers that need an API key
-    updated_provider = ctx.providers.GeoportailFrance.maps(apikey="mykey")
-    assert isinstance(updated_provider, ctx._providers.TileProvider)
+    updated_provider = ctx.providers.GeoportailFrance.plan(apikey="mykey")
+    assert isinstance(updated_provider, xyzservices.TileProvider)
     assert "url" in updated_provider
     assert updated_provider["apikey"] == "mykey"
     # check that original provider dict is not modified
-    assert ctx.providers.GeoportailFrance.maps["apikey"] == "choisirgeoportail"
+    assert ctx.providers.GeoportailFrance.plan["apikey"] == "choisirgeoportail"
 
 
 def test_invalid_provider():

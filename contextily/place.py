@@ -6,7 +6,7 @@ from warnings import warn
 from .tile import howmany, bounds2raster, bounds2img, _sm2ll, _calculate_zoom
 from .plotting import INTERPOLATION, ZOOM, add_attribution
 from . import providers
-from ._providers import TileProvider
+from xyzservices import TileProvider
 
 
 class Place(object):
