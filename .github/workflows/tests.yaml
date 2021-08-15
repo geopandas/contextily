@@ -1,0 +1,54 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - '*'
+  pull_request:
+    branches:
+      - '*'
+  schedule:
+      - cron: '59 23 * * 3'
+
+jobs:
+
+  unittests:
+    name: ${{ matrix.os }}, ${{ matrix.environment-file }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        environment-file: [ci/envs/37-minimal.yaml, ci/envs/38-latest-conda-forge.yaml]
+
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v2
+
+      - name: setup micromamba
+        uses: mamba-org/provision-with-micromamba@main
+        with:
+          environment-file: ${{ matrix.environment-file }}
+          micromamba-version: 'latest'
+
+      - name: Install contextily
+        shell: bash -l {0}
+        run: pip install .
+        if: matrix.os != 'windows-latest'
+
+      - name: Install contextily
+        shell: powershell
+        run: pip install .
+        if: matrix.os == 'windows-latest'
+
+      - name: run tests - bash
+        shell: bash -l {0}
+        run: pytest -v . --cov=contextily --cov-append --cov-report term-missing --cov-report xml
+        if: matrix.os != 'windows-latest'
+
+      - name: run tests - powershell
+        shell: powershell
+        run: pytest -v . --cov=contextily --cov-append --cov-report term-missing --cov-report xml
+        if: matrix.os == 'windows-latest'
+
+      - uses: codecov/codecov-action@v2
