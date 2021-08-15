@@ -11,6 +11,7 @@ dependencies:
   - rasterio
   - requests
   - joblib
+  - xyzservices
   # testing
   - pip
   - pytest
