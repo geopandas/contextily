@@ -11,6 +11,7 @@ dependencies:
 - pillow
 - rasterio
 - requests
+- joblib
 - xyzservices
 # doc dependencies
 - sphinx

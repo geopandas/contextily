@@ -126,7 +126,7 @@ def bounds2raster(
         w, s = _sm2ll(w, s)
         e, n = _sm2ll(e, n)
     # Download
-    Z, ext = bounds2img(w, s, e, n, zoom=zoom, source=source, url=url, ll=True)
+    Z, ext = bounds2img(w, s, e, n, zoom=zoom, source=source, ll=True)
     # Write
     # ---
     h, w, b = Z.shape

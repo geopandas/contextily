@@ -5,26 +5,6 @@ import pytest
 from numpy.testing import assert_allclose
 
 
-
-def test_deprecated_url_format():
-    old_url = "http://a.tile.openstreetmap.org/tileZ/tileX/tileY.png"
-    new_url = "http://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
-
-    w, s, e, n = (
-        -106.6495132446289,
-        25.845197677612305,
-        -93.50721740722656,
-        36.49387741088867,
-    )
-
-    with pytest.warns(FutureWarning, match="The url format using 'tileX'"):
-        img1, ext1 = ctx.bounds2img(w, s, e, n, 4, source=old_url, ll=True)
-
-    img2, ext2 = ctx.bounds2img(w, s, e, n, 4, source=new_url, ll=True)
-    assert_allclose(img1, img2)
-    assert_allclose(ext1, ext2)
-
-
 def test_providers():
     # NOTE: only tests they download, does not check pixel values
     w, s, e, n = (
@@ -63,14 +43,3 @@ def test_provider_attribute_access():
     assert provider.name == "OpenStreetMap.Mapnik"
     with pytest.raises(AttributeError):
         provider.non_existing_key
-
-
-def test_url():
-    # NOTE: only tests they download, does not check pixel values
-    w, s, e, n = (
-        -106.6495132446289,
-        25.845197677612305,
-        -93.50721740722656,
-        36.49387741088867,
-    )
-    ctx.bounds2img(w, s, e, n, 4, url=ctx.providers.OpenStreetMap.Mapnik, ll=True)
