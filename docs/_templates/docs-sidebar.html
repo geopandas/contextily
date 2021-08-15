@@ -14,21 +14,10 @@ CONTEXTILY
 <form class="bd-search d-flex align-items-center" action="{{ pathto('search') }}" method="get">
     <i class="icon fas fa-search"></i>
     <input type="search" class="form-control" name="q" id="search-input" placeholder="{{ theme_search_bar_text }}" aria-label="{{ theme_search_bar_text }}" autocomplete="off" >
-  </form>
-  
-  <nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
-  
-    <div class="bd-toc-item active">
-    {% set nav = get_nav_object(maxdepth=3, collapse=True) %}
-  
+</form>
 
-
-    <ul class="nav bd-sidenav">
-        {% for nav_item in nav %}
-        <li class="nav-item {% if nav_item.active%}active{% endif %}">
-            <a class="nav-link" href="{{ nav_item.url }}">{{ nav_item.title }}</a>
-        </li>
-        {% endfor %}
-    </ul>
-  
-  </nav>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    {{ generate_nav_html("sidebar", startdepth=0, maxdepth=4, collapse=False, includehidden=True, titles_only=True) }}
+  </div>
+</nav>

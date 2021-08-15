@@ -18,5 +18,4 @@ dependencies:
 - nbsphinx
 - pandoc
 - ipython
-- pip:
-  - git+https://github.com/pandas-dev/pydata-sphinx-theme.git@master
+- pydata-sphinx-theme
