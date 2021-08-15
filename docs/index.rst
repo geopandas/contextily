@@ -13,6 +13,7 @@ Contents
    :maxdepth: 2
 
    intro_guide
+   places_guide
    warping_guide
    working_with_local_files
    providers_deepdive

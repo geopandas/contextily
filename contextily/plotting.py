@@ -145,6 +145,10 @@ def add_basemap(
         # Warping
         if crs is not None:
             image, extent = warp_tiles(image, extent, t_crs=crs, resampling=resampling)
+        # Check if overlay
+        if _is_overlay(source) and 'zorder' not in extra_imshow_args:
+            # If zorder was not set then make it 9 otherwise leave it
+            extra_imshow_args['zorder'] = 9
     # If local source
     else:
         import rasterio as rio
@@ -176,17 +180,21 @@ def add_basemap(
                     }
                 ]
                 image, img_transform = riomask(raster, window, crop=True)
+                extent = left, right, bottom, top
             else:
                 # Read full
                 image = np.array([band for band in raster.read()])
                 img_transform = raster.transform
+                bb = raster.bounds
+                extent = bb.left, bb.right, bb.bottom, bb.top 
             # Warp
             if (crs is not None) and (raster.crs != crs):
                 image, bounds, _ = _warper(
                     image, img_transform, raster.crs, crs, resampling
                 )
+                extent = bounds.left, bounds.right, bounds.bottom, bounds.top
             image = image.transpose(1, 2, 0)
-            extent = bounds.left, bounds.right, bounds.bottom, bounds.top
+
     # Plotting
     if image.shape[2] == 1:
         image = image[:, :, 0]
@@ -219,6 +227,44 @@ def add_basemap(
 def _reproj_bb(left, right, bottom, top, s_crs, t_crs):
     n_l, n_b, n_r, n_t = transform_bounds(s_crs, t_crs, left, bottom, right, top)
     return n_l, n_r, n_b, n_t
+
+def _is_overlay(source):
+    """
+    Check if the identified source is an overlay (partially transparent) layer.
+
+    Parameters
+    ----------
+    source : dict
+        The tile source: web tile provider.  Must be preprocessed as
+        into a dictionary, not just a string.
+
+    Returns
+    -------
+    bool
+
+    Notes
+    -----
+    This function is based on a very similar javascript version found in leaflet:
+    https://github.com/leaflet-extras/leaflet-providers/blob/9eb968f8442ea492626c9c8f0dac8ede484e6905/preview/preview.js#L56-L70
+    """
+    if not isinstance(source, dict):
+        return False
+    if source.get('opacity', 1.0) < 1.0:
+        return True
+    overlayPatterns = [
+        '^(OpenWeatherMap|OpenSeaMap)',
+        'OpenMapSurfer.(Hybrid|AdminBounds|ContourLines|Hillshade|ElementsAtRisk)',
+        'Stamen.Toner(Hybrid|Lines|Labels)',
+        'CartoDB.(Positron|DarkMatter|Voyager)OnlyLabels',
+        'Hydda.RoadsAndLabels',
+        '^JusticeMap',
+        'OpenPtMap',
+        'OpenRailwayMap',
+        'OpenFireMap',
+        'SafeCast'
+    ]
+    import re
+    return bool(re.match('(' + '|'.join(overlayPatterns) + ')', source.get('name', '')))
 
 
 def add_attribution(ax, text, font_size=ATTRIBUTION_SIZE, **kwargs):
