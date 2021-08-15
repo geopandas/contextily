@@ -74,7 +74,6 @@ def bounds2raster(
     ll=False,
     wait=0,
     max_retries=2,
-    url=None,
 ):
     """
     Take bounding box and zoom, and write tiles into a raster file in
@@ -94,10 +93,10 @@ def bounds2raster(
         Level of detail
     path : str
         Path to raster file to be written
-    source : contextily.providers object or str
+    source : xyzservices.TileProvider object or str
         [Optional. Default: Stamen Terrain web tiles]
         The tile source: web tile provider or path to local file. The web tile
-        provider can be in the form of a `contextily.providers` object or a
+        provider can be in the form of a :class:`xyzservices.TileProvider` object or a
         URL. The placeholders for the XYZ in the URL need to be `{x}`, `{y}`,
         `{z}`, respectively. For local file paths, the file is read with
         `rasterio` and all bands are loaded into the basemap.
@@ -156,7 +155,7 @@ def bounds2raster(
 
 
 def bounds2img(
-    w, s, e, n, zoom="auto", source=None, ll=False, wait=0, max_retries=2, url=None
+    w, s, e, n, zoom="auto", source=None, ll=False, wait=0, max_retries=2
 ):
     """
     Take bounding box and zoom and return an image with all the tiles
@@ -174,10 +173,10 @@ def bounds2img(
         North edge
     zoom : int
         Level of detail
-    source : contextily.providers object or str
+    source : xyzservices.TileProvider object or str
         [Optional. Default: Stamen Terrain web tiles]
         The tile source: web tile provider or path to local file. The web tile
-        provider can be in the form of a `contextily.providers` object or a
+        provider can be in the form of a :class:`xyzservices.TileProvider` object or a
         URL. The placeholders for the XYZ in the URL need to be `{x}`, `{y}`,
         `{z}`, respectively. For local file paths, the file is read with
         `rasterio` and all bands are loaded into the basemap.
@@ -194,11 +193,6 @@ def bounds2img(
         [Optional. Default: 2]
         total number of rejected requests allowed before contextily
         will stop trying to fetch more tiles from a rate-limited API.
-    url : str [DEPRECATED]
-        [Optional. Default: 'http://tile.stamen.com/terrain/{z}/{x}/{y}.png']
-        URL for tile provider. The placeholders for the XYZ need to be
-        `{x}`, `{y}`, `{z}`, respectively. IMPORTANT: tiles are
-        assumed to be in the Spherical Mercator projection (EPSG:3857).
 
     Returns
     -------
@@ -211,21 +205,7 @@ def bounds2img(
         # Convert w, s, e, n into lon/lat
         w, s = _sm2ll(w, s)
         e, n = _sm2ll(e, n)
-    if url is not None and source is None:
-        warnings.warn(
-            'The "url" option is deprecated. Please use the "source"'
-            " argument instead.",
-            FutureWarning,
-            stacklevel=2,
-        )
-        source = url
-    elif url is not None and source is not None:
-        warnings.warn(
-            'The "url" argument is deprecated. Please use the "source"'
-            ' argument. Do not supply a "url" argument. It will be ignored.',
-            FutureWarning,
-            stacklevel=2,
-        )
+
     # get provider dict given the url
     provider = _process_source(source)
     # calculate and validate zoom level
@@ -251,30 +231,14 @@ def bounds2img(
     return merged, extent
 
 
-def _url_from_string(url):
-    """
-    Generate actual tile url from tile provider definition or template url.
-    """
-    if "tileX" in url and "tileY" in url:
-        warnings.warn(
-            "The url format using 'tileX', 'tileY', 'tileZ' as placeholders "
-            "is deprecated. Please use '{x}', '{y}', '{z}' instead.",
-            FutureWarning,
-        )
-        url = (
-            url.replace("tileX", "{x}").replace("tileY", "{y}").replace("tileZ", "{z}")
-        )
-    return TileProvider(url=url, attribution="", name="url")
-
-
 def _process_source(source):
     if source is None:
         provider = providers.Stamen.Terrain
     elif isinstance(source, str):
-        provider = _url_from_string(source)
-    elif not isinstance(source, (dict, TileProvider)):
+        provider = TileProvider(url=source, attribution="", name="url")
+    elif not isinstance(source, dict):
         raise TypeError(
-            "The 'url' needs to be a contextily.providers object, a dict, or string"
+            "The 'url' needs to be a xyzservices.TileProvider object or string"
         )
     elif "url" not in source:
         raise ValueError("The 'url' dict should at least contain a 'url' key")

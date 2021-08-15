@@ -1,19 +1,19 @@
 # `contextily`: context geo tiles in Python
 
-`contextily` is a small Python 3 (3.6 and above) package to retrieve tile maps from the
+`contextily` is a small Python 3 (3.7 and above) package to retrieve tile maps from the
 internet. It can add those tiles as basemap to matplotlib figures or write tile
 maps to disk into geospatial raster files. Bounding boxes can be passed in both
 WGS84 (`EPSG:4326`) and Spheric Mercator (`EPSG:3857`). See the notebook
 `contextily_guide.ipynb` for usage.
 
 [![Build Status](https://travis-ci.org/geopandas/contextily.svg?branch=master)](https://travis-ci.org/geopandas/contextily)
-[![Coverage Status](https://coveralls.io/repos/github/darribas/contextily/badge.svg?branch=master)](https://coveralls.io/github/darribas/contextily?branch=master)
+[![codecov](https://codecov.io/gh/geopandas/contextily/branch/master/graph/badge.svg?token=5Eu3L1peBb)](https://codecov.io/gh/geopandas/contextily)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/geopandas/contextily/master?urlpath=lab/tree/notebooks/intro_guide.ipynb)
 
 ![Tiles](tiles.png)
 
 The current tile providers that are available in contextily are the providers
-defined in the [leaflet-providers](https://github.com/leaflet-extras/leaflet-providers)
+defined in the [`xyzservices`](https://xyzservices.readthedocs.io)
 package. This includes some popular tile maps, such as:
 
 * The standard [OpenStreetMap](http://openstreetmap.org) map tiles
@@ -29,10 +29,11 @@ package. This includes some popular tile maps, such as:
 * `requests`
 * `geopy`
 * `joblib`
+* `xyzservices`
 
 ## Installation
 
-**Python 3 only** (3.6 and above)
+**Python 3 only** (3.7 and above)
 
 [Latest released version](https://github.com/geopandas/contextily/releases/), using pip:
 
