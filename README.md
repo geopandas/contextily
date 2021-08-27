@@ -6,7 +6,8 @@ maps to disk into geospatial raster files. Bounding boxes can be passed in both
 WGS84 (`EPSG:4326`) and Spheric Mercator (`EPSG:3857`). See the notebook
 `contextily_guide.ipynb` for usage.
 
-[![Build Status](https://travis-ci.org/geopandas/contextily.svg?branch=master)](https://travis-ci.org/geopandas/contextily)
+
+[![Tests](https://github.com/geopandas/contextily/actions/workflows/tests.yaml/badge.svg)](https://github.com/geopandas/contextily/actions/workflows/tests.yaml)
 [![codecov](https://codecov.io/gh/geopandas/contextily/branch/master/graph/badge.svg?token=5Eu3L1peBb)](https://codecov.io/gh/geopandas/contextily)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/geopandas/contextily/master?urlpath=lab/tree/notebooks/intro_guide.ipynb)
 
