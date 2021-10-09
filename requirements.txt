@@ -5,3 +5,4 @@ pillow
 rasterio
 requests
 joblib
+xyzservices

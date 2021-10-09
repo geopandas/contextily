@@ -28,7 +28,7 @@ copyright = "2020, Dani Arribas-Bel & Contexily Contributors"
 author = "Dani Arribas-Bel & Contexily Contributors"
 
 # The full version, including alpha/beta/rc tags
-release = "1.0.0"
+release = "1.1.0"
 
 
 # -- General configuration ---------------------------------------------------
@@ -36,7 +36,12 @@ release = "1.0.0"
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ["sphinx.ext.autodoc", "numpydoc", "nbsphinx"]
+extensions = [
+    "sphinx.ext.autodoc",
+    "numpydoc",
+    "nbsphinx",
+    "sphinx.ext.intersphinx",
+]
 
 # nbsphinx do not use requirejs (breaks bootstrap)
 nbsphinx_requirejs_path = ""
@@ -65,6 +70,14 @@ html_static_path = ["_static"]
 html_css_files = [
     "css/custom.css",
 ]
+
+html_sidebars = {
+    "**": ["docs-sidebar.html"],
+}
+
+intersphinx_mapping = {
+    "xyzservices": ("https://xyzservices.readthedocs.io/en/stable/", None),
+}
 
 
 # ---------------------------------------------------------------------------

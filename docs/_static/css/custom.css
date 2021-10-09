@@ -1,18 +1,17 @@
 /* Override some aspects of the pydata-sphinx-theme */
 
-body {
-  padding-top: 0px;
-}
-
-h1,
-h2 {
-  color: #333;
+:root {
+  --pst-color-active-navigation: 0, 91, 129;
+  /* Use normal text color (like h3, ..) instead of primary color */
+  --pst-color-h1: var(--pst-color-text-base);
+  --pst-color-h2: var(--pst-color-text-base);
+  --pst-header-height: 0px;
 }
 
 @media (min-width: 768px) {
   @supports (position: -webkit-sticky) or (position: sticky) {
     .bd-sidebar {
-      top: 40px;
+      padding-top: 3rem;
     }
   }
 }
@@ -22,21 +21,10 @@ code {
   color: #3b444b;
 }
 
-/* Default link color for active + larger font size for sidebar*/
+/* Larger font size for sidebar*/
 .bd-sidebar .nav > li > a {
   font-size: 1em;
 }
-
-.bd-sidebar .nav>li>a:hover,
-.bd-sidebar .nav > .active:hover > a,
-.bd-sidebar .nav > .active > a {
-  color: #005b81;
-}
-.toc-entry > .nav-link.active {
-  color: #005b81;
-  border-left:2px solid #005b81;
-}
-
 
 /* New element: brand text instead of logo */
 

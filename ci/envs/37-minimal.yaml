@@ -1,0 +1,19 @@
+name: test-environment
+channels:
+  - conda-forge
+dependencies:
+  - python=3.7
+  # required
+  - geopy
+  - matplotlib
+  - mercantile
+  - pillow
+  - rasterio
+  - requests
+  - joblib
+  - xyzservices
+  # testing
+  - pip
+  - pytest
+  - pytest-cov
+

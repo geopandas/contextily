@@ -12,11 +12,11 @@ dependencies:
 - rasterio
 - requests
 - joblib
+- xyzservices
 # doc dependencies
 - sphinx
 - numpydoc
 - nbsphinx
 - pandoc
 - ipython
-- pip:
-  - git+https://github.com/pandas-dev/pydata-sphinx-theme.git@master
+- pydata-sphinx-theme

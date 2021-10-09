@@ -11,13 +11,20 @@ Contents
 
 .. toctree::
    :maxdepth: 2
+   :caption: User Guide
 
    intro_guide
+   places_guide
    warping_guide
    working_with_local_files
    providers_deepdive
    friends_gee
    friends_cenpy_osmnx
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Reference Guide
+
    reference
 
 

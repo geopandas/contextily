@@ -20,9 +20,8 @@ from rasterio.transform import from_origin
 from rasterio.io import MemoryFile
 from rasterio.vrt import WarpedVRT
 from rasterio.enums import Resampling
-from . import tile_providers as sources
 from . import providers
-from ._providers import TileProvider
+from xyzservices import TileProvider
 
 __all__ = [
     "bounds2raster",
@@ -75,7 +74,6 @@ def bounds2raster(
     ll=False,
     wait=0,
     max_retries=2,
-    url=None,
 ):
     """
     Take bounding box and zoom, and write tiles into a raster file in
@@ -95,10 +93,10 @@ def bounds2raster(
         Level of detail
     path : str
         Path to raster file to be written
-    source : contextily.providers object or str
+    source : xyzservices.TileProvider object or str
         [Optional. Default: Stamen Terrain web tiles]
         The tile source: web tile provider or path to local file. The web tile
-        provider can be in the form of a `contextily.providers` object or a
+        provider can be in the form of a :class:`xyzservices.TileProvider` object or a
         URL. The placeholders for the XYZ in the URL need to be `{x}`, `{y}`,
         `{z}`, respectively. For local file paths, the file is read with
         `rasterio` and all bands are loaded into the basemap.
@@ -115,11 +113,6 @@ def bounds2raster(
         [Optional. Default: 2]
         total number of rejected requests allowed before contextily
         will stop trying to fetch more tiles from a rate-limited API.
-    url : str [DEPRECATED]
-        [Optional. Default:
-        'http://tile.stamen.com/terrain/{z}/{x}/{y}.png'] URL for
-        tile provider. The placeholders for the XYZ need to be `{x}`,
-        `{y}`, `{z}`, respectively. See `cx.sources`.
 
     Returns
     -------
@@ -133,7 +126,7 @@ def bounds2raster(
         w, s = _sm2ll(w, s)
         e, n = _sm2ll(e, n)
     # Download
-    Z, ext = bounds2img(w, s, e, n, zoom=zoom, source=source, url=url, ll=True)
+    Z, ext = bounds2img(w, s, e, n, zoom=zoom, source=source, ll=True)
     # Write
     # ---
     h, w, b = Z.shape
@@ -162,7 +155,7 @@ def bounds2raster(
 
 
 def bounds2img(
-    w, s, e, n, zoom="auto", source=None, ll=False, wait=0, max_retries=2, url=None
+    w, s, e, n, zoom="auto", source=None, ll=False, wait=0, max_retries=2
 ):
     """
     Take bounding box and zoom and return an image with all the tiles
@@ -180,10 +173,10 @@ def bounds2img(
         North edge
     zoom : int
         Level of detail
-    source : contextily.providers object or str
+    source : xyzservices.TileProvider object or str
         [Optional. Default: Stamen Terrain web tiles]
         The tile source: web tile provider or path to local file. The web tile
-        provider can be in the form of a `contextily.providers` object or a
+        provider can be in the form of a :class:`xyzservices.TileProvider` object or a
         URL. The placeholders for the XYZ in the URL need to be `{x}`, `{y}`,
         `{z}`, respectively. For local file paths, the file is read with
         `rasterio` and all bands are loaded into the basemap.
@@ -200,11 +193,6 @@ def bounds2img(
         [Optional. Default: 2]
         total number of rejected requests allowed before contextily
         will stop trying to fetch more tiles from a rate-limited API.
-    url : str [DEPRECATED]
-        [Optional. Default: 'http://tile.stamen.com/terrain/{z}/{x}/{y}.png']
-        URL for tile provider. The placeholders for the XYZ need to be
-        `{x}`, `{y}`, `{z}`, respectively. IMPORTANT: tiles are
-        assumed to be in the Spherical Mercator projection (EPSG:3857).
 
     Returns
     -------
@@ -217,21 +205,7 @@ def bounds2img(
         # Convert w, s, e, n into lon/lat
         w, s = _sm2ll(w, s)
         e, n = _sm2ll(e, n)
-    if url is not None and source is None:
-        warnings.warn(
-            'The "url" option is deprecated. Please use the "source"'
-            " argument instead.",
-            FutureWarning,
-            stacklevel=2,
-        )
-        source = url
-    elif url is not None and source is not None:
-        warnings.warn(
-            'The "url" argument is deprecated. Please use the "source"'
-            ' argument. Do not supply a "url" argument. It will be ignored.',
-            FutureWarning,
-            stacklevel=2,
-        )
+
     # get provider dict given the url
     provider = _process_source(source)
     # calculate and validate zoom level
@@ -244,7 +218,7 @@ def bounds2img(
     arrays = []
     for t in mt.tiles(w, s, e, n, [zoom]):
         x, y, z = t.x, t.y, t.z
-        tile_url = _construct_tile_url(provider, x, y, z)
+        tile_url = provider.build_url(x=x, y=y, z=z)
         image = _fetch_tile(tile_url, wait, max_retries)
         tiles.append(t)
         arrays.append(image)
@@ -257,30 +231,14 @@ def bounds2img(
     return merged, extent
 
 
-def _url_from_string(url):
-    """
-    Generate actual tile url from tile provider definition or template url.
-    """
-    if "tileX" in url and "tileY" in url:
-        warnings.warn(
-            "The url format using 'tileX', 'tileY', 'tileZ' as placeholders "
-            "is deprecated. Please use '{x}', '{y}', '{z}' instead.",
-            FutureWarning,
-        )
-        url = (
-            url.replace("tileX", "{x}").replace("tileY", "{y}").replace("tileZ", "{z}")
-        )
-    return {"url": url}
-
-
 def _process_source(source):
     if source is None:
         provider = providers.Stamen.Terrain
     elif isinstance(source, str):
-        provider = _url_from_string(source)
-    elif not isinstance(source, (dict, TileProvider)):
+        provider = TileProvider(url=source, attribution="", name="url")
+    elif not isinstance(source, dict):
         raise TypeError(
-            "The 'url' needs to be a contextily.providers object, a dict, or string"
+            "The 'url' needs to be a xyzservices.TileProvider object or string"
         )
     elif "url" not in source:
         raise ValueError("The 'url' dict should at least contain a 'url' key")
@@ -289,20 +247,11 @@ def _process_source(source):
     return provider
 
 
-def _construct_tile_url(provider, x, y, z):
-    provider = provider.copy()
-    tile_url = provider.pop("url")
-    subdomains = provider.pop("subdomains", "abc")
-    r = provider.pop("r", "")
-    tile_url = tile_url.format(x=x, y=y, z=z, s=subdomains[0], r=r, **provider)
-    return tile_url
-
-
 @memory.cache
 def _fetch_tile(tile_url, wait, max_retries):
     request = _retryer(tile_url, wait, max_retries)
     with io.BytesIO(request.content) as image_stream:
-        image = Image.open(image_stream).convert("RGB")
+        image = Image.open(image_stream).convert("RGBA")
         array = np.asarray(image)
         image.close()
     return array
@@ -349,11 +298,11 @@ def warp_tiles(img, extent, t_crs="EPSG:4326", resampling=Resampling.bilinear):
     resY = (y[-1] - y[0]) / h
     transform = from_origin(x[0] - resX / 2, y[-1] + resY / 2, resX, resY)
     # ---
-    w_img, vrt = _warper(
+    w_img, bounds, _ = _warper(
         img.transpose(2, 0, 1), transform, "EPSG:3857", t_crs, resampling
     )
     # ---
-    extent = vrt.bounds.left, vrt.bounds.right, vrt.bounds.bottom, vrt.bounds.top
+    extent = bounds.left, bounds.right, bounds.bottom, bounds.top
     return w_img.transpose(1, 2, 0), extent
 
 
@@ -392,13 +341,13 @@ def warp_img_transform(img, transform, s_crs, t_crs, resampling=Resampling.bilin
         Transform of the input image as expressed by `rasterio` and
         the `affine` package
     """
-    w_img, vrt = _warper(img, transform, s_crs, t_crs, resampling)
-    return w_img, vrt.transform
+    w_img, _, w_transform = _warper(img, transform, s_crs, t_crs, resampling)
+    return w_img, w_transform
 
 
 def _warper(img, transform, s_crs, t_crs, resampling):
     """
-    Warp an image returning it as a virtual file
+    Warp an image. Returns the warped image and updated bounds and transform.
     """
     b, h, w = img.shape
     with MemoryFile() as memfile:
@@ -411,12 +360,15 @@ def _warper(img, transform, s_crs, t_crs, resampling):
             crs=s_crs,
             transform=transform,
         ) as mraster:
-            for band in range(b):
-                mraster.write(img[band, :, :], band + 1)
-            # --- Virtual Warp
-            vrt = WarpedVRT(mraster, crs=t_crs, resampling=resampling)
-            img = vrt.read()
-    return img, vrt
+            mraster.write(img)
+
+        with memfile.open() as mraster:
+            with WarpedVRT(mraster, crs=t_crs, resampling=resampling) as vrt:
+                img = vrt.read()
+                bounds = vrt.bounds
+                transform = vrt.transform
+
+    return img, bounds, transform
 
 
 def _retryer(tile_url, wait, max_retries):
