@@ -95,6 +95,7 @@ files_to_copy = [
     "notebooks/warping_guide.ipynb",
     "notebooks/working_with_local_files.ipynb",
     "notebooks/friends_gee.ipynb",
+    "notebooks/friends_cenpy_osmnx.ipynb",
     "tiles.png",
 ]
 

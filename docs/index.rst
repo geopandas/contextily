@@ -19,6 +19,7 @@ Contents
    working_with_local_files
    providers_deepdive
    friends_gee
+   friends_cenpy_osmnx
 
 .. toctree::
    :maxdepth: 2
