@@ -209,16 +209,16 @@ def test_validate_zoom():
 
 
 def test_place():
-    expected_bbox = [-105.3014509, 39.9643513, -105.1780988, 40.094409]
+    expected_bbox = [-105.430545, 39.8549856, -105.110545, 40.1749856]
     expected_bbox_map = [
         -11740727.544603072,
-        -11701591.786121061,
-        4852834.0517692715,
-        4891969.810251278,
+        -11662456.027639052,
+        4774562.53480525,
+        4931105.568733288,
     ]
-    expected_zoom = 10
+    expected_zoom = 9
     loc = ctx.Place(SEARCH, zoom_adjust=ADJUST)
-    assert loc.im.shape == (256, 256, 4)
+    assert loc.im.shape == (512, 256, 4)
     loc  # Make sure repr works
 
     # Check auto picks are correct
@@ -298,11 +298,11 @@ def test_add_basemap():
     ctx.add_basemap(ax, source="./test2.tif", reset_extent=True)
 
     assert_array_almost_equal(subset, ax.images[0].get_extent())
-    assert ax.images[0].get_array().sum() == 12489346
-    assert ax.images[0].get_array()[:,:,:3].sum() == 8440966
-    assert ax.images[0].get_array().shape == (126, 126, 4)
-    assert_array_almost_equal(ax.images[0].get_array()[:,:,:3].mean(), 177.22696733014195)
-    assert_array_almost_equal(ax.images[0].get_array().mean(), 196.670225)
+    assert ax.images[0].get_array().sum() == 3187219
+    assert ax.images[0].get_array()[:,:,:3].sum() == 2175124
+    assert ax.images[0].get_array().shape == (64, 64, 4)
+    assert_array_almost_equal(ax.images[0].get_array()[:,:,:3].mean(), 177.01204427083334)
+    assert_array_almost_equal(ax.images[0].get_array().mean(), 194.53240966796875)
     ## Full read
     f, ax = matplotlib.pyplot.subplots(1)
     ax.set_xlim(x1, x2)
@@ -311,17 +311,17 @@ def test_add_basemap():
     ctx.add_basemap(ax, source="./test2.tif", reset_extent=False)
 
     raster_extent = (
-        -11740803.981631357,
-        -11701668.223149346,
-        4852910.488797557,
-        4892046.247279563,
+        -11740880.418659642,
+        -11662608.901695622,
+        4774715.408861821,
+        4931258.442789858,
     )
     assert_array_almost_equal(raster_extent, ax.images[0].get_extent())
-    assert ax.images[0].get_array()[:,:,:3].sum() == 34840247
-    assert ax.images[0].get_array().sum() == 51551927
-    assert ax.images[0].get_array().shape == (256, 256, 4)
-    assert_array_almost_equal(ax.images[0].get_array()[:,:,:3].mean(), 177.20665995279947)
-    assert_array_almost_equal(ax.images[0].get_array().mean(), 196.654995)
+    assert ax.images[0].get_array()[:,:,:3].sum() == 76248416
+    assert ax.images[0].get_array().sum() == 109671776
+    assert ax.images[0].get_array().shape == (512, 256, 4)
+    assert_array_almost_equal(ax.images[0].get_array()[:,:,:3].mean(), 193.90974934895834)
+    assert_array_almost_equal(ax.images[0].get_array().mean(), 209.18231201171875)
 
     # Test with auto-zoom
     f, ax = matplotlib.pyplot.subplots(1)
