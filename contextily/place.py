@@ -7,7 +7,7 @@ import warnings
 from .tile import howmany, bounds2raster, bounds2img, _sm2ll, _calculate_zoom
 from .plotting import INTERPOLATION, ZOOM, add_attribution
 from . import providers
-from ._providers import TileProvider
+from xyzservices import TileProvider
 
 # Set user ID for Nominatim
 _val = np.random.randint(1000000)
@@ -36,20 +36,15 @@ class Place(object):
     zoom_adjust : int or None
         [Optional. Default: None]
         The amount to adjust a chosen zoom level if it is chosen automatically.
-    source : contextily.providers object or str
+    source : xyzservices.providers object or str
         [Optional. Default: Stamen Terrain web tiles]
         The tile source: web tile provider or path to local file. The web tile
-        provider can be in the form of a `contextily.providers` object or a
+        provider can be in the form of a :class:`xyzservices.TileProvider` object or a
         URL. The placeholders for the XYZ in the URL need to be `{x}`, `{y}`,
         `{z}`, respectively. For local file paths, the file is read with
         `rasterio` and all bands are loaded into the basemap.
         IMPORTANT: tiles are assumed to be in the Spherical Mercator
         projection (EPSG:3857), unless the `crs` keyword is specified.
-    url : str [DEPRECATED]
-        [Optional. Default: 'http://tile.stamen.com/terrain/{z}/{x}/{y}.png']
-        Source url for web tiles, or path to local file. If
-        local, the file is read with `rasterio` and all
-        bands are loaded into the basemap.
     geocoder : geopy.geocoders
         [Optional. Default: geopy.geocoders.Nominatim()] Geocoder method to process `search`
 
@@ -82,25 +77,9 @@ class Place(object):
         path=None,
         zoom_adjust=None,
         source=None,
-        url=None,
         geocoder=gp.geocoders.Nominatim(user_agent=_default_user_agent),
     ):
         self.path = path
-        if url is not None and source is None:
-            warnings.warn(
-                'The "url" option is deprecated. Please use the "source"'
-                " argument instead.",
-                FutureWarning,
-                stacklevel=2,
-            )
-            source = url
-        elif url is not None and source is not None:
-            warnings.warn(
-                'The "url" argument is deprecated. Please use the "source"'
-                ' argument. Do not supply a "url" argument. It will be ignored.',
-                FutureWarning,
-                stacklevel=2,
-            )
         if source is None:
             source = providers.Stamen.Terrain
         self.source = source

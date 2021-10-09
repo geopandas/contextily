@@ -12,6 +12,7 @@ dependencies:
 - rasterio
 - requests
 - joblib
+- xyzservices
 # doc dependencies
 - sphinx
 - numpydoc
