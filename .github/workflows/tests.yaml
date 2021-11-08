@@ -14,12 +14,18 @@ jobs:
 
   unittests:
     name: ${{ matrix.os }}, ${{ matrix.environment-file }}
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}-latest
     timeout-minutes: 30
     strategy:
+      fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
-        environment-file: [ci/envs/37-minimal.yaml, ci/envs/38-latest-conda-forge.yaml]
+        os: [macos, ubuntu, windows]
+        environment-file: [ci/envs/37-minimal.yaml, ci/envs/310-latest-conda-forge.yaml]
+        include:
+          - os: ubuntu
+            environment-file: ci/envs/38-conda-forge.yaml
+          - os: ubuntu
+            environment-file: ci/envs/39-conda-forge.yaml
 
     steps:
       - name: checkout repo
@@ -34,21 +40,21 @@ jobs:
       - name: Install contextily
         shell: bash -l {0}
         run: pip install .
-        if: matrix.os != 'windows-latest'
+        if: matrix.os != 'windows'
 
       - name: Install contextily
         shell: powershell
         run: pip install .
-        if: matrix.os == 'windows-latest'
+        if: matrix.os == 'windows'
 
       - name: run tests - bash
         shell: bash -l {0}
         run: pytest -v . --cov=contextily --cov-append --cov-report term-missing --cov-report xml
-        if: matrix.os != 'windows-latest'
+        if: matrix.os != 'windows'
 
       - name: run tests - powershell
         shell: powershell
         run: pytest -v . --cov=contextily --cov-append --cov-report term-missing --cov-report xml
-        if: matrix.os == 'windows-latest'
+        if: matrix.os == 'windows'
 
       - uses: codecov/codecov-action@v2
