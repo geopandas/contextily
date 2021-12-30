@@ -8,8 +8,8 @@ WGS84 (`EPSG:4326`) and Spheric Mercator (`EPSG:3857`). See the notebook
 
 
 [![Tests](https://github.com/geopandas/contextily/actions/workflows/tests.yaml/badge.svg)](https://github.com/geopandas/contextily/actions/workflows/tests.yaml)
-[![codecov](https://codecov.io/gh/geopandas/contextily/branch/master/graph/badge.svg?token=5Eu3L1peBb)](https://codecov.io/gh/geopandas/contextily)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/geopandas/contextily/master?urlpath=lab/tree/notebooks/intro_guide.ipynb)
+[![codecov](https://codecov.io/gh/geopandas/contextily/branch/main/graph/badge.svg?token=5Eu3L1peBb)](https://codecov.io/gh/geopandas/contextily)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/geopandas/contextily/main?urlpath=lab/tree/notebooks/intro_guide.ipynb)
 
 ![Tiles](tiles.png)
 
