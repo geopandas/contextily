@@ -14,7 +14,7 @@ setup(
     description="Context geo-tiles in Python",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/darribas/contextily",
+    url="https://github.com/geopandas/contextily",
     author="Dani Arribas-Bel",
     author_email="daniel.arribas.bel@gmail.com",
     license="3-Clause BSD",
