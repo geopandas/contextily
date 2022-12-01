@@ -38,9 +38,9 @@ def test_bounds2raster():
     assert img[100, 100, :].tolist() == [230, 229, 188, 255]
     assert img[100, 200, :].tolist() == [156, 180, 131, 255]
     assert img[200, 100, :].tolist() == [230, 225, 189, 255]
-    assert img[:,:,:3].sum() == 36926856
+    assert img[:, :, :3].sum() == 36926856
     assert img.sum() == 53638536
-    assert_array_almost_equal(img[:,:,:3].mean(), 187.8197021484375)
+    assert_array_almost_equal(img[:, :, :3].mean(), 187.8197021484375)
     assert_array_almost_equal(img.mean(), 204.614777)
 
     # multiple tiles for which result is not square
@@ -209,16 +209,16 @@ def test_validate_zoom():
 
 
 def test_place():
-    expected_bbox = [-105.430545, 39.8549856, -105.110545, 40.1749856]
+    expected_bbox = [-105.3014509, 39.9643513, -105.1780988, 40.094409]
     expected_bbox_map = [
         -11740727.544603072,
-        -11662456.027639052,
-        4774562.53480525,
-        4931105.568733288,
+        -11701591.786121061,
+        4852834.0517692715,
+        4891969.810251278,
     ]
-    expected_zoom = 9
+    expected_zoom = 10
     loc = ctx.Place(SEARCH, zoom_adjust=ADJUST)
-    assert loc.im.shape == (512, 256, 4)
+    assert loc.im.shape == (256, 256, 4)
     loc  # Make sure repr works
 
     # Check auto picks are correct
@@ -279,9 +279,13 @@ def test_add_basemap():
 
     assert ax.images[0].get_array().sum() == 51551927
     assert ax.images[0].get_array().shape == (256, 256, 4)
-    assert_array_almost_equal(ax.images[0].get_array()[:,:,:3].mean(), 177.20665995279947)
+    assert_array_almost_equal(
+        ax.images[0].get_array()[:, :, :3].mean(), 177.20665995279947
+    )
     assert_array_almost_equal(ax.images[0].get_array().mean(), 196.654995)
 
+
+def test_add_basemap_local_source():
     # Test local source
     ## Windowed read
     subset = (
@@ -298,12 +302,21 @@ def test_add_basemap():
     ctx.add_basemap(ax, source="./test2.tif", reset_extent=True)
 
     assert_array_almost_equal(subset, ax.images[0].get_extent())
-    assert ax.images[0].get_array().sum() == 3187219
-    assert ax.images[0].get_array()[:,:,:3].sum() == 2175124
-    assert ax.images[0].get_array().shape == (64, 64, 4)
-    assert_array_almost_equal(ax.images[0].get_array()[:,:,:3].mean(), 177.01204427083334)
-    assert_array_almost_equal(ax.images[0].get_array().mean(), 194.53240966796875)
+    assert ax.images[0].get_array().sum() == 12489346
+    assert ax.images[0].get_array()[:, :, :3].sum() == 8440966
+    assert ax.images[0].get_array().shape == (126, 126, 4)
+    assert_array_almost_equal(ax.images[0].get_array()[:, :, :3].mean(), 177.226967)
+    assert_array_almost_equal(ax.images[0].get_array().mean(), 196.670225)
+
+
+def test_add_basemap_full_read():
     ## Full read
+    x1, x2, y1, y2 = [
+        -11740727.544603072,
+        -11701591.786121061,
+        4852834.0517692715,
+        4891969.810251278,
+    ]
     f, ax = matplotlib.pyplot.subplots(1)
     ax.set_xlim(x1, x2)
     ax.set_ylim(y1, y2)
@@ -311,19 +324,27 @@ def test_add_basemap():
     ctx.add_basemap(ax, source="./test2.tif", reset_extent=False)
 
     raster_extent = (
-        -11740880.418659642,
-        -11662608.901695622,
-        4774715.408861821,
-        4931258.442789858,
+        -11740803.981631,
+        -11701668.223149,
+        4852910.488798,
+        4892046.24728,
     )
     assert_array_almost_equal(raster_extent, ax.images[0].get_extent())
-    assert ax.images[0].get_array()[:,:,:3].sum() == 76248416
-    assert ax.images[0].get_array().sum() == 109671776
-    assert ax.images[0].get_array().shape == (512, 256, 4)
-    assert_array_almost_equal(ax.images[0].get_array()[:,:,:3].mean(), 193.90974934895834)
-    assert_array_almost_equal(ax.images[0].get_array().mean(), 209.18231201171875)
+    assert ax.images[0].get_array()[:, :, :3].sum() == 34840247
+    assert ax.images[0].get_array().sum() == 51551927
+    assert ax.images[0].get_array().shape == (256, 256, 4)
+    assert_array_almost_equal(ax.images[0].get_array()[:, :, :3].mean(), 177.20666)
+    assert_array_almost_equal(ax.images[0].get_array().mean(), 196.654995)
 
+
+def test_add_basemap_auto_zoom():
     # Test with auto-zoom
+    x1, x2, y1, y2 = [
+        -11740727.544603072,
+        -11701591.786121061,
+        4852834.0517692715,
+        4891969.810251278,
+    ]
     f, ax = matplotlib.pyplot.subplots(1)
     ax.set_xlim(x1, x2)
     ax.set_ylim(y1, y2)
@@ -336,12 +357,16 @@ def test_add_basemap():
         4891969.810251278,
     )
     assert_array_almost_equal(ax_extent, ax.images[0].get_extent())
-    assert ax.images[0].get_array()[:,:,:3].sum() == 563185119
+    assert ax.images[0].get_array()[:, :, :3].sum() == 563185119
     assert ax.images[0].get_array().sum() == 830571999
     assert ax.images[0].get_array().shape == (1024, 1024, 4)
-    assert_array_almost_equal(ax.images[0].get_array()[:,:,:3].mean(), 179.03172779083252)
+    assert_array_almost_equal(
+        ax.images[0].get_array()[:, :, :3].mean(), 179.03172779083252
+    )
     assert_array_almost_equal(ax.images[0].get_array().mean(), 198.023796)
 
+
+def test_add_basemap_warping():
     # Test on-th-fly warping
     x1, x2 = -105.5, -105.00
     y1, y2 = 39.56, 40.13
@@ -351,11 +376,18 @@ def test_add_basemap():
     ctx.add_basemap(ax, crs={"init": "epsg:4326"}, attribution=None)
     assert ax.get_xlim() == (x1, x2)
     assert ax.get_ylim() == (y1, y2)
-    assert ax.images[0].get_array()[:,:,:3].sum() == 724238693
+    assert ax.images[0].get_array()[:, :, :3].sum() == 724238693
     assert ax.images[0].get_array().shape == (1135, 1183, 4)
-    assert_array_almost_equal(ax.images[0].get_array()[:,:,:3].mean(), 179.79593258881636)
+    assert_array_almost_equal(
+        ax.images[0].get_array()[:, :, :3].mean(), 179.79593258881636
+    )
     assert_array_almost_equal(ax.images[0].get_array().mean(), 198.596949)
+
+
+def test_add_basemap_warping_local():
     # Test local source warping
+    x1, x2 = -105.5, -105.00
+    y1, y2 = 39.56, 40.13
     _ = ctx.bounds2raster(x1, y1, x2, y2, "./test2.tif", ll=True)
     f, ax = matplotlib.pyplot.subplots(1)
     ax.set_xlim(x1, x2)
@@ -366,19 +398,13 @@ def test_add_basemap():
     assert ax.get_xlim() == (x1, x2)
     assert ax.get_ylim() == (y1, y2)
 
-    assert ax.images[0].get_array()[:,:,:3].sum() == 464536503
+    assert ax.images[0].get_array()[:, :, :3].sum() == 464536503
     assert ax.images[0].get_array().shape == (980, 862, 4)
-    assert_array_almost_equal(ax.images[0].get_array()[:,:,:3].mean(), 183.301175)
+    assert_array_almost_equal(ax.images[0].get_array()[:, :, :3].mean(), 183.301175)
 
     assert ax.images[0].get_array().sum() == 678981558
     assert_array_almost_equal(ax.images[0].get_array().mean(), 200.939189)
 
-    x1, x2, y1, y2 = [
-        -11740727.544603072,
-        -11701591.786121061,
-        4852834.0517692715,
-        4891969.810251278,
-    ]
 
 def test_add_basemap_overlay():
     x1, x2, y1, y2 = [
@@ -404,7 +430,9 @@ def test_add_basemap_overlay():
     assert ax.images[0].get_array()[:, :, :3].sum() == 34840247
     assert ax.images[0].get_array().sum() == 51551927
     assert ax.images[0].get_array().shape == (256, 256, 4)
-    assert_array_almost_equal(ax.images[0].get_array()[:, :, :3].mean(), 177.20665995279947)
+    assert_array_almost_equal(
+        ax.images[0].get_array()[:, :, :3].mean(), 177.20665995279947
+    )
     assert_array_almost_equal(ax.images[0].get_array().mean(), 196.654995)
 
     # check totals on overaly (mostly transparent labels) layer
