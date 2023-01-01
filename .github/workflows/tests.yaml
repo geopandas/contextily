@@ -57,4 +57,4 @@ jobs:
         run: pytest -v . --cov=contextily --cov-append --cov-report term-missing --cov-report xml
         if: matrix.os == 'windows'
 
-      - uses: codecov/codecov-action@v2
+      - uses: codecov/codecov-action@v3
