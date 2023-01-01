@@ -29,7 +29,7 @@ def test_providers_callable():
     assert "url" in updated_provider
     assert updated_provider["apikey"] == "mykey"
     # check that original provider dict is not modified
-    assert ctx.providers.GeoportailFrance.plan["apikey"] == "choisirgeoportail"
+    assert ctx.providers.GeoportailFrance.plan["apikey"] == "essentiels"
 
 
 def test_invalid_provider():
