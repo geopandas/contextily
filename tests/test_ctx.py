@@ -320,6 +320,7 @@ def test_add_basemap_local_source():
     assert_array_almost_equal(ax.images[0].get_array().mean(), 196.670225)
 
 
+@pytest.mark.network
 def test_add_basemap_query():
     # Plot boulder bbox as in test_place
     x1, x2, y1, y2 = [
