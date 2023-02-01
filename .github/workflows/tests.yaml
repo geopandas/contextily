@@ -3,15 +3,14 @@ name: Tests
 on:
   push:
     branches:
-      - '*'
+      - "*"
   pull_request:
     branches:
-      - '*'
+      - "*"
   schedule:
-      - cron: '59 23 * * 3'
+    - cron: "59 23 * * 3"
 
 jobs:
-
   unittests:
     name: ${{ matrix.os }}, ${{ matrix.environment-file }}
     runs-on: ${{ matrix.os }}-latest
@@ -20,10 +19,11 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos, ubuntu, windows]
-        environment-file: [ci/envs/37-minimal.yaml, ci/envs/310-latest-conda-forge.yaml]
+        environment-file:
+          [ci/envs/38-minimal.yaml, ci/envs/311-latest-conda-forge.yaml]
         include:
           - os: ubuntu
-            environment-file: ci/envs/38-conda-forge.yaml
+            environment-file: ci/envs/310-conda-forge.yaml
           - os: ubuntu
             environment-file: ci/envs/39-conda-forge.yaml
 
@@ -35,7 +35,7 @@ jobs:
         uses: mamba-org/provision-with-micromamba@main
         with:
           environment-file: ${{ matrix.environment-file }}
-          micromamba-version: 'latest'
+          micromamba-version: "latest"
 
       - name: Install contextily
         shell: bash -l {0}
