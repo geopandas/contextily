@@ -41,13 +41,14 @@ def add_basemap(
         it is calculated automatically. Ignored if `source` is a local file.
     source : xyzservices.TileProvider object or str
         [Optional. Default: Stamen Terrain web tiles]
-        The tile source: web tile provider or path to local file. The web tile
-        provider can be in the form of a :class:`xyzservices.TileProvider` object or a
-        URL. The placeholders for the XYZ in the URL need to be `{x}`, `{y}`,
-        `{z}`, respectively. For local file paths, the file is read with
-        `rasterio` and all bands are loaded into the basemap.
-        IMPORTANT: tiles are assumed to be in the Spherical Mercator
-        projection (EPSG:3857), unless the `crs` keyword is specified.
+        The tile source: web tile provider, a valid input for a query of a
+        :class:`xyzservices.TileProvider` by a name from ``xyzservices.providers`` or
+        path to local file. The web tile provider can be in the form of a
+        :class:`xyzservices.TileProvider` object or a URL. The placeholders for the XYZ
+        in the URL need to be `{x}`, `{y}`, `{z}`, respectively. For local file paths,
+        the file is read with `rasterio` and all bands are loaded into the basemap.
+        IMPORTANT: tiles are assumed to be in the Spherical Mercator projection
+        (EPSG:3857), unless the `crs` keyword is specified.
     interpolation : str
         [Optional. Default='bilinear'] Interpolation algorithm to be passed
         to `imshow`. See `matplotlib.pyplot.imshow` for further details.
@@ -104,6 +105,13 @@ def add_basemap(
 
     """
     xmin, xmax, ymin, ymax = ax.axis()
+
+    if isinstance(source, str):
+        try:
+            source = providers.query_name(source)
+        except ValueError:
+            pass
+
     # If web source
     if (
         source is None
@@ -125,9 +133,9 @@ def add_basemap(
         if crs is not None:
             image, extent = warp_tiles(image, extent, t_crs=crs, resampling=resampling)
         # Check if overlay
-        if _is_overlay(source) and 'zorder' not in extra_imshow_args:
+        if _is_overlay(source) and "zorder" not in extra_imshow_args:
             # If zorder was not set then make it 9 otherwise leave it
-            extra_imshow_args['zorder'] = 9
+            extra_imshow_args["zorder"] = 9
     # If local source
     else:
         import rasterio as rio
@@ -207,6 +215,7 @@ def _reproj_bb(left, right, bottom, top, s_crs, t_crs):
     n_l, n_b, n_r, n_t = transform_bounds(s_crs, t_crs, left, bottom, right, top)
     return n_l, n_r, n_b, n_t
 
+
 def _is_overlay(source):
     """
     Check if the identified source is an overlay (partially transparent) layer.
@@ -228,22 +237,23 @@ def _is_overlay(source):
     """
     if not isinstance(source, dict):
         return False
-    if source.get('opacity', 1.0) < 1.0:
+    if source.get("opacity", 1.0) < 1.0:
         return True
     overlayPatterns = [
-        '^(OpenWeatherMap|OpenSeaMap)',
-        'OpenMapSurfer.(Hybrid|AdminBounds|ContourLines|Hillshade|ElementsAtRisk)',
-        'Stamen.Toner(Hybrid|Lines|Labels)',
-        'CartoDB.(Positron|DarkMatter|Voyager)OnlyLabels',
-        'Hydda.RoadsAndLabels',
-        '^JusticeMap',
-        'OpenPtMap',
-        'OpenRailwayMap',
-        'OpenFireMap',
-        'SafeCast'
+        "^(OpenWeatherMap|OpenSeaMap)",
+        "OpenMapSurfer.(Hybrid|AdminBounds|ContourLines|Hillshade|ElementsAtRisk)",
+        "Stamen.Toner(Hybrid|Lines|Labels)",
+        "CartoDB.(Positron|DarkMatter|Voyager)OnlyLabels",
+        "Hydda.RoadsAndLabels",
+        "^JusticeMap",
+        "OpenPtMap",
+        "OpenRailwayMap",
+        "OpenFireMap",
+        "SafeCast",
     ]
     import re
-    return bool(re.match('(' + '|'.join(overlayPatterns) + ')', source.get('name', '')))
+
+    return bool(re.match("(" + "|".join(overlayPatterns) + ")", source.get("name", "")))
 
 
 def add_attribution(ax, text, font_size=ATTRIBUTION_SIZE, **kwargs):
