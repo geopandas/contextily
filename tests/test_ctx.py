@@ -320,6 +320,33 @@ def test_add_basemap_local_source():
     assert_array_almost_equal(ax.images[0].get_array().mean(), 196.670225)
 
 
+def test_add_basemap_query():
+    # Plot boulder bbox as in test_place
+    x1, x2, y1, y2 = [
+        -11740727.544603072,
+        -11701591.786121061,
+        4852834.0517692715,
+        4891969.810251278,
+    ]
+
+    # Test web basemap
+    fig, ax = matplotlib.pyplot.subplots(1)
+    ax.set_xlim(x1, x2)
+    ax.set_ylim(y1, y2)
+    ctx.add_basemap(ax, zoom=10, source="stamen toner")
+
+    # ensure add_basemap did not change the axis limits of ax
+    ax_extent = (x1, x2, y1, y2)
+    assert ax.axis() == ax_extent
+
+    assert ax.images[0].get_array().sum() == 65119134
+    assert ax.images[0].get_array().shape == (256, 256, 4)
+    assert_array_almost_equal(
+        ax.images[0].get_array()[:, :, :3].mean(), 246.21304321289062
+    )
+    assert_array_almost_equal(ax.images[0].get_array().mean(), 248.40978240966797)
+
+
 @pytest.mark.network
 def test_add_basemap_full_read():
     ## Full read
@@ -419,7 +446,6 @@ def test_add_basemap_warping_local():
 
     assert ax.images[0].get_array().sum() == 678981558
     assert_array_almost_equal(ax.images[0].get_array().mean(), 200.939189)
-
 
 
 @pytest.mark.network
