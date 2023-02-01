@@ -5,6 +5,7 @@ import contextily as ctx
 import os
 import numpy as np
 import mercantile as mt
+import pytest
 import rasterio as rio
 from contextily.tile import _calculate_zoom
 from numpy.testing import assert_array_almost_equal
@@ -17,6 +18,7 @@ ADJUST = -3  # To save download size / time
 # Tile
 
 
+@pytest.mark.network
 def test_bounds2raster():
     w, s, e, n = (
         -106.6495132446289,
@@ -68,6 +70,7 @@ def test_bounds2raster():
     assert_array_almost_equal(list(rtr.bounds), rtr_bounds)
 
 
+@pytest.mark.network
 def test_bounds2img():
     w, s, e, n = (
         -106.6495132446289,
@@ -89,6 +92,7 @@ def test_bounds2img():
     assert img[200, 100, :].tolist() == [230, 225, 189, 255]
 
 
+@pytest.mark.network
 def test_warp_tiles():
     w, s, e, n = (
         -106.6495132446289,
@@ -114,6 +118,7 @@ def test_warp_tiles():
     assert wimg[200, 100, :].tolist() == [133, 130, 109, 255]
 
 
+@pytest.mark.network
 def test_warp_img_transform():
     w, s, e, n = ext = (
         -106.6495132446289,
@@ -145,6 +150,7 @@ def test_howmany():
     assert got == expected
 
 
+@pytest.mark.network
 def test_ll2wdw():
     w, s, e, n = (
         -106.6495132446289,
@@ -183,6 +189,7 @@ def test_autozoom():
     assert zoom == expected_zoom
 
 
+@pytest.mark.network
 def test_validate_zoom():
     # tiny extent to trigger large calculated zoom
     w, s, e, n = (0, 0, 0.001, 0.001)
@@ -208,6 +215,7 @@ def test_validate_zoom():
 # Place
 
 
+@pytest.mark.network
 def test_place():
     expected_bbox = [-105.3014509, 39.9643513, -105.1780988, 40.094409]
     expected_bbox_map = [
@@ -239,6 +247,7 @@ def test_place():
     assert_array_almost_equal(loc.bbox_map, ax.images[0].get_extent())
 
 
+@pytest.mark.network
 def test_plot_map():
     # Place as a search
     loc = ctx.Place(SEARCH, zoom_adjust=ADJUST)
@@ -258,6 +267,7 @@ def test_plot_map():
 # Plotting
 
 
+@pytest.mark.network
 def test_add_basemap():
     # Plot boulder bbox as in test_place
     x1, x2, y1, y2 = [
@@ -285,6 +295,7 @@ def test_add_basemap():
     assert_array_almost_equal(ax.images[0].get_array().mean(), 196.654995)
 
 
+@pytest.mark.network
 def test_add_basemap_local_source():
     # Test local source
     ## Windowed read
@@ -309,6 +320,7 @@ def test_add_basemap_local_source():
     assert_array_almost_equal(ax.images[0].get_array().mean(), 196.670225)
 
 
+@pytest.mark.network
 def test_add_basemap_full_read():
     ## Full read
     x1, x2, y1, y2 = [
@@ -337,6 +349,7 @@ def test_add_basemap_full_read():
     assert_array_almost_equal(ax.images[0].get_array().mean(), 196.654995)
 
 
+@pytest.mark.network
 def test_add_basemap_auto_zoom():
     # Test with auto-zoom
     x1, x2, y1, y2 = [
@@ -366,6 +379,7 @@ def test_add_basemap_auto_zoom():
     assert_array_almost_equal(ax.images[0].get_array().mean(), 198.023796)
 
 
+@pytest.mark.network
 def test_add_basemap_warping():
     # Test on-th-fly warping
     x1, x2 = -105.5, -105.00
@@ -384,6 +398,7 @@ def test_add_basemap_warping():
     assert_array_almost_equal(ax.images[0].get_array().mean(), 198.596949)
 
 
+@pytest.mark.network
 def test_add_basemap_warping_local():
     # Test local source warping
     x1, x2 = -105.5, -105.00
@@ -406,6 +421,8 @@ def test_add_basemap_warping_local():
     assert_array_almost_equal(ax.images[0].get_array().mean(), 200.939189)
 
 
+
+@pytest.mark.network
 def test_add_basemap_overlay():
     x1, x2, y1, y2 = [
         -11740727.544603072,
@@ -455,6 +472,7 @@ def test_add_basemap_overlay():
     assert ax.images[1].get_array().sum() == 51551927
 
 
+@pytest.mark.network
 def test_basemap_attribution():
     extent = (-11945319, -10336026, 2910477, 4438236)
 
@@ -506,6 +524,7 @@ def test_attribution():
     assert txt.get_fontfamily() == ["monospace"]
 
 
+@pytest.mark.network
 def test_set_cache_dir(tmpdir):
     # set cache directory manually
     path = str(tmpdir.mkdir("cache"))
