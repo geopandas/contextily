@@ -398,13 +398,13 @@ def test_add_basemap_auto_zoom():
         4891969.810251278,
     )
     assert_array_almost_equal(ax_extent, ax.images[0].get_extent())
-    assert ax.images[0].get_array()[:, :, :3].sum() == 563185119
-    assert ax.images[0].get_array().sum() == 830571999
-    assert ax.images[0].get_array().shape == (1024, 1024, 4)
+    assert ax.images[0].get_array()[:, :, :3].sum() == 141378723
+    assert ax.images[0].get_array().sum() == 208225443
+    assert ax.images[0].get_array().shape == (512, 512, 4)
     assert_array_almost_equal(
-        ax.images[0].get_array()[:, :, :3].mean(), 179.03172779083252
+        ax.images[0].get_array()[:, :, :3].mean(), 179.772343
     )
-    assert_array_almost_equal(ax.images[0].get_array().mean(), 198.023796)
+    assert_array_almost_equal(ax.images[0].get_array().mean(), 198.579257)
 
 
 @pytest.mark.network
