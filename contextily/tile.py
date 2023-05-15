@@ -16,6 +16,7 @@ import numpy as np
 import rasterio as rio
 from PIL import Image
 from joblib import Memory as _Memory
+from joblib import Parallel, delayed
 from rasterio.transform import from_origin
 from rasterio.io import MemoryFile
 from rasterio.vrt import WarpedVRT
@@ -74,6 +75,7 @@ def bounds2raster(
     ll=False,
     wait=0,
     max_retries=2,
+    num_parallel_tile_downloads=16,
 ):
     """
     Take bounding box and zoom, and write tiles into a raster file in
@@ -113,6 +115,9 @@ def bounds2raster(
         [Optional. Default: 2]
         total number of rejected requests allowed before contextily
         will stop trying to fetch more tiles from a rate-limited API.
+    num_parallel_tile_downloads: int
+        [Optional. Default: 16]
+        number of parallel tile downloads.
 
     Returns
     -------
@@ -126,7 +131,9 @@ def bounds2raster(
         w, s = _sm2ll(w, s)
         e, n = _sm2ll(e, n)
     # Download
-    Z, ext = bounds2img(w, s, e, n, zoom=zoom, source=source, ll=True)
+    Z, ext = bounds2img(w, s, e, n, zoom=zoom, source=source, ll=True,
+                        num_parallel_tile_downloads=num_parallel_tile_downloads)
+
     # Write
     # ---
     h, w, b = Z.shape
@@ -155,7 +162,7 @@ def bounds2raster(
 
 
 def bounds2img(
-    w, s, e, n, zoom="auto", source=None, ll=False, wait=0, max_retries=2
+    w, s, e, n, zoom="auto", source=None, ll=False, wait=0, max_retries=2, num_parallel_tile_downloads=16
 ):
     """
     Take bounding box and zoom and return an image with all the tiles
@@ -193,6 +200,9 @@ def bounds2img(
         [Optional. Default: 2]
         total number of rejected requests allowed before contextily
         will stop trying to fetch more tiles from a rate-limited API.
+    num_parallel_tile_downloads: int
+        [Optional. Default: 16]
+        number of parallel tile downloads.
 
     Returns
     -------
@@ -214,14 +224,16 @@ def bounds2img(
         zoom = _calculate_zoom(w, s, e, n)
     zoom = _validate_zoom(zoom, provider, auto=auto_zoom)
     # download and merge tiles
-    tiles = []
-    arrays = []
-    for t in mt.tiles(w, s, e, n, [zoom]):
-        x, y, z = t.x, t.y, t.z
-        tile_url = provider.build_url(x=x, y=y, z=z)
-        image = _fetch_tile(tile_url, wait, max_retries)
-        tiles.append(t)
-        arrays.append(image)
+    max_num_parallel_tile_downloads = 32
+    if num_parallel_tile_downloads < 1 or num_parallel_tile_downloads > max_num_parallel_tile_downloads:
+        raise ValueError(
+            f"num_parallel_tile_downloads must be between 1 and {max_num_parallel_tile_downloads}"
+        )
+    tiles = list(mt.tiles(w, s, e, n, [zoom]))
+    tile_urls = [provider.build_url(x=tile.x, y=tile.y, z=tile.z) for tile in tiles]
+    arrays = \
+        Parallel(n_jobs=num_parallel_tile_downloads, prefer="threads")(
+            delayed(_fetch_tile)(tile_url, wait, max_retries) for tile_url in tile_urls)
     merged, extent = _merge_tiles(tiles, arrays)
     # lon/lat extent --> Spheric Mercator
     west, south, east, north = extent
