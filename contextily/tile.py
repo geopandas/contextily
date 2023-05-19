@@ -232,7 +232,7 @@ def bounds2img(
     tiles = list(mt.tiles(w, s, e, n, [zoom]))
     tile_urls = [provider.build_url(x=tile.x, y=tile.y, z=tile.z) for tile in tiles]
     arrays = \
-        Parallel(n_jobs=num_parallel_tile_downloads, prefer="threads")(
+        Parallel(n_jobs=num_parallel_tile_downloads)(
             delayed(_fetch_tile)(tile_url, wait, max_retries) for tile_url in tile_urls)
     merged, extent = _merge_tiles(tiles, arrays)
     # lon/lat extent --> Spheric Mercator
