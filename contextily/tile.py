@@ -75,7 +75,7 @@ def bounds2raster(
     ll=False,
     wait=0,
     max_retries=2,
-    num_parallel_tile_downloads=16,
+    n_connections=1,
 ):
     """
     Take bounding box and zoom, and write tiles into a raster file in
@@ -115,9 +115,9 @@ def bounds2raster(
         [Optional. Default: 2]
         total number of rejected requests allowed before contextily
         will stop trying to fetch more tiles from a rate-limited API.
-    num_parallel_tile_downloads: int
-        [Optional. Default: 16]
-        number of parallel tile downloads.
+    n_connections: int
+        [Optional. Default: 1]
+        number of connections for downloading tiles in parallel.
 
     Returns
     -------
@@ -132,7 +132,7 @@ def bounds2raster(
         e, n = _sm2ll(e, n)
     # Download
     Z, ext = bounds2img(w, s, e, n, zoom=zoom, source=source, ll=True,
-                        num_parallel_tile_downloads=num_parallel_tile_downloads)
+                        n_connections=n_connections)
 
     # Write
     # ---
@@ -162,7 +162,7 @@ def bounds2raster(
 
 
 def bounds2img(
-    w, s, e, n, zoom="auto", source=None, ll=False, wait=0, max_retries=2, num_parallel_tile_downloads=16
+    w, s, e, n, zoom="auto", source=None, ll=False, wait=0, max_retries=2, n_connections=1
 ):
     """
     Take bounding box and zoom and return an image with all the tiles
@@ -200,9 +200,9 @@ def bounds2img(
         [Optional. Default: 2]
         total number of rejected requests allowed before contextily
         will stop trying to fetch more tiles from a rate-limited API.
-    num_parallel_tile_downloads: int
-        [Optional. Default: 16]
-        number of parallel tile downloads.
+    n_connections: int
+        [Optional. Default: 1]
+        number of connections for downloading tiles in parallel.
 
     Returns
     -------
@@ -223,17 +223,22 @@ def bounds2img(
     if auto_zoom:
         zoom = _calculate_zoom(w, s, e, n)
     zoom = _validate_zoom(zoom, provider, auto=auto_zoom)
-    # download and merge tiles
-    max_num_parallel_tile_downloads = 32
-    if num_parallel_tile_downloads < 1 or num_parallel_tile_downloads > max_num_parallel_tile_downloads:
-        raise ValueError(
-            f"num_parallel_tile_downloads must be between 1 and {max_num_parallel_tile_downloads}"
-        )
+    # create list of tiles to download
     tiles = list(mt.tiles(w, s, e, n, [zoom]))
     tile_urls = [provider.build_url(x=tile.x, y=tile.y, z=tile.z) for tile in tiles]
-    arrays = \
-        Parallel(n_jobs=num_parallel_tile_downloads)(
-            delayed(_fetch_tile)(tile_url, wait, max_retries) for tile_url in tile_urls)
+    # download tiles
+    max_connections = 32
+    if n_connections < 1 or n_connections > max_connections:
+        raise ValueError(
+            f"n_connections must be between 1 and {max_connections}"
+        )
+    # Use threads for a single connection to avoid the overhead of spawning a process. For multiple connections, use
+    # processes, as threads lead to memory issues when used in combination with the joblib memory caching (used for
+    # the _fetch_tile() function).
+    preferred_backend = "threads" if n_connections == 1 else "processes"
+    arrays = Parallel(n_jobs=n_connections, prefer=preferred_backend)(
+        delayed(_fetch_tile)(tile_url, wait, max_retries) for tile_url in tile_urls)
+    # merge downloaded tiles
     merged, extent = _merge_tiles(tiles, arrays)
     # lon/lat extent --> Spheric Mercator
     west, south, east, north = extent

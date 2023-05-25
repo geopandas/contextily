@@ -70,26 +70,31 @@ def test_bounds2raster():
     assert_array_almost_equal(list(rtr.bounds), rtr_bounds)
 
 
+@pytest.mark.parametrize("n_connections", [0, 1, 16, 33])
 @pytest.mark.network
-def test_bounds2img():
+def test_bounds2img(n_connections):
     w, s, e, n = (
         -106.6495132446289,
         25.845197677612305,
         -93.50721740722656,
         36.49387741088867,
     )
-    img, ext = ctx.bounds2img(w, s, e, n, zoom=4, ll=True)
-    solu = (
-        -12523442.714243276,
-        -10018754.171394622,
-        2504688.5428486555,
-        5009377.085697309,
-    )
-    for i, j in zip(ext, solu):
-        assert round(i - j, TOL) == 0
-    assert img[100, 100, :].tolist() == [230, 229, 188, 255]
-    assert img[100, 200, :].tolist() == [156, 180, 131, 255]
-    assert img[200, 100, :].tolist() == [230, 225, 189, 255]
+    if n_connections in [1, 16]:  # accepted number of connections
+        img, ext = ctx.bounds2img(w, s, e, n, zoom=4, ll=True, n_connections=n_connections)
+        solu = (
+            -12523442.714243276,
+            -10018754.171394622,
+            2504688.5428486555,
+            5009377.085697309,
+        )
+        for i, j in zip(ext, solu):
+            assert round(i - j, TOL) == 0
+        assert img[100, 100, :].tolist() == [230, 229, 188, 255]
+        assert img[100, 200, :].tolist() == [156, 180, 131, 255]
+        assert img[200, 100, :].tolist() == [230, 225, 189, 255]
+    else:  # too few/many connections should raise an error
+        with pytest.raises(ValueError):
+            img, ext = ctx.bounds2img(w, s, e, n, zoom=4, ll=True, n_connections=n_connections)
 
 
 @pytest.mark.network
