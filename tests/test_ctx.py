@@ -79,7 +79,7 @@ def test_bounds2img(n_connections):
         -93.50721740722656,
         36.49387741088867,
     )
-    if n_connections in [1, 16]:  # accepted number of connections
+    if n_connections in [1, 16]:  # valid number of connections (test single and multiple connections)
         img, ext = ctx.bounds2img(w, s, e, n, zoom=4, ll=True, n_connections=n_connections)
         solu = (
             -12523442.714243276,
@@ -92,9 +92,13 @@ def test_bounds2img(n_connections):
         assert img[100, 100, :].tolist() == [230, 229, 188, 255]
         assert img[100, 200, :].tolist() == [156, 180, 131, 255]
         assert img[200, 100, :].tolist() == [230, 225, 189, 255]
-    else:  # too few/many connections should raise an error
+    elif n_connections == 0:  # no connections should raise an error
         with pytest.raises(ValueError):
             img, ext = ctx.bounds2img(w, s, e, n, zoom=4, ll=True, n_connections=n_connections)
+    elif n_connections == 33:  # too many connections should raise an error
+        with pytest.raises(ValueError):
+            img, ext = ctx.bounds2img(w, s, e, n, zoom=4, ll=True, n_connections=n_connections,
+                                      max_connections=n_connections-1)
 
 
 @pytest.mark.network
