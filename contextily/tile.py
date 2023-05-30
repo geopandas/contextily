@@ -531,7 +531,7 @@ def _calculate_zoom(w, s, e, n):
     # Calculate the zoom
     zoom_lon = np.ceil(np.log2(360 * 2.0 / lon_length))
     zoom_lat = np.ceil(np.log2(360 * 2.0 / lat_length))
-    zoom = np.max([zoom_lon, zoom_lat])
+    zoom = np.min([zoom_lon, zoom_lat])
     return int(zoom)
 
 
