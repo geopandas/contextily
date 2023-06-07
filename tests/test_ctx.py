@@ -70,7 +70,7 @@ def test_bounds2raster():
     assert_array_almost_equal(list(rtr.bounds), rtr_bounds)
 
 
-@pytest.mark.parametrize("n_connections", [0, 1, 16, 33])
+@pytest.mark.parametrize("n_connections", [0, 1, 16])
 @pytest.mark.network
 def test_bounds2img(n_connections):
     w, s, e, n = (
@@ -95,10 +95,6 @@ def test_bounds2img(n_connections):
     elif n_connections == 0:  # no connections should raise an error
         with pytest.raises(ValueError):
             img, ext = ctx.bounds2img(w, s, e, n, zoom=4, ll=True, n_connections=n_connections)
-    elif n_connections == 33:  # too many connections should raise an error
-        with pytest.raises(ValueError):
-            img, ext = ctx.bounds2img(w, s, e, n, zoom=4, ll=True, n_connections=n_connections,
-                                      max_connections=n_connections-1)
 
 
 @pytest.mark.network

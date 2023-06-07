@@ -76,7 +76,6 @@ def bounds2raster(
     wait=0,
     max_retries=2,
     n_connections=1,
-    max_connections=32,
     disable_cache=False,
 ):
     """
@@ -119,15 +118,15 @@ def bounds2raster(
         will stop trying to fetch more tiles from a rate-limited API.
     n_connections: int
         [Optional. Default: 1]
-        number of connections for downloading tiles in parallel.
-    max_connections: int
-        [Optional. Default: 32]
-        Maximum number of connections for downloading tiles in parallel. Be careful not to overload the tile server if
-        you increase this value.
+        Number of connections for downloading tiles in parallel. Be careful not to overload the tile server and to check
+        the tile provider's terms of use before increasing this value. E.g., OpenStreetMap has a max. value of 2
+        (https://operations.osmfoundation.org/policies/tiles/). If allowed to download in parallel, a recommended
+        value for n_connections is 16, and should never be larger than 64.
     disable_cache: bool
         [Optional. Default: False]
         If True, caching of the downloaded tiles will be disabled. This can be useful in resource constrained
-        environments, especially when using n_connections > 1.
+        environments, especially when using n_connections > 1, or when a tile provider's terms of use don't allow
+        caching.
 
     Returns
     -------
@@ -141,8 +140,7 @@ def bounds2raster(
         w, s = _sm2ll(w, s)
         e, n = _sm2ll(e, n)
     # Download
-    Z, ext = bounds2img(w, s, e, n, zoom=zoom, source=source, ll=True,
-                        n_connections=n_connections, max_connections=max_connections,
+    Z, ext = bounds2img(w, s, e, n, zoom=zoom, source=source, ll=True, n_connections=n_connections,
                         disable_cache=disable_cache)
 
     # Write
@@ -173,8 +171,7 @@ def bounds2raster(
 
 
 def bounds2img(
-    w, s, e, n, zoom="auto", source=None, ll=False, wait=0, max_retries=2, n_connections=1, max_connections=32,
-    disable_cache=False
+    w, s, e, n, zoom="auto", source=None, ll=False, wait=0, max_retries=2, n_connections=1, disable_cache=False
 ):
     """
     Take bounding box and zoom and return an image with all the tiles
@@ -214,15 +211,15 @@ def bounds2img(
         will stop trying to fetch more tiles from a rate-limited API.
     n_connections: int
         [Optional. Default: 1]
-        number of connections for downloading tiles in parallel.
-    max_connections: int
-        [Optional. Default: 32]
-        Maximum number of connections for downloading tiles in parallel. Be careful not to overload the tile server if
-        you increase this value.
+        Number of connections for downloading tiles in parallel. Be careful not to overload the tile server and to check
+        the tile provider's terms of use before increasing this value. E.g., OpenStreetMap has a max. value of 2
+        (https://operations.osmfoundation.org/policies/tiles/). If allowed to download in parallel, a recommended
+        value for n_connections is 16, and should never be larger than 64.
     disable_cache: bool
         [Optional. Default: False]
         If True, caching of the downloaded tiles will be disabled. This can be useful in resource constrained
-        environments, especially when using n_connections > 1.
+        environments, especially when using n_connections > 1, or when a tile provider's terms of use don't allow
+        caching.
 
     Returns
     -------
@@ -247,10 +244,9 @@ def bounds2img(
     tiles = list(mt.tiles(w, s, e, n, [zoom]))
     tile_urls = [provider.build_url(x=tile.x, y=tile.y, z=tile.z) for tile in tiles]
     # download tiles
-    if n_connections < 1 or n_connections > max_connections:
+    if n_connections < 1 or not isinstance(n_connections, int):
         raise ValueError(
-            f"n_connections must be between 1 and {max_connections}. If needed, you can increase max_connections, "
-            "but be careful not to overload the tile server if doing so."
+            f"n_connections must be a positive integer value."
         )
     # Use threads for a single connection to avoid the overhead of spawning a process. For multiple connections, use
     # processes, as threads lead to memory issues when used in combination with the joblib memory caching (used for
