@@ -76,7 +76,7 @@ def bounds2raster(
     wait=0,
     max_retries=2,
     n_connections=1,
-    disable_cache=False,
+    use_cache=True,
 ):
     """
     Take bounding box and zoom, and write tiles into a raster file in
@@ -122,9 +122,9 @@ def bounds2raster(
         the tile provider's terms of use before increasing this value. E.g., OpenStreetMap has a max. value of 2
         (https://operations.osmfoundation.org/policies/tiles/). If allowed to download in parallel, a recommended
         value for n_connections is 16, and should never be larger than 64.
-    disable_cache: bool
-        [Optional. Default: False]
-        If True, caching of the downloaded tiles will be disabled. This can be useful in resource constrained
+    use_cache: bool
+        [Optional. Default: True]
+        If False, caching of the downloaded tiles will be disabled. This can be useful in resource constrained
         environments, especially when using n_connections > 1, or when a tile provider's terms of use don't allow
         caching.
 
@@ -141,7 +141,7 @@ def bounds2raster(
         e, n = _sm2ll(e, n)
     # Download
     Z, ext = bounds2img(w, s, e, n, zoom=zoom, source=source, ll=True, n_connections=n_connections,
-                        disable_cache=disable_cache)
+                        use_cache=use_cache)
 
     # Write
     # ---
@@ -171,7 +171,7 @@ def bounds2raster(
 
 
 def bounds2img(
-    w, s, e, n, zoom="auto", source=None, ll=False, wait=0, max_retries=2, n_connections=1, disable_cache=False
+    w, s, e, n, zoom="auto", source=None, ll=False, wait=0, max_retries=2, n_connections=1, use_cache=True
 ):
     """
     Take bounding box and zoom and return an image with all the tiles
@@ -215,9 +215,9 @@ def bounds2img(
         the tile provider's terms of use before increasing this value. E.g., OpenStreetMap has a max. value of 2
         (https://operations.osmfoundation.org/policies/tiles/). If allowed to download in parallel, a recommended
         value for n_connections is 16, and should never be larger than 64.
-    disable_cache: bool
-        [Optional. Default: False]
-        If True, caching of the downloaded tiles will be disabled. This can be useful in resource constrained
+    use_cache: bool
+        [Optional. Default: True]
+        If False, caching of the downloaded tiles will be disabled. This can be useful in resource constrained
         environments, especially when using n_connections > 1, or when a tile provider's terms of use don't allow
         caching.
 
@@ -248,11 +248,11 @@ def bounds2img(
         raise ValueError(
             f"n_connections must be a positive integer value."
         )
-    # Use threads for a single connection to avoid the overhead of spawning a process. For multiple connections, use
-    # processes, as threads lead to memory issues when used in combination with the joblib memory caching (used for
-    # the _fetch_tile() function).
-    preferred_backend = "threads" if (n_connections == 1 or disable_cache) else "processes"
-    fetch_tile_fn = memory.cache(_fetch_tile) if not disable_cache else _fetch_tile
+    # Use threads for a single connection to avoid the overhead of spawning a process. Use processes for multiple
+    # connections if caching is enabled, as threads lead to memory issues when used in combination with the joblib
+    # memory caching (used for the _fetch_tile() function).
+    preferred_backend = "threads" if (n_connections == 1 or not use_cache) else "processes"
+    fetch_tile_fn = memory.cache(_fetch_tile) if use_cache else _fetch_tile
     arrays = Parallel(n_jobs=n_connections, prefer=preferred_backend)(
         delayed(fetch_tile_fn)(tile_url, wait, max_retries) for tile_url in tile_urls)
     # merge downloaded tiles
