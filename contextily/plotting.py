@@ -123,7 +123,7 @@ def add_basemap(
         # Convert extent from `crs` into WM for tile query
         if crs is not None:
             left, right, bottom, top = _reproj_bb(
-                left, right, bottom, top, crs, {"init": "epsg:3857"}
+                left, right, bottom, top, crs, "epsg:3857"
             )
         # Download image
         image, extent = bounds2img(
