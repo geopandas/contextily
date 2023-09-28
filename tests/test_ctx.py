@@ -79,8 +79,13 @@ def test_bounds2img(n_connections):
         -93.50721740722656,
         36.49387741088867,
     )
-    if n_connections in [1, 16]:  # valid number of connections (test single and multiple connections)
-        img, ext = ctx.bounds2img(w, s, e, n, zoom=4, ll=True, n_connections=n_connections)
+    if n_connections in [
+        1,
+        16,
+    ]:  # valid number of connections (test single and multiple connections)
+        img, ext = ctx.bounds2img(
+            w, s, e, n, zoom=4, ll=True, n_connections=n_connections
+        )
         solu = (
             -12523442.714243276,
             -10018754.171394622,
@@ -94,7 +99,9 @@ def test_bounds2img(n_connections):
         assert img[200, 100, :].tolist() == [230, 225, 189, 255]
     elif n_connections == 0:  # no connections should raise an error
         with pytest.raises(ValueError):
-            img, ext = ctx.bounds2img(w, s, e, n, zoom=4, ll=True, n_connections=n_connections)
+            img, ext = ctx.bounds2img(
+                w, s, e, n, zoom=4, ll=True, n_connections=n_connections
+            )
 
 
 @pytest.mark.network
@@ -406,9 +413,7 @@ def test_add_basemap_auto_zoom():
     assert ax.images[0].get_array()[:, :, :3].sum() == 141378723
     assert ax.images[0].get_array().sum() == 208225443
     assert ax.images[0].get_array().shape == (512, 512, 4)
-    assert_array_almost_equal(
-        ax.images[0].get_array()[:, :, :3].mean(), 179.772343
-    )
+    assert_array_almost_equal(ax.images[0].get_array()[:, :, :3].mean(), 179.772343)
     assert_array_almost_equal(ax.images[0].get_array().mean(), 198.579257)
 
 
