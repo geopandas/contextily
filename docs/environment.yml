@@ -13,6 +13,7 @@ dependencies:
 - requests
 - joblib
 - xyzservices
+- geodatasets
 # doc dependencies
 - sphinx
 - numpydoc
