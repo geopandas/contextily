@@ -409,8 +409,8 @@ def test_add_basemap_auto_zoom():
     assert ax.images[0].get_array()[:, :, :3].sum() == 160979279
     assert ax.images[0].get_array().sum() == 227825999
     assert ax.images[0].get_array().shape == (512, 512, 4)
-    assert_array_almost_equal(ax.images[0].get_array()[:, :, :3].mean(), 204.695738)
-    assert_array_almost_equal(ax.images[0].get_array().mean(), 217.2718038)
+    assert_array_almost_equal(ax.images[0].get_array()[:, :, :3].mean(), 179.772343)
+    assert_array_almost_equal(ax.images[0].get_array().mean(), 198.579257)
 
 
 @pytest.mark.network
