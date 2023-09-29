@@ -7,4 +7,10 @@ from .place import Place, plot_map
 from .tile import *
 from .plotting import add_basemap, add_attribution
 
-__version__ = "1.3.0"
+from importlib.metadata import PackageNotFoundError, version
+
+try:
+    __version__ = version("contextily")
+except PackageNotFoundError:  # noqa
+    # package is not installed
+    pass
