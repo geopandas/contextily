@@ -40,7 +40,7 @@ def add_basemap(
         [Optional. Default='auto'] Level of detail for the basemap. If 'auto',
         it is calculated automatically. Ignored if `source` is a local file.
     source : xyzservices.TileProvider object or str
-        [Optional. Default: Stamen Terrain web tiles]
+        [Optional. Default: OpenStreetMap Humanitarian web tiles]
         The tile source: web tile provider, a valid input for a query of a
         :class:`xyzservices.TileProvider` by a name from ``xyzservices.providers`` or
         path to local file. The web tile provider can be in the form of a
@@ -123,7 +123,7 @@ def add_basemap(
         # Convert extent from `crs` into WM for tile query
         if crs is not None:
             left, right, bottom, top = _reproj_bb(
-                left, right, bottom, top, crs, {"init": "epsg:3857"}
+                left, right, bottom, top, crs, "epsg:3857"
             )
         # Download image
         image, extent = bounds2img(
@@ -202,7 +202,7 @@ def add_basemap(
 
     # Add attribution text
     if source is None:
-        source = providers.Stamen.Terrain
+        source = providers.OpenStreetMap.HOT
     if isinstance(source, (dict, TileProvider)) and attribution is None:
         attribution = source.get("attribution")
     if attribution:

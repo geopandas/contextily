@@ -97,7 +97,7 @@ def bounds2raster(
     path : str
         Path to raster file to be written
     source : xyzservices.TileProvider object or str
-        [Optional. Default: Stamen Terrain web tiles]
+        [Optional. Default: OpenStreetMap Humanitarian web tiles]
         The tile source: web tile provider or path to local file. The web tile
         provider can be in the form of a :class:`xyzservices.TileProvider` object or a
         URL. The placeholders for the XYZ in the URL need to be `{x}`, `{y}`,
@@ -190,7 +190,7 @@ def bounds2img(
     zoom : int
         Level of detail
     source : xyzservices.TileProvider object or str
-        [Optional. Default: Stamen Terrain web tiles]
+        [Optional. Default: OpenStreetMap Humanitarian web tiles]
         The tile source: web tile provider or path to local file. The web tile
         provider can be in the form of a :class:`xyzservices.TileProvider` object or a
         URL. The placeholders for the XYZ in the URL need to be `{x}`, `{y}`,
@@ -267,7 +267,7 @@ def bounds2img(
 
 def _process_source(source):
     if source is None:
-        provider = providers.Stamen.Terrain
+        provider = providers.OpenStreetMap.HOT
     elif isinstance(source, str):
         provider = TileProvider(url=source, attribution="", name="url")
     elif not isinstance(source, dict):

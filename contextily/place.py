@@ -37,7 +37,7 @@ class Place(object):
         [Optional. Default: None]
         The amount to adjust a chosen zoom level if it is chosen automatically.
     source : xyzservices.providers object or str
-        [Optional. Default: Stamen Terrain web tiles]
+        [Optional. Default: OpenStreetMap Humanitarian web tiles]
         The tile source: web tile provider or path to local file. The web tile
         provider can be in the form of a :class:`xyzservices.TileProvider` object or a
         URL. The placeholders for the XYZ in the URL need to be `{x}`, `{y}`,
@@ -81,7 +81,7 @@ class Place(object):
     ):
         self.path = path
         if source is None:
-            source = providers.Stamen.Terrain
+            source = providers.OpenStreetMap.HOT
         self.source = source
         self.zoom_adjust = zoom_adjust
 
