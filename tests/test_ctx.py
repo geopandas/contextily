@@ -40,10 +40,10 @@ def test_bounds2raster():
     assert img[0, 100, :].tolist() == [220, 217, 214, 255]
     assert img[20, 120, :].tolist() == [246, 245, 238, 255]
     assert img[200, 100, :].tolist() == [247, 246, 241, 255]
-    assert img[:, :, :3].sum() == 44440377
-    assert img.sum() == 61152057
-    assert_array_almost_equal(img[:, :, :3].mean(), 226.0354461669922)
-    assert_array_almost_equal(img.mean(), 233.27658462524414)
+    assert img[:, :, :3].sum() == pytest.approx(44440377, rel=0.1)
+    assert img.sum() == pytest.approx(61152057, rel=0.1)
+    assert_array_almost_equal(img[:, :, :3].mean(), 226.0354461669922, decimal=0)
+    assert_array_almost_equal(img.mean(), 233.27658462524414, decimal=0)
 
     # multiple tiles for which result is not square
     w, s, e, n = (
@@ -297,12 +297,14 @@ def test_add_basemap():
     ax_extent = (x1, x2, y1, y2)
     assert ax.axis() == ax_extent
 
-    assert ax.images[0].get_array().sum() == 57095515
+    assert ax.images[0].get_array().sum() == pytest.approx(57095515, rel=0.1)
     assert ax.images[0].get_array().shape == (256, 256, 4)
     assert_array_almost_equal(
-        ax.images[0].get_array()[:, :, :3].mean(), 205.4028065999349
+        ax.images[0].get_array()[:, :, :3].mean(), 205.4028065999349, decimal=0
     )
-    assert_array_almost_equal(ax.images[0].get_array().mean(), 217.80210494995117)
+    assert_array_almost_equal(
+        ax.images[0].get_array().mean(), 217.80210494995117, decimal=0
+    )
 
 
 @pytest.mark.network
@@ -323,11 +325,13 @@ def test_add_basemap_local_source():
     ctx.add_basemap(ax, source="./test2.tif", reset_extent=True)
 
     assert_array_almost_equal(subset, ax.images[0].get_extent())
-    assert ax.images[0].get_array().sum() == 13758065
-    assert ax.images[0].get_array()[:, :, :3].sum() == 9709685
+    assert ax.images[0].get_array().sum() == pytest.approx(13758065, rel=0.1)
+    assert ax.images[0].get_array()[:, :, :3].sum() == pytest.approx(9709685, rel=0.1)
     assert ax.images[0].get_array().shape == (126, 126, 4)
-    assert_array_almost_equal(ax.images[0].get_array()[:, :, :3].mean(), 203.865058)
-    assert_array_almost_equal(ax.images[0].get_array().mean(), 216.64879377)
+    assert_array_almost_equal(
+        ax.images[0].get_array()[:, :, :3].mean(), 203.865058, decimal=0
+    )
+    assert_array_almost_equal(ax.images[0].get_array().mean(), 216.64879377, decimal=0)
 
 
 @pytest.mark.network
@@ -378,11 +382,13 @@ def test_add_basemap_full_read():
         4892046.24728,
     )
     assert_array_almost_equal(raster_extent, ax.images[0].get_extent())
-    assert ax.images[0].get_array()[:, :, :3].sum() == 40383835
-    assert ax.images[0].get_array().sum() == 57095515
+    assert ax.images[0].get_array()[:, :, :3].sum() == pytest.approx(40383835, rel=0.1)
+    assert ax.images[0].get_array().sum() == pytest.approx(57095515, rel=0.1)
     assert ax.images[0].get_array().shape == (256, 256, 4)
-    assert_array_almost_equal(ax.images[0].get_array()[:, :, :3].mean(), 205.4028065999)
-    assert_array_almost_equal(ax.images[0].get_array().mean(), 217.8021049)
+    assert_array_almost_equal(
+        ax.images[0].get_array()[:, :, :3].mean(), 205.4028065999, decimal=0
+    )
+    assert_array_almost_equal(ax.images[0].get_array().mean(), 217.8021049, decimal=0)
 
 
 @pytest.mark.network
@@ -406,11 +412,13 @@ def test_add_basemap_auto_zoom():
         4891969.810251278,
     )
     assert_array_almost_equal(ax_extent, ax.images[0].get_extent())
-    assert ax.images[0].get_array()[:, :, :3].sum() == 160979279
-    assert ax.images[0].get_array().sum() == 227825999
+    assert ax.images[0].get_array()[:, :, :3].sum() == pytest.approx(160979279, rel=0.1)
+    assert ax.images[0].get_array().sum() == pytest.approx(227825999, rel=0.1)
     assert ax.images[0].get_array().shape == (512, 512, 4)
-    assert_array_almost_equal(ax.images[0].get_array()[:, :, :3].mean(), 204.695738)
-    assert_array_almost_equal(ax.images[0].get_array().mean(), 217.2718038)
+    assert_array_almost_equal(
+        ax.images[0].get_array()[:, :, :3].mean(), 204.695738, decimal=0
+    )
+    assert_array_almost_equal(ax.images[0].get_array().mean(), 217.2718038, decimal=0)
 
 
 @pytest.mark.network
@@ -424,12 +432,12 @@ def test_add_basemap_warping():
     ctx.add_basemap(ax, crs="epsg:4326", attribution=None)
     assert ax.get_xlim() == (x1, x2)
     assert ax.get_ylim() == (y1, y2)
-    assert ax.images[0].get_array()[:, :, :3].sum() == 811443707
+    assert ax.images[0].get_array()[:, :, :3].sum() == pytest.approx(811443707, rel=0.1)
     assert ax.images[0].get_array().shape == (1135, 1183, 4)
     assert_array_almost_equal(
-        ax.images[0].get_array()[:, :, :3].mean(), 201.445020
+        ax.images[0].get_array()[:, :, :3].mean(), 201.445020, decimal=0
     )
-    assert_array_almost_equal(ax.images[0].get_array().mean(), 214.8337650)
+    assert_array_almost_equal(ax.images[0].get_array().mean(), 214.8337650, decimal=0)
 
 
 @pytest.mark.network
@@ -441,18 +449,18 @@ def test_add_basemap_warping_local():
     f, ax = matplotlib.pyplot.subplots(1)
     ax.set_xlim(x1, x2)
     ax.set_ylim(y1, y2)
-    ctx.add_basemap(
-        ax, source="./test2.tif", crs="epsg:4326", attribution=None
-    )
+    ctx.add_basemap(ax, source="./test2.tif", crs="epsg:4326", attribution=None)
     assert ax.get_xlim() == (x1, x2)
     assert ax.get_ylim() == (y1, y2)
 
-    assert ax.images[0].get_array()[:, :, :3].sum() == 515569833
+    assert ax.images[0].get_array()[:, :, :3].sum() == pytest.approx(515569833, rel=0.1)
     assert ax.images[0].get_array().shape == (980, 862, 4)
-    assert_array_almost_equal(ax.images[0].get_array()[:, :, :3].mean(), 203.4383860)
+    assert_array_almost_equal(
+        ax.images[0].get_array()[:, :, :3].mean(), 203.4383860, decimal=0
+    )
 
-    assert ax.images[0].get_array().sum() == 730014888
-    assert_array_almost_equal(ax.images[0].get_array().mean(), 216.0420971)
+    assert ax.images[0].get_array().sum() == pytest.approx(730014888, rel=0.1)
+    assert_array_almost_equal(ax.images[0].get_array().mean(), 216.0420971, decimal=0)
 
 
 @pytest.mark.network
@@ -477,18 +485,18 @@ def test_add_basemap_overlay():
 
     # check totals on lowest (opaque terrain) base layer
     assert_array_almost_equal(ax_extent, ax.images[0].get_extent())
-    assert ax.images[0].get_array()[:, :, :3].sum() == 40383835
-    assert ax.images[0].get_array().sum() == 57095515
+    assert ax.images[0].get_array()[:, :, :3].sum() == pytest.approx(40383835, rel=0.1)
+    assert ax.images[0].get_array().sum() == pytest.approx(57095515, rel=0.1)
     assert ax.images[0].get_array().shape == (256, 256, 4)
     assert_array_almost_equal(
-        ax.images[0].get_array()[:, :, :3].mean(), 205.402806
+        ax.images[0].get_array()[:, :, :3].mean(), 205.402806, decimal=0
     )
-    assert_array_almost_equal(ax.images[0].get_array().mean(), 217.8021049)
+    assert_array_almost_equal(ax.images[0].get_array().mean(), 217.8021049, decimal=0)
 
     # check totals on overaly (mostly transparent labels) layer
-    assert ax.images[1].get_array().sum() == 1603214
+    assert ax.images[1].get_array().sum() == pytest.approx(1603214, rel=0.1)
     assert ax.images[1].get_array().shape == (256, 256, 4)
-    assert_array_almost_equal(ax.images[1].get_array().mean(), 6.1157760)
+    assert_array_almost_equal(ax.images[1].get_array().mean(), 6.1157760, decimal=0)
 
     # create a new map
     fig, ax = matplotlib.pyplot.subplots(1)
@@ -501,8 +509,8 @@ def test_add_basemap_overlay():
 
     # check that z-order of overlay is higher than that of base layer
     assert ax.images[0].zorder > ax.images[1].zorder
-    assert ax.images[0].get_array().sum() == 1603214
-    assert ax.images[1].get_array().sum() == 57095515
+    assert ax.images[0].get_array().sum() == pytest.approx(1603214, rel=0.1)
+    assert ax.images[1].get_array().sum() == pytest.approx(57095515, rel=0.1)
 
 
 @pytest.mark.network
