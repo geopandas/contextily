@@ -26,35 +26,24 @@ jobs:
             environment-file: ci/envs/310-conda-forge.yaml
           - os: ubuntu
             environment-file: ci/envs/39-conda-forge.yaml
+    defaults:
+      run:
+        shell: bash -l {0}
 
     steps:
       - name: checkout repo
         uses: actions/checkout@v4
 
       - name: setup micromamba
-        uses: mamba-org/provision-with-micromamba@main
+        uses: mamba-org/setup-micromamba@v1
         with:
           environment-file: ${{ matrix.environment-file }}
           micromamba-version: "latest"
 
       - name: Install contextily
-        shell: bash -l {0}
         run: pip install .
-        if: matrix.os != 'windows'
 
-      - name: Install contextily
-        shell: powershell
-        run: pip install .
-        if: matrix.os == 'windows'
-
-      - name: run tests - bash
-        shell: bash -l {0}
-        run: pytest -v . --cov=contextily --cov-append --cov-report term-missing --cov-report xml
-        if: matrix.os != 'windows'
-
-      - name: run tests - powershell
-        shell: powershell
-        run: pytest -v . --cov=contextily --cov-append --cov-report term-missing --cov-report xml
-        if: matrix.os == 'windows'
+      - name: run tests
+        run: pytest -v . --cov=contextily --cov-append --cov-report term-missing --cov-report xml --color=yes
 
       - uses: codecov/codecov-action@v3
