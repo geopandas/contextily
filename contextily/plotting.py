@@ -25,6 +25,7 @@ def add_basemap(
     reset_extent=True,
     crs=None,
     resampling=Resampling.bilinear,
+    zoom_adjust=None,
     **extra_imshow_args
 ):
     """
@@ -75,6 +76,9 @@ def add_basemap(
         [Optional. Default=Resampling.bilinear] Resampling
         method for executing warping, expressed as a
         `rasterio.enums.Resampling` method
+    zoom_adjust : int or None
+        [Optional. Default: None]
+        The amount to adjust a chosen zoom level if it is chosen automatically.
     **extra_imshow_args :
         Other parameters to be passed to `imshow`.
 
@@ -127,7 +131,7 @@ def add_basemap(
             )
         # Download image
         image, extent = bounds2img(
-            left, bottom, right, top, zoom=zoom, source=source, ll=False
+            left, bottom, right, top, zoom=zoom, source=source, ll=False, zoom_adjust=zoom_adjust
         )
         # Warping
         if crs is not None:
