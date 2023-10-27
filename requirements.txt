@@ -1,0 +1,16 @@
+numpy
+geopandas
+geopy
+mercantile
+pillow
+rasterio
+requests
+joblib
+xyzservices
+geodatasets
+sphinx
+numpydoc
+nbsphinx
+pandoc
+ipython
+pydata-sphinx-theme
