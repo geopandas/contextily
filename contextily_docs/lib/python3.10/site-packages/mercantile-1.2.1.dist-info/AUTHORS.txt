@@ -1,0 +1,24 @@
+Authors
+=======
+
+Mercantile is written by:
+
+* Sean Gillies
+* Matthew Perry
+* Patrick M Young
+* Felix Jung
+* Amit Kapadia
+* Daniel J. H
+* Brendan Ward
+* Sam Murphy
+* dnomadb
+* Andrew Harvey
+* Jacob Wasserman
+* James Gill
+* Jeremiah Cooper
+* Michal Migurski
+* Pratik Yadav
+* Rohit Singh
+* Stefano Costa
+* drnextgis
+* jqtrde

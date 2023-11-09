@@ -1,0 +1,10 @@
+cligj-0.7.2.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
+cligj-0.7.2.dist-info/LICENSE,sha256=WQLXFlRN35o0hJs0XDkauvfCHKFu0icG1qwvVQNxJZQ,1469
+cligj-0.7.2.dist-info/METADATA,sha256=0M7veLSbCNJVF57jt5ah44S43avjjTu9wuDC5qr91tQ,5002
+cligj-0.7.2.dist-info/RECORD,,
+cligj-0.7.2.dist-info/WHEEL,sha256=OqRkF0eY5GHssMorFjlbTIq072vpHpF60fIQA6lS9xA,92
+cligj-0.7.2.dist-info/top_level.txt,sha256=Hvy1tviiMzKbB1D3AYXJVeozEJV6SgCs-EHFnhGlwMA,6
+cligj/__init__.py,sha256=zvD8Kc5PcY-AopHqGIY-Iekjv53BUhRCD6FHiF0k8uM,3876
+cligj/__pycache__/__init__.cpython-310.pyc,,
+cligj/__pycache__/features.cpython-310.pyc,,
+cligj/features.py,sha256=FwVHj0iAdqtOOy0uCFllC6H0EVNqsf3Djj99VEBYqCU,6905

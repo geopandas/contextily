@@ -1,0 +1,130 @@
+Metadata-Version: 2.1
+Name: mercantile
+Version: 1.2.1
+Summary: Web mercator XYZ tile utilities
+Home-page: https://github.com/mapbox/mercantile
+Author: Sean Gillies
+Author-email: sean@mapbox.com
+License: BSD
+Keywords: mapping,web mercator,tiles
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Scientific/Engineering :: GIS
+Requires-Dist: click (>=3.0)
+Provides-Extra: dev
+Requires-Dist: check-manifest ; extra == 'dev'
+Provides-Extra: test
+Requires-Dist: hypothesis ; extra == 'test'
+Requires-Dist: pytest ; extra == 'test'
+
+==========
+Mercantile
+==========
+
+.. image:: https://travis-ci.com/mapbox/mercantile.svg
+   :target: https://travis-ci.com/mapbox/mercantile
+   :alt: Build Status
+
+.. image:: https://coveralls.io/repos/github/mapbox/mercantile/badge.svg?branch=master
+   :target: https://coveralls.io/github/mapbox/mercantile?branch=master
+   :alt: Coverage Status
+
+.. image:: https://readthedocs.org/projects/mercantile/badge/?version=latest
+   :target: http://mercantile.readthedocs.io/en/latest/?badge=latest
+   :alt: Documentation Status
+
+Spherical mercator coordinate and tile utilities
+
+Documentation: http://mercantile.readthedocs.io/en/latest/
+
+The mercantile module provides ``ul(xtile, ytile, zoom)`` and ``bounds(xtile,
+ytile, zoom)`` functions that respectively return the upper left corner and
+bounding longitudes and latitudes for XYZ tiles, a ``xy(lng, lat)`` function
+that returns spherical mercator x and y coordinates, a ``tile(lng, lat,
+zoom)`` function that returns the tile containing a given point, and
+quadkey conversion functions ``quadkey(xtile, ytile, zoom)`` and
+``quadkey_to_tile(quadkey)`` for translating between quadkey and tile
+coordinates.
+
+.. code-block:: pycon
+
+    >>> import mercantile
+    >>> mercantile.ul(486, 332, 10)
+    LngLat(lng=-9.140625, lat=53.33087298301705)
+    >>> mercantile.bounds(486, 332, 10)
+    LngLatBbox(west=-9.140625, south=53.12040528310657, east=-8.7890625, north=53.33087298301705)
+    >>> mercantile.xy(*mercantile.ul(486, 332, 10))
+    (-1017529.7205322663, 7044436.526761846)
+    >> mercantile.xy_bounds(486, 332, 10)
+    Bbox(left=-1017529.7205322663, bottom=7005300.768279833, right=-978393.962050256, top=7044436.526761846)
+    >>> mercantile.tile(*mercantile.ul(486, 332, 10) + (10,))
+    Tile(x=486, y=332, z=10)
+    >>> mercantile.quadkey(486, 332, 10)
+    '0313102310'
+    >>> mercantile.quadkey_to_tile('0313102310')
+    Tile(x=486, y=332, z=10)
+
+Also in mercantile are functions to traverse the tile stack.
+
+.. code-block:: pycon
+
+    >>> mercantile.parent(486, 332, 10)
+    Tile(x=243, y=166, z=9)
+    >>> mercantile.children(mercantile.parent(486, 332, 10))
+    [Tile(x=486, y=332, z=10), Tile(x=487, y=332, z=10), Tile(x=487, y=333, z=10), Tile(x=486, y=333, z=10)]
+
+Named tuples are used to represent tiles, coordinates, and bounding boxes.
+
+Mercantile CLI
+==============
+
+Mercantile's command line interface, named "mercantile", has commands for 
+getting the shapes of Web Mercator tiles as GeoJSON and getting the tiles
+that intersect with a GeoJSON bounding box. 
+
+.. code-block:: console
+
+	$ mercantile --help
+	Usage: mercantile [OPTIONS] COMMAND [ARGS]...
+
+	  Command line interface for the Mercantile Python package.
+
+	Options:
+	  -v, --verbose  Increase verbosity.
+	  -q, --quiet    Decrease verbosity.
+	  --version      Show the version and exit.
+	  --help         Show this message and exit.
+
+	Commands:
+	  bounding-tile  Print the bounding tile of a lng/lat point, bounding box, or
+					 GeoJSON objects.
+	  children       Print the children of the tile.
+	  neighbors      Print the neighbors of the tile.
+	  parent         Print the parent tile.
+	  quadkey        Convert to/from quadkeys.
+	  shapes         Print the shapes of tiles as GeoJSON.
+	  tiles          Print tiles that overlap or contain a lng/lat point, bounding
+					 box, or GeoJSON objects.
+
+See Also
+========
+
+`supermercado <https://github.com/mapbox/supermercado>`__ is another python lib
+with added tile logic functionality (union tile shapes, find edge tiles, and
+find tile intersections for complex geometries).
+
+`node-sphericalmercator <https://github.com/mapbox/node-sphericalmercator>`__
+provides many of the same features for Node.
+
+`tilebelt <https://github.com/mapbox/tilebelt>`__ has some of the GeoJSON
+features as mercantile and a few more (tile parents, quadkey).
+
+`morecantile <https://github.com/developmentseed/morecantile>`__ is like mercantile,
+but with support for other TileMatrixSet grids.
+
+

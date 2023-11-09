@@ -21,4 +21,3 @@ docs/_build/
 docs/*.ipynb
 docs/README.rst
 docs/tiles.png
-contextily_docs/

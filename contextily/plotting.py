@@ -78,7 +78,8 @@ def add_basemap(
         `rasterio.enums.Resampling` method
     zoom_adjust : int or None
         [Optional. Default: None]
-        The amount to adjust a chosen zoom level if it is chosen automatically.
+        The amount to adjust a chosen zoom level if it is chosen automatically. 
+        Values outside of -1 to 1 are not recommended as they can lead to slow execution.
     **extra_imshow_args :
         Other parameters to be passed to `imshow`.
 
