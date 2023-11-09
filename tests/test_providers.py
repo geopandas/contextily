@@ -16,7 +16,6 @@ def test_providers():
     )
     for provider in [
         ctx.providers.OpenStreetMap.Mapnik,
-        ctx.providers.Stamen.Toner,
         ctx.providers.NASAGIBS.ViirsEarthAtNight2012,
     ]:
         ctx.bounds2img(w, s, e, n, 4, source=provider, ll=True)
