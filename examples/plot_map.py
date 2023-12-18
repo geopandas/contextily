@@ -18,9 +18,9 @@ image of the place.
 """
 import numpy as np
 import matplotlib.pyplot as plt
-import contextily as ctx
+import contextily as cx
 
-loc = ctx.Place("boulder", zoom_adjust=0)  # zoom_adjust modifies the auto-zoom
+loc = cx.Place("boulder", zoom_adjust=0)  # zoom_adjust modifies the auto-zoom
 
 # Print some metadata
 for attr in ["w", "s", "e", "n", "place", "zoom", "n_tiles"]:
@@ -30,14 +30,14 @@ for attr in ["w", "s", "e", "n", "place", "zoom", "n_tiles"]:
 im1 = loc.im
 
 fig, axs = plt.subplots(1, 3, figsize=(15, 5))
-ctx.plot_map(loc, ax=axs[0])
+cx.plot_map(loc, ax=axs[0])
 
 ###############################################################################
 # The zoom level will be chosen for you by default, though you can specify
 # this manually as well:
 
-loc2 = ctx.Place("boulder", zoom=11)
-ctx.plot_map(loc2, ax=axs[1])
+loc2 = cx.Place("boulder", zoom=11)
+cx.plot_map(loc2, ax=axs[1])
 
 ###############################################################################
 # Downloading tiles from bounds
@@ -46,7 +46,7 @@ ctx.plot_map(loc2, ax=axs[1])
 # You can also grab tile information directly from a bounding box + zoom level.
 # This is demoed below:
 
-im2, bbox = ctx.bounds2img(loc.w, loc.s, loc.e, loc.n, zoom=loc.zoom, ll=True)
-ctx.plot_map(im2, bbox, ax=axs[2], title="Boulder, CO")
+im2, bbox = cx.bounds2img(loc.w, loc.s, loc.e, loc.n, zoom=loc.zoom, ll=True)
+cx.plot_map(im2, bbox, ax=axs[2], title="Boulder, CO")
 
 plt.show()
