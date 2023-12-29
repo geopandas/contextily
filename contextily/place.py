@@ -177,7 +177,7 @@ class Place(object):
         Examples
         --------
 
-        >>> lvl = ctx.Place('Liverpool')
+        >>> lvl = cx.Place('Liverpool')
         >>> lvl.plot()
 
         """
