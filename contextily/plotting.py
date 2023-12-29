@@ -87,7 +87,7 @@ def add_basemap(
     --------
 
     >>> import geopandas
-    >>> import contextily as ctx
+    >>> import contextily as cx
     >>> db = geopandas.read_file(ps.examples.get_path('virginia.shp'))
 
     Ensure the data is in Spherical Mercator:
@@ -97,15 +97,15 @@ def add_basemap(
     Add a web basemap:
 
     >>> ax = db.plot(alpha=0.5, color='k', figsize=(6, 6))
-    >>> ctx.add_basemap(ax, source=url)
+    >>> cx.add_basemap(ax, source=url)
     >>> plt.show()
 
     Or download a basemap to a local file and then plot it:
 
     >>> source = 'virginia.tiff'
-    >>> _ = ctx.bounds2raster(*db.total_bounds, zoom=6, source=source)
+    >>> _ = cx.bounds2raster(*db.total_bounds, zoom=6, source=source)
     >>> ax = db.plot(alpha=0.5, color='k', figsize=(6, 6))
-    >>> ctx.add_basemap(ax, source=source)
+    >>> cx.add_basemap(ax, source=source)
     >>> plt.show()
 
     """

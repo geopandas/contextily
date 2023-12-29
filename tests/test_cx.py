@@ -1,7 +1,7 @@
 import matplotlib
 
 matplotlib.use("agg")  # To prevent plots from using display
-import contextily as ctx
+import contextily as cx
 import os
 import numpy as np
 import mercantile as mt
@@ -26,7 +26,7 @@ def test_bounds2raster():
         -93.50721740722656,
         36.49387741088867,
     )
-    _ = ctx.bounds2raster(w, s, e, n, "test.tif", zoom=4, ll=True)
+    _ = cx.bounds2raster(w, s, e, n, "test.tif", zoom=4, ll=True)
     rtr = rio.open("test.tif")
     img = np.array([band for band in rtr.read()]).transpose(1, 2, 0)
     solu = (
@@ -52,7 +52,7 @@ def test_bounds2raster():
         6.15665815595878,
         51.47502370869813,
     )
-    img, ext = ctx.bounds2raster(w, s, e, n, "test2.tif", zoom=7, ll=True)
+    img, ext = cx.bounds2raster(w, s, e, n, "test2.tif", zoom=7, ll=True)
     rtr = rio.open("test2.tif")
     rimg = np.array([band for band in rtr.read()]).transpose(1, 2, 0)
     assert rimg.shape == img.shape
@@ -83,7 +83,7 @@ def test_bounds2img(n_connections):
         1,
         16,
     ]:  # valid number of connections (test single and multiple connections)
-        img, ext = ctx.bounds2img(
+        img, ext = cx.bounds2img(
             w, s, e, n, zoom=4, ll=True, n_connections=n_connections
         )
         solu = (
@@ -99,7 +99,7 @@ def test_bounds2img(n_connections):
         assert img[200, 100, :].tolist() == [247, 246, 241, 255]
     elif n_connections == 0:  # no connections should raise an error
         with pytest.raises(ValueError):
-            img, ext = ctx.bounds2img(
+            img, ext = cx.bounds2img(
                 w, s, e, n, zoom=4, ll=True, n_connections=n_connections
             )
 
@@ -112,8 +112,8 @@ def test_warp_tiles():
         -93.50721740722656,
         36.49387741088867,
     )
-    img, ext = ctx.bounds2img(w, s, e, n, zoom=4, ll=True)
-    wimg, wext = ctx.warp_tiles(img, ext)
+    img, ext = cx.bounds2img(w, s, e, n, zoom=4, ll=True)
+    wimg, wext = cx.warp_tiles(img, ext)
     assert_array_almost_equal(
         np.array(wext),
         np.array(
@@ -138,10 +138,10 @@ def test_warp_img_transform():
         -93.50721740722656,
         36.49387741088867,
     )
-    _ = ctx.bounds2raster(w, s, e, n, "test.tif", zoom=4, ll=True)
+    _ = cx.bounds2raster(w, s, e, n, "test.tif", zoom=4, ll=True)
     rtr = rio.open("test.tif")
     img = np.array([band for band in rtr.read()])
-    wimg, _ = ctx.warp_img_transform(img, rtr.transform, rtr.crs, "epsg:4326")
+    wimg, _ = cx.warp_img_transform(img, rtr.transform, rtr.crs, "epsg:4326")
     assert wimg[:, 100, 100].tolist() == [247, 246, 241, 255]
     assert wimg[:, 100, 200].tolist() == [246, 246, 241, 255]
     assert wimg[:, 20, 120].tolist() == [139, 128, 148, 255]
@@ -156,7 +156,7 @@ def test_howmany():
     )
     zoom = 7
     expected = 25
-    got = ctx.howmany(w, s, e, n, zoom=zoom, verbose=False, ll=True)
+    got = cx.howmany(w, s, e, n, zoom=zoom, verbose=False, ll=True)
     assert got == expected
 
 
@@ -169,9 +169,9 @@ def test_ll2wdw():
         36.49387741088867,
     )
     hou = (-10676650.69219051, 3441477.046670125, -10576977.7804825, 3523606.146650609)
-    _ = ctx.bounds2raster(w, s, e, n, "test.tif", zoom=4, ll=True)
+    _ = cx.bounds2raster(w, s, e, n, "test.tif", zoom=4, ll=True)
     rtr = rio.open("test.tif")
-    wdw = ctx.tile.bb2wdw(hou, rtr)
+    wdw = cx.tile.bb2wdw(hou, rtr)
     assert wdw == ((152, 161), (189, 199))
 
 
@@ -182,8 +182,8 @@ def test__sm2ll():
         -93.50721740722656,
         36.49387741088867,
     )
-    minX, minY = ctx.tile._sm2ll(w, s)
-    maxX, maxY = ctx.tile._sm2ll(e, n)
+    minX, minY = cx.tile._sm2ll(w, s)
+    maxX, maxY = cx.tile._sm2ll(e, n)
     nw, ns = mt.xy(minX, minY)
     ne, nn = mt.xy(maxX, maxY)
     assert round(nw - w, TOL) == 0
@@ -206,20 +206,20 @@ def test_validate_zoom():
 
     # automatically inferred -> set to known max but warn
     with pytest.warns(UserWarning, match="inferred zoom level"):
-        ctx.bounds2img(w, s, e, n)
+        cx.bounds2img(w, s, e, n)
 
     # specify manually -> raise an error
     with pytest.raises(ValueError):
-        ctx.bounds2img(w, s, e, n, zoom=23)
+        cx.bounds2img(w, s, e, n, zoom=23)
 
     # with specific string url (not dict) -> error when specified
     url = "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
     with pytest.raises(ValueError):
-        ctx.bounds2img(w, s, e, n, zoom=33, source=url)
+        cx.bounds2img(w, s, e, n, zoom=33, source=url)
 
     # but also when inferred (no max zoom know to set to)
     with pytest.raises(ValueError):
-        ctx.bounds2img(w, s, e, n, source=url)
+        cx.bounds2img(w, s, e, n, source=url)
 
 
 # Place
@@ -235,7 +235,7 @@ def test_place():
         4891969.810251278,
     ]
     expected_zoom = 10
-    loc = ctx.Place(SEARCH, zoom_adjust=ADJUST)
+    loc = cx.Place(SEARCH, zoom_adjust=ADJUST)
     assert loc.im.shape == (256, 256, 4)
     loc  # Make sure repr works
 
@@ -245,7 +245,7 @@ def test_place():
     assert_array_almost_equal(loc.bbox_map, expected_bbox_map)
     assert loc.zoom == expected_zoom
 
-    loc = ctx.Place(SEARCH, path="./test2.tif", zoom_adjust=ADJUST)
+    loc = cx.Place(SEARCH, path="./test2.tif", zoom_adjust=ADJUST)
     assert os.path.exists("./test2.tif")
 
     # .plot() method
@@ -260,17 +260,17 @@ def test_place():
 @pytest.mark.network
 def test_plot_map():
     # Place as a search
-    loc = ctx.Place(SEARCH, zoom_adjust=ADJUST)
+    loc = cx.Place(SEARCH, zoom_adjust=ADJUST)
     w, e, s, n = loc.bbox_map
-    ax = ctx.plot_map(loc)
+    ax = cx.plot_map(loc)
 
     assert ax.get_title() == loc.place
-    ax = ctx.plot_map(loc.im, loc.bbox)
+    ax = cx.plot_map(loc.im, loc.bbox)
     assert_array_almost_equal(loc.bbox, ax.images[0].get_extent())
 
     # Place as an image
-    img, ext = ctx.bounds2img(w, s, e, n, zoom=10)
-    ax = ctx.plot_map(img, ext)
+    img, ext = cx.bounds2img(w, s, e, n, zoom=10)
+    ax = cx.plot_map(img, ext)
     assert_array_almost_equal(ext, ax.images[0].get_extent())
 
 
@@ -291,7 +291,7 @@ def test_add_basemap():
     fig, ax = matplotlib.pyplot.subplots(1)
     ax.set_xlim(x1, x2)
     ax.set_ylim(y1, y2)
-    ctx.add_basemap(ax, zoom=10)
+    cx.add_basemap(ax, zoom=10)
 
     # ensure add_basemap did not change the axis limits of ax
     ax_extent = (x1, x2, y1, y2)
@@ -321,8 +321,8 @@ def test_add_basemap_local_source():
     f, ax = matplotlib.pyplot.subplots(1)
     ax.set_xlim(subset[0], subset[1])
     ax.set_ylim(subset[2], subset[3])
-    _ = ctx.Place(SEARCH, path="./test2.tif", zoom_adjust=ADJUST)
-    ctx.add_basemap(ax, source="./test2.tif", reset_extent=True)
+    _ = cx.Place(SEARCH, path="./test2.tif", zoom_adjust=ADJUST)
+    cx.add_basemap(ax, source="./test2.tif", reset_extent=True)
 
     assert_array_almost_equal(subset, ax.images[0].get_extent())
     assert ax.images[0].get_array().sum() == pytest.approx(13758065, rel=0.1)
@@ -348,7 +348,7 @@ def test_add_basemap_query():
     fig, ax = matplotlib.pyplot.subplots(1)
     ax.set_xlim(x1, x2)
     ax.set_ylim(y1, y2)
-    ctx.add_basemap(ax, zoom=10, source="cartodb positron")
+    cx.add_basemap(ax, zoom=10, source="cartodb positron")
 
     # ensure add_basemap did not change the axis limits of ax
     ax_extent = (x1, x2, y1, y2)
@@ -372,8 +372,8 @@ def test_add_basemap_full_read():
     f, ax = matplotlib.pyplot.subplots(1)
     ax.set_xlim(x1, x2)
     ax.set_ylim(y1, y2)
-    loc = ctx.Place(SEARCH, path="./test2.tif", zoom_adjust=ADJUST)
-    ctx.add_basemap(ax, source="./test2.tif", reset_extent=False)
+    loc = cx.Place(SEARCH, path="./test2.tif", zoom_adjust=ADJUST)
+    cx.add_basemap(ax, source="./test2.tif", reset_extent=False)
 
     raster_extent = (
         -11740803.981631,
@@ -403,7 +403,7 @@ def test_add_basemap_auto_zoom():
     f, ax = matplotlib.pyplot.subplots(1)
     ax.set_xlim(x1, x2)
     ax.set_ylim(y1, y2)
-    ctx.add_basemap(ax, zoom="auto")
+    cx.add_basemap(ax, zoom="auto")
 
     ax_extent = (
         -11740727.544603072,
@@ -466,7 +466,7 @@ def test_add_basemap_warping():
     f, ax = matplotlib.pyplot.subplots(1)
     ax.set_xlim(x1, x2)
     ax.set_ylim(y1, y2)
-    ctx.add_basemap(ax, crs="epsg:4326", attribution=None)
+    cx.add_basemap(ax, crs="epsg:4326", attribution=None)
     assert ax.get_xlim() == (x1, x2)
     assert ax.get_ylim() == (y1, y2)
     assert ax.images[0].get_array()[:, :, :3].sum() == pytest.approx(811443707, rel=0.1)
@@ -482,11 +482,11 @@ def test_add_basemap_warping_local():
     # Test local source warping
     x1, x2 = -105.5, -105.00
     y1, y2 = 39.56, 40.13
-    _ = ctx.bounds2raster(x1, y1, x2, y2, "./test2.tif", ll=True)
+    _ = cx.bounds2raster(x1, y1, x2, y2, "./test2.tif", ll=True)
     f, ax = matplotlib.pyplot.subplots(1)
     ax.set_xlim(x1, x2)
     ax.set_ylim(y1, y2)
-    ctx.add_basemap(ax, source="./test2.tif", crs="epsg:4326", attribution=None)
+    cx.add_basemap(ax, source="./test2.tif", crs="epsg:4326", attribution=None)
     assert ax.get_xlim() == (x1, x2)
     assert ax.get_ylim() == (y1, y2)
 
@@ -513,8 +513,8 @@ def test_add_basemap_overlay():
     ax.set_ylim(y1, y2)
 
     # Draw two layers, the 2nd of which is an overlay.
-    ctx.add_basemap(ax, zoom=10)
-    ctx.add_basemap(ax, zoom=10, source=ctx.providers.CartoDB.PositronOnlyLabels)
+    cx.add_basemap(ax, zoom=10)
+    cx.add_basemap(ax, zoom=10, source=cx.providers.CartoDB.PositronOnlyLabels)
 
     # ensure add_basemap did not change the axis limits of ax
     ax_extent = (x1, x2, y1, y2)
@@ -541,8 +541,8 @@ def test_add_basemap_overlay():
     ax.set_ylim(y1, y2)
 
     # Draw two layers, the 1st of which is an overlay.
-    ctx.add_basemap(ax, zoom=10, source=ctx.providers.CartoDB.PositronOnlyLabels)
-    ctx.add_basemap(ax, zoom=10)
+    cx.add_basemap(ax, zoom=10, source=cx.providers.CartoDB.PositronOnlyLabels)
+    cx.add_basemap(ax, zoom=10)
 
     # check that z-order of overlay is higher than that of base layer
     assert ax.images[0].zorder > ax.images[1].zorder
@@ -564,40 +564,40 @@ def test_basemap_attribution():
     # default provider and attribution
     fig, ax = matplotlib.pyplot.subplots()
     ax.axis(extent)
-    ctx.add_basemap(ax)
+    cx.add_basemap(ax)
     (txt,) = get_attr(ax)
-    assert txt.get_text() == ctx.providers.OpenStreetMap.HOT["attribution"]
+    assert txt.get_text() == cx.providers.OpenStreetMap.HOT["attribution"]
 
     # override attribution
     fig, ax = matplotlib.pyplot.subplots()
     ax.axis(extent)
-    ctx.add_basemap(ax, attribution="custom text")
+    cx.add_basemap(ax, attribution="custom text")
     (txt,) = get_attr(ax)
     assert txt.get_text() == "custom text"
 
     # disable attribution
     fig, ax = matplotlib.pyplot.subplots()
     ax.axis(extent)
-    ctx.add_basemap(ax, attribution=False)
+    cx.add_basemap(ax, attribution=False)
     assert len(get_attr(ax)) == 0
 
     # specified provider
     fig, ax = matplotlib.pyplot.subplots()
     ax.axis(extent)
-    ctx.add_basemap(ax, source=ctx.providers.OpenStreetMap.Mapnik)
+    cx.add_basemap(ax, source=cx.providers.OpenStreetMap.Mapnik)
     (txt,) = get_attr(ax)
-    assert txt.get_text() == ctx.providers.OpenStreetMap.Mapnik["attribution"]
+    assert txt.get_text() == cx.providers.OpenStreetMap.Mapnik["attribution"]
 
 
 def test_attribution():
     fig, ax = matplotlib.pyplot.subplots(1)
-    txt = ctx.add_attribution(ax, "Test")
+    txt = cx.add_attribution(ax, "Test")
     assert isinstance(txt, matplotlib.text.Text)
     assert txt.get_text() == "Test"
 
     # test passthrough font size and kwargs
     fig, ax = matplotlib.pyplot.subplots(1)
-    txt = ctx.add_attribution(ax, "Test", font_size=15, fontfamily="monospace")
+    txt = cx.add_attribution(ax, "Test", font_size=15, fontfamily="monospace")
     assert txt.get_size() == 15
     assert txt.get_fontfamily() == ["monospace"]
 
@@ -606,10 +606,10 @@ def test_attribution():
 def test_set_cache_dir(tmpdir):
     # set cache directory manually
     path = str(tmpdir.mkdir("cache"))
-    ctx.set_cache_dir(path)
+    cx.set_cache_dir(path)
 
     # then check that plotting still works
     extent = (-11945319, -10336026, 2910477, 4438236)
     fig, ax = matplotlib.pyplot.subplots()
     ax.axis(extent)
-    ctx.add_basemap(ax)
+    cx.add_basemap(ax)
