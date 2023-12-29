@@ -444,7 +444,7 @@ def test_add_basemap_zoom_adjust(zoom_adjust, expected_extent, expected_sum_1, e
     f, ax = matplotlib.pyplot.subplots(1)
     ax.set_xlim(x1, x2)
     ax.set_ylim(y1, y2)
-    ctx.add_basemap(ax, zoom="auto", zoom_adjust=zoom_adjust)
+    cx.add_basemap(ax, zoom="auto", zoom_adjust=zoom_adjust)
 
     ax_extent = expected_extent
     assert_array_almost_equal(ax_extent, ax.images[0].get_extent())
