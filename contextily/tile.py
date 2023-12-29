@@ -171,7 +171,7 @@ def bounds2raster(
 
 
 def bounds2img(
-    w, s, e, n, zoom="auto", source=None, ll=False, wait=0, max_retries=2, n_connections=1, use_cache=True
+    w, s, e, n, zoom="auto", source=None, ll=False, wait=0, max_retries=2, n_connections=1, use_cache=True, zoom_adjust=None
 ):
     """
     Take bounding box and zoom and return an image with all the tiles
@@ -220,6 +220,10 @@ def bounds2img(
         If False, caching of the downloaded tiles will be disabled. This can be useful in resource constrained
         environments, especially when using n_connections > 1, or when a tile provider's terms of use don't allow
         caching.
+    zoom_adjust : int or None
+        [Optional. Default: None]
+        The amount to adjust a chosen zoom level if it is chosen automatically.
+        Values outside of -1 to 1 are not recommended as they can lead to slow execution.
 
     Returns
     -------
@@ -239,6 +243,8 @@ def bounds2img(
     auto_zoom = zoom == "auto"
     if auto_zoom:
         zoom = _calculate_zoom(w, s, e, n)
+    if zoom_adjust:
+        zoom += zoom_adjust
     zoom = _validate_zoom(zoom, provider, auto=auto_zoom)
     # create list of tiles to download
     tiles = list(mt.tiles(w, s, e, n, [zoom]))

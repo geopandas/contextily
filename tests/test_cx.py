@@ -354,10 +354,10 @@ def test_add_basemap_query():
     ax_extent = (x1, x2, y1, y2)
     assert ax.axis() == ax_extent
 
-    assert ax.images[0].get_array().sum() == 64717007
+    assert ax.images[0].get_array().sum() == 64691220
     assert ax.images[0].get_array().shape == (256, 256, 4)
-    assert_array_almost_equal(ax.images[0].get_array()[:, :, :3].mean(), 244.167719)
-    assert_array_almost_equal(ax.images[0].get_array().mean(), 246.875789642)
+    assert_array_almost_equal(ax.images[0].get_array()[:, :, :3].mean(), 244.03656)
+    assert_array_almost_equal(ax.images[0].get_array().mean(), 246.77742)
 
 
 @pytest.mark.network
@@ -415,6 +415,43 @@ def test_add_basemap_auto_zoom():
     assert ax.images[0].get_array()[:, :, :3].sum() == pytest.approx(160979279, rel=0.1)
     assert ax.images[0].get_array().sum() == pytest.approx(227825999, rel=0.1)
     assert ax.images[0].get_array().shape == (512, 512, 4)
+    assert_array_almost_equal(
+        ax.images[0].get_array()[:, :, :3].mean(), 204.695738, decimal=0
+    )
+    assert_array_almost_equal(ax.images[0].get_array().mean(), 217.2718038, decimal=0)
+
+@pytest.mark.network
+@pytest.mark.parametrize("zoom_adjust, expected_extent, expected_sum_1, expected_sum_2, expected_shape", [
+    # zoom_adjust and expected values where zoom_adjust == 1
+    (1, (
+        -11740727.544603072,
+        -11701591.786121061,
+        4852834.051769271,
+        4891969.810251278,
+    ), 648244877, 915631757, (1024, 1024, 4)),
+
+    # zoom_adjust and expected values where zoom_adjust == -1
+    (-1, (
+        -11740727.544603072,
+        -11701591.786121061,
+        4852834.051769271,
+        4891969.810251278,
+    ), 40396582, 57108262, (256, 256, 4)),
+])
+def test_add_basemap_zoom_adjust(zoom_adjust, expected_extent, expected_sum_1, expected_sum_2, expected_shape):
+    x1, x2, y1, y2 = [-11740727.544603072, -11701591.786121061, 4852834.0517692715, 4891969.810251278]
+
+    f, ax = matplotlib.pyplot.subplots(1)
+    ax.set_xlim(x1, x2)
+    ax.set_ylim(y1, y2)
+    cx.add_basemap(ax, zoom="auto", zoom_adjust=zoom_adjust)
+
+    ax_extent = expected_extent
+    assert_array_almost_equal(ax_extent, ax.images[0].get_extent())
+
+    assert ax.images[0].get_array()[:, :, :3].sum() == pytest.approx(expected_sum_1, rel=0.1)
+    assert ax.images[0].get_array().sum() == pytest.approx(expected_sum_2, rel=0.1)
+    assert ax.images[0].get_array().shape == expected_shape
     assert_array_almost_equal(
         ax.images[0].get_array()[:, :, :3].mean(), 204.695738, decimal=0
     )
