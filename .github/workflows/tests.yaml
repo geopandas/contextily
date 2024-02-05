@@ -46,4 +46,4 @@ jobs:
       - name: run tests
         run: pytest -v . --cov=contextily --cov-append --cov-report term-missing --cov-report xml --color=yes
 
-      - uses: codecov/codecov-action@v3
+      - uses: codecov/codecov-action@v4
