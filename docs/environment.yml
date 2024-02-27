@@ -20,4 +20,4 @@ dependencies:
 - nbsphinx
 - pandoc
 - ipython
-- pydata-sphinx-theme
+- sphinx-book-theme
