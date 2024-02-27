@@ -1,9 +1,12 @@
 version: 2
-formats: []
-conda:
-    environment: docs/environment.yml
+build:
+  os: ubuntu-22.04
+  tools:
+    python: mambaforge-latest
 python:
-    version: 3
-    install:
-        - method: pip
-          path: .
+  install:
+  - method: pip
+    path: .
+conda:
+  environment: docs/environment.yml
+formats: []

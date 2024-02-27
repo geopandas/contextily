@@ -10,7 +10,7 @@ Contents
 --------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: User Guide
 
    intro_guide
@@ -22,7 +22,7 @@ Contents
    friends_cenpy_osmnx
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Reference Guide
 
    reference
