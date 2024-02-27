@@ -62,7 +62,6 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 # a list of builtin themes.
 #
 html_theme = "sphinx_book_theme"
-html_title = "CONTEXTILY <br> Context geo tiles in Python"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -72,6 +71,12 @@ html_static_path = ["_static"]
 html_css_files = [
     "css/custom.css",
 ]
+
+html_theme_options = {
+    "logo": {
+        "text": "CONTEXTILY <br> Context geo tiles in Python",
+    }
+}
 
 intersphinx_mapping = {
     "xyzservices": ("https://xyzservices.readthedocs.io/en/stable/", None),
