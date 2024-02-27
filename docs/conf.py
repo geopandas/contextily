@@ -17,8 +17,9 @@ import subprocess
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 # import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import sys
+sys.path.insert(0, os.path.abspath(".."))
+import contextily  # noqa
 
 
 # -- Project information -----------------------------------------------------
@@ -28,7 +29,7 @@ copyright = "2020, Dani Arribas-Bel & Contexily Contributors"
 author = "Dani Arribas-Bel & Contexily Contributors"
 
 # The full version, including alpha/beta/rc tags
-release = "1.1.0"
+release = contextily.__version__
 
 
 # -- General configuration ---------------------------------------------------
@@ -60,7 +61,8 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "pydata_sphinx_theme"
+html_theme = "sphinx_book_theme"
+html_title = "CONTEXTILY <br> Context geo tiles in Python"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -70,10 +72,6 @@ html_static_path = ["_static"]
 html_css_files = [
     "css/custom.css",
 ]
-
-html_sidebars = {
-    "**": ["docs-sidebar.html"],
-}
 
 intersphinx_mapping = {
     "xyzservices": ("https://xyzservices.readthedocs.io/en/stable/", None),
