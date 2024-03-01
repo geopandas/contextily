@@ -14,7 +14,7 @@ import warnings
 
 import numpy as np
 import rasterio as rio
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 from joblib import Memory as _Memory
 from joblib import Parallel, delayed
 from rasterio.transform import from_origin
@@ -288,11 +288,7 @@ def _process_source(source):
 
 
 def _fetch_tile(tile_url, wait, max_retries):
-    request = _retryer(tile_url, wait, max_retries)
-    with io.BytesIO(request.content) as image_stream:
-        image = Image.open(image_stream).convert("RGBA")
-        array = np.asarray(image)
-        image.close()
+    array = _retryer(tile_url, wait, max_retries)
     return array
 
 
@@ -412,7 +408,7 @@ def _warper(img, transform, s_crs, t_crs, resampling):
 
 def _retryer(tile_url, wait, max_retries):
     """
-    Retry a url many times in attempt to get a tile
+    Retry a url many times in attempt to get a tile and read the image
 
     Arguments
     ---------
@@ -428,25 +424,32 @@ def _retryer(tile_url, wait, max_retries):
 
     Returns
     -------
-    request object containing the web response.
+    array of the tile
     """
     try:
         request = requests.get(tile_url, headers={"user-agent": USER_AGENT})
         request.raise_for_status()
-    except requests.HTTPError:
+        with io.BytesIO(request.content) as image_stream:
+            image = Image.open(image_stream).convert("RGBA")
+            array = np.asarray(image)
+            image.close()
+
+            return array
+
+    except (requests.HTTPError, UnidentifiedImageError):
         if request.status_code == 404:
             raise requests.HTTPError(
                 "Tile URL resulted in a 404 error. "
                 "Double-check your tile url:\n{}".format(tile_url)
             )
-        elif request.status_code == 104:
+        elif request.status_code == 104 or request.status_code == 200:
             if max_retries > 0:
                 os.wait(wait)
                 max_retries -= 1
                 request = _retryer(tile_url, wait, max_retries)
             else:
                 raise requests.HTTPError("Connection reset by peer too many times.")
-    return request
+
 
 
 def howmany(w, s, e, n, zoom, verbose=True, ll=False):
