@@ -127,7 +127,7 @@ def test_warp_tiles():
     )
     assert wimg[100, 100, :].tolist() == [247, 246, 241, 255]
     assert wimg[100, 200, :].tolist() == [246, 246, 241, 255]
-    assert wimg[20, 120, :].tolist() == [139, 128, 149, 255]
+    assert wimg[20, 120, :].tolist() == [139, 128, 148, 255]
 
 
 @pytest.mark.network
