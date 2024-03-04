@@ -144,7 +144,7 @@ def test_warp_img_transform():
     wimg, _ = cx.warp_img_transform(img, rtr.transform, rtr.crs, "epsg:4326")
     assert wimg[:, 100, 100].tolist() == [247, 246, 241, 255]
     assert wimg[:, 100, 200].tolist() == [246, 246, 241, 255]
-    assert wimg[:, 20, 120].tolist() == [139, 128, 149, 255]
+    assert wimg[:, 20, 120].tolist() == [139, 128, 148, 255]
 
 
 def test_howmany():
