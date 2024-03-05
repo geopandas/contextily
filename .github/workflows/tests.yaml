@@ -13,19 +13,24 @@ on:
 jobs:
   unittests:
     name: ${{ matrix.os }}, ${{ matrix.environment-file }}
-    runs-on: ${{ matrix.os }}-latest
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
-        os: [macos, ubuntu, windows]
+        os: [ubuntu-latest]
         environment-file:
-          [ci/envs/38-minimal.yaml, ci/envs/311-latest-conda-forge.yaml]
+          - ci/envs/39-minimal.yaml
+          - ci/envs/310-conda-forge.yaml
+          - ci/envs/311-conda-forge.yaml
+          - ci/envs/312-latest-conda-forge.yaml
         include:
-          - os: ubuntu
-            environment-file: ci/envs/310-conda-forge.yaml
-          - os: ubuntu
-            environment-file: ci/envs/39-conda-forge.yaml
+          - os: macos-latest
+            environment-file: ci/envs/312-latest-conda-forge.yaml
+          - os: macos-14 # apple silicon
+            environment-file: ci/envs/312-latest-conda-forge.yaml
+          - os: windows-latest
+            environment-file: ci/envs/312-latest-conda-forge.yaml
     defaults:
       run:
         shell: bash -l {0}
