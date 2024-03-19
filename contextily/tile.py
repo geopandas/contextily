@@ -58,7 +58,7 @@ def set_cache_dir(path):
 
 
 def _clear_cache():
-    shutil.rmtree(tmpdir)
+    shutil.rmtree(tmpdir, ignore_errors=True)
 
 
 atexit.register(_clear_cache)
