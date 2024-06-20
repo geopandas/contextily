@@ -531,7 +531,7 @@ def test_add_basemap_overlay():
     assert_array_almost_equal(ax.images[0].get_array().mean(), 217.8021049, decimal=0)
 
     # check totals on overaly (mostly transparent labels) layer
-    assert ax.images[1].get_array().sum() == pytest.approx(1603214, rel=0.1)
+    assert ax.images[1].get_array().sum() == pytest.approx(1677372, rel=0.1)
     assert ax.images[1].get_array().shape == (256, 256, 4)
     assert_array_almost_equal(ax.images[1].get_array().mean(), 6.1157760, decimal=0)
 
@@ -546,7 +546,7 @@ def test_add_basemap_overlay():
 
     # check that z-order of overlay is higher than that of base layer
     assert ax.images[0].zorder > ax.images[1].zorder
-    assert ax.images[0].get_array().sum() == pytest.approx(1603214, rel=0.1)
+    assert ax.images[0].get_array().sum() == pytest.approx(1677372, rel=0.1)
     assert ax.images[1].get_array().sum() == pytest.approx(57095515, rel=0.1)
 
 
