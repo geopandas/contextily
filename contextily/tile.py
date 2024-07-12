@@ -1,4 +1,5 @@
 """Tools for downloading map tiles from coordinates."""
+
 from __future__ import absolute_import, division, print_function
 
 import uuid
@@ -7,7 +8,7 @@ import mercantile as mt
 import requests
 import atexit
 import io
-import os
+import time
 import shutil
 import tempfile
 import warnings
@@ -140,8 +141,17 @@ def bounds2raster(
         w, s = _sm2ll(w, s)
         e, n = _sm2ll(e, n)
     # Download
-    Z, ext = bounds2img(w, s, e, n, zoom=zoom, source=source, ll=True, n_connections=n_connections,
-                        use_cache=use_cache)
+    Z, ext = bounds2img(
+        w,
+        s,
+        e,
+        n,
+        zoom=zoom,
+        source=source,
+        ll=True,
+        n_connections=n_connections,
+        use_cache=use_cache,
+    )
 
     # Write
     # ---
@@ -171,7 +181,18 @@ def bounds2raster(
 
 
 def bounds2img(
-    w, s, e, n, zoom="auto", source=None, ll=False, wait=0, max_retries=2, n_connections=1, use_cache=True, zoom_adjust=None
+    w,
+    s,
+    e,
+    n,
+    zoom="auto",
+    source=None,
+    ll=False,
+    wait=0,
+    max_retries=2,
+    n_connections=1,
+    use_cache=True,
+    zoom_adjust=None,
 ):
     """
     Take bounding box and zoom and return an image with all the tiles
@@ -251,16 +272,17 @@ def bounds2img(
     tile_urls = [provider.build_url(x=tile.x, y=tile.y, z=tile.z) for tile in tiles]
     # download tiles
     if n_connections < 1 or not isinstance(n_connections, int):
-        raise ValueError(
-            f"n_connections must be a positive integer value."
-        )
+        raise ValueError(f"n_connections must be a positive integer value.")
     # Use threads for a single connection to avoid the overhead of spawning a process. Use processes for multiple
     # connections if caching is enabled, as threads lead to memory issues when used in combination with the joblib
     # memory caching (used for the _fetch_tile() function).
-    preferred_backend = "threads" if (n_connections == 1 or not use_cache) else "processes"
+    preferred_backend = (
+        "threads" if (n_connections == 1 or not use_cache) else "processes"
+    )
     fetch_tile_fn = memory.cache(_fetch_tile) if use_cache else _fetch_tile
     arrays = Parallel(n_jobs=n_connections, prefer=preferred_backend)(
-        delayed(fetch_tile_fn)(tile_url, wait, max_retries) for tile_url in tile_urls)
+        delayed(fetch_tile_fn)(tile_url, wait, max_retries) for tile_url in tile_urls
+    )
     # merge downloaded tiles
     merged, extent = _merge_tiles(tiles, arrays)
     # lon/lat extent --> Spheric Mercator
@@ -444,12 +466,11 @@ def _retryer(tile_url, wait, max_retries):
             )
         elif request.status_code == 104 or request.status_code == 200:
             if max_retries > 0:
-                os.wait(wait)
+                time.sleep(wait)
                 max_retries -= 1
                 request = _retryer(tile_url, wait, max_retries)
             else:
                 raise requests.HTTPError("Connection reset by peer too many times.")
-
 
 
 def howmany(w, s, e, n, zoom, verbose=True, ll=False):
