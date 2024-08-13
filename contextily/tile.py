@@ -464,14 +464,15 @@ def _retryer(tile_url, wait, max_retries):
                 "Tile URL resulted in a 404 error. "
                 "Double-check your tile url:\n{}".format(tile_url)
             )
-        elif request.status_code == 104 or request.status_code == 200:
+        else:
             if max_retries > 0:
                 time.sleep(wait)
                 max_retries -= 1
                 request = _retryer(tile_url, wait, max_retries)
             else:
-                raise requests.HTTPError("Connection reset by peer too many times.")
-
+                raise requests.HTTPError("Connection reset by peer too many times. "
+                                         f"Last message was: {request.status_code} "
+                                         f"Error: {request.reason} for url: {request.url}")
 
 def howmany(w, s, e, n, zoom, verbose=True, ll=False):
     """
