@@ -26,7 +26,9 @@ def test_bounds2raster():
         -93.50721740722656,
         36.49387741088867,
     )
-    _ = cx.bounds2raster(w, s, e, n, "test.tif", zoom=4, ll=True)
+    _ = cx.bounds2raster(
+        w, s, e, n, "test.tif", zoom=4, ll=True, source=cx.providers.CartoDB.Positron
+    )
     rtr = rio.open("test.tif")
     img = np.array([band for band in rtr.read()]).transpose(1, 2, 0)
     solu = (
@@ -37,13 +39,13 @@ def test_bounds2raster():
     )
     for i, j in zip(rtr.bounds, solu):
         assert round(i - j, TOL) == 0
-    assert img[0, 100, :].tolist() == [220, 217, 214, 255]
-    assert img[20, 120, :].tolist() == [246, 245, 238, 255]
-    assert img[200, 100, :].tolist() == [247, 246, 241, 255]
-    assert img[:, :, :3].sum() == pytest.approx(44440377, rel=0.1)
-    assert img.sum() == pytest.approx(61152057, rel=0.1)
-    assert_array_almost_equal(img[:, :, :3].mean(), 226.0354461669922, decimal=0)
-    assert_array_almost_equal(img.mean(), 233.27658462524414, decimal=0)
+    assert img[0, 100, :].tolist() == [250, 250, 248, 255]
+    assert img[20, 120, :].tolist() == [139, 153, 164, 255]
+    assert img[200, 100, :].tolist() == [250, 250, 248, 255]
+    assert img[:, :, :3].sum() == pytest.approx(47622796, rel=0.1)
+    assert img.sum() == pytest.approx(64334476, rel=0.1)
+    assert_array_almost_equal(img[:, :, :3].mean(), 242.2220662434896, decimal=0)
+    assert_array_almost_equal(img.mean(), 245.4165496826172, decimal=0)
 
     # multiple tiles for which result is not square
     w, s, e, n = (
@@ -52,7 +54,9 @@ def test_bounds2raster():
         6.15665815595878,
         51.47502370869813,
     )
-    img, ext = cx.bounds2raster(w, s, e, n, "test2.tif", zoom=7, ll=True)
+    img, ext = cx.bounds2raster(
+        w, s, e, n, "test2.tif", zoom=7, ll=True, source=cx.providers.CartoDB.Positron
+    )
     rtr = rio.open("test2.tif")
     rimg = np.array([band for band in rtr.read()]).transpose(1, 2, 0)
     assert rimg.shape == img.shape
@@ -84,7 +88,14 @@ def test_bounds2img(n_connections):
         16,
     ]:  # valid number of connections (test single and multiple connections)
         img, ext = cx.bounds2img(
-            w, s, e, n, zoom=4, ll=True, n_connections=n_connections
+            w,
+            s,
+            e,
+            n,
+            zoom=4,
+            ll=True,
+            n_connections=n_connections,
+            source=cx.providers.CartoDB.Positron,
         )
         solu = (
             -12523442.714243276,
@@ -94,9 +105,9 @@ def test_bounds2img(n_connections):
         )
         for i, j in zip(ext, solu):
             assert round(i - j, TOL) == 0
-        assert img[0, 100, :].tolist() == [220, 217, 214, 255]
-        assert img[20, 120, :].tolist() == [246, 245, 238, 255]
-        assert img[200, 100, :].tolist() == [247, 246, 241, 255]
+        assert img[0, 100, :].tolist() == [250, 250, 248, 255]
+        assert img[20, 120, :].tolist() == [139, 153, 164, 255]
+        assert img[200, 100, :].tolist() == [250, 250, 248, 255]
     elif n_connections == 0:  # no connections should raise an error
         with pytest.raises(ValueError):
             img, ext = cx.bounds2img(
@@ -112,7 +123,9 @@ def test_warp_tiles():
         -93.50721740722656,
         36.49387741088867,
     )
-    img, ext = cx.bounds2img(w, s, e, n, zoom=4, ll=True)
+    img, ext = cx.bounds2img(
+        w, s, e, n, zoom=4, ll=True, source=cx.providers.CartoDB.Positron
+    )
     wimg, wext = cx.warp_tiles(img, ext)
     assert_array_almost_equal(
         np.array(wext),
@@ -125,9 +138,9 @@ def test_warp_tiles():
             ]
         ),
     )
-    assert wimg[100, 100, :].tolist() == [247, 246, 241, 255]
-    assert wimg[100, 200, :].tolist() == [246, 246, 241, 255]
-    assert wimg[20, 120, :].tolist() == [139, 128, 149, 255]
+    assert wimg[100, 100, :].tolist() == [249, 249, 247, 255]
+    assert wimg[100, 200, :].tolist() == [250, 250, 248, 255]
+    assert wimg[20, 120, :].tolist() == [250, 250, 248, 255]
 
 
 @pytest.mark.network
@@ -138,13 +151,15 @@ def test_warp_img_transform():
         -93.50721740722656,
         36.49387741088867,
     )
-    _ = cx.bounds2raster(w, s, e, n, "test.tif", zoom=4, ll=True)
+    _ = cx.bounds2raster(
+        w, s, e, n, "test.tif", zoom=4, ll=True, source=cx.providers.CartoDB.Positron
+    )
     rtr = rio.open("test.tif")
     img = np.array([band for band in rtr.read()])
     wimg, _ = cx.warp_img_transform(img, rtr.transform, rtr.crs, "epsg:4326")
-    assert wimg[:, 100, 100].tolist() == [247, 246, 241, 255]
-    assert wimg[:, 100, 200].tolist() == [246, 246, 241, 255]
-    assert wimg[:, 20, 120].tolist() == [139, 128, 149, 255]
+    assert wimg[:, 100, 100].tolist() == [249, 249, 247, 255]
+    assert wimg[:, 100, 200].tolist() == [250, 250, 248, 255]
+    assert wimg[:, 20, 120].tolist() == [250, 250, 248, 255]
 
 
 def test_howmany():
@@ -227,7 +242,7 @@ def test_validate_zoom():
 
 @pytest.mark.network
 def test_place():
-    expected_bbox = [-105.3014509, 39.9643513, -105.1780988, 40.094409]
+    expected_bbox = [-105.3014509, 39.9569362, -105.1780988, 40.0944658]
     expected_bbox_map = [
         -11740727.544603072,
         -11701591.786121061,
@@ -356,7 +371,9 @@ def test_add_basemap_query():
 
     assert ax.images[0].get_array().sum() == 64685390
     assert ax.images[0].get_array().shape == (256, 256, 4)
-    assert_array_almost_equal(ax.images[0].get_array()[:, :, :3].mean(), 244.03656, decimal=0)
+    assert_array_almost_equal(
+        ax.images[0].get_array()[:, :, :3].mean(), 244.03656, decimal=0
+    )
     assert_array_almost_equal(ax.images[0].get_array().mean(), 246.77742, decimal=0)
 
 
@@ -420,42 +437,68 @@ def test_add_basemap_auto_zoom():
     )
     assert_array_almost_equal(ax.images[0].get_array().mean(), 217.2718038, decimal=0)
 
-@pytest.mark.network
-@pytest.mark.parametrize("zoom_adjust, expected_extent, expected_sum_1, expected_sum_2, expected_shape", [
-    # zoom_adjust and expected values where zoom_adjust == 1
-    (1, (
-        -11740727.544603072,
-        -11701591.786121061,
-        4852834.051769271,
-        4891969.810251278,
-    ), 648244877, 915631757, (1024, 1024, 4)),
 
-    # zoom_adjust and expected values where zoom_adjust == -1
-    (-1, (
+@pytest.mark.network
+@pytest.mark.parametrize(
+    "zoom_adjust, expected_extent, expected_sum_1, expected_sum_2, expected_shape",
+    [
+        # zoom_adjust and expected values where zoom_adjust == 1
+        (
+            1,
+            (
+                -11740727.544603072,
+                -11701591.786121061,
+                4852834.0517692715,
+                4891969.810251278,
+            ),
+            763769618,
+            1031156498,
+            (1024, 1024, 4),
+        ),
+        # zoom_adjust and expected values where zoom_adjust == -1
+        (
+            -1,
+            (
+                -11740727.544603072,
+                -11701591.786121061,
+                4852834.0517692715,
+                4891969.810251278,
+            ),
+            47973710,
+            64685390,
+            (256, 256, 4),
+        ),
+    ],
+)
+def test_add_basemap_zoom_adjust(
+    zoom_adjust, expected_extent, expected_sum_1, expected_sum_2, expected_shape
+):
+    x1, x2, y1, y2 = [
         -11740727.544603072,
         -11701591.786121061,
-        4852834.051769271,
+        4852834.0517692715,
         4891969.810251278,
-    ), 40396582, 57108262, (256, 256, 4)),
-])
-def test_add_basemap_zoom_adjust(zoom_adjust, expected_extent, expected_sum_1, expected_sum_2, expected_shape):
-    x1, x2, y1, y2 = [-11740727.544603072, -11701591.786121061, 4852834.0517692715, 4891969.810251278]
+    ]
 
     f, ax = matplotlib.pyplot.subplots(1)
     ax.set_xlim(x1, x2)
     ax.set_ylim(y1, y2)
-    cx.add_basemap(ax, zoom="auto", zoom_adjust=zoom_adjust)
+    cx.add_basemap(
+        ax, zoom="auto", zoom_adjust=zoom_adjust, source=cx.providers.CartoDB.Positron
+    )
 
     ax_extent = expected_extent
     assert_array_almost_equal(ax_extent, ax.images[0].get_extent())
 
-    assert ax.images[0].get_array()[:, :, :3].sum() == pytest.approx(expected_sum_1, rel=0.1)
+    assert ax.images[0].get_array()[:, :, :3].sum() == pytest.approx(
+        expected_sum_1, rel=0.1
+    )
     assert ax.images[0].get_array().sum() == pytest.approx(expected_sum_2, rel=0.1)
     assert ax.images[0].get_array().shape == expected_shape
     assert_array_almost_equal(
-        ax.images[0].get_array()[:, :, :3].mean(), 204.695738, decimal=0
+        ax.images[0].get_array()[:, :, :3].mean(), 242.79582, decimal=0
     )
-    assert_array_almost_equal(ax.images[0].get_array().mean(), 217.2718038, decimal=0)
+    assert_array_almost_equal(ax.images[0].get_array().mean(), 245.8468, decimal=0)
 
 
 @pytest.mark.network
@@ -466,15 +509,17 @@ def test_add_basemap_warping():
     f, ax = matplotlib.pyplot.subplots(1)
     ax.set_xlim(x1, x2)
     ax.set_ylim(y1, y2)
-    cx.add_basemap(ax, crs="epsg:4326", attribution=None)
+    cx.add_basemap(
+        ax, crs="epsg:4326", attribution=None, source=cx.providers.CartoDB.Positron
+    )
     assert ax.get_xlim() == (x1, x2)
     assert ax.get_ylim() == (y1, y2)
-    assert ax.images[0].get_array()[:, :, :3].sum() == pytest.approx(811443707, rel=0.1)
+    assert ax.images[0].get_array()[:, :, :3].sum() == pytest.approx(978096737, rel=0.1)
     assert ax.images[0].get_array().shape == (1135, 1183, 4)
     assert_array_almost_equal(
-        ax.images[0].get_array()[:, :, :3].mean(), 201.445020, decimal=0
+        ax.images[0].get_array()[:, :, :3].mean(), 242.8174808, decimal=0
     )
-    assert_array_almost_equal(ax.images[0].get_array().mean(), 214.8337650, decimal=0)
+    assert_array_almost_equal(ax.images[0].get_array().mean(), 245.8631, decimal=0)
 
 
 @pytest.mark.network
@@ -482,7 +527,9 @@ def test_add_basemap_warping_local():
     # Test local source warping
     x1, x2 = -105.5, -105.00
     y1, y2 = 39.56, 40.13
-    _ = cx.bounds2raster(x1, y1, x2, y2, "./test2.tif", ll=True)
+    _ = cx.bounds2raster(
+        x1, y1, x2, y2, "./test2.tif", ll=True, source=cx.providers.CartoDB.Positron
+    )
     f, ax = matplotlib.pyplot.subplots(1)
     ax.set_xlim(x1, x2)
     ax.set_ylim(y1, y2)
@@ -490,14 +537,14 @@ def test_add_basemap_warping_local():
     assert ax.get_xlim() == (x1, x2)
     assert ax.get_ylim() == (y1, y2)
 
-    assert ax.images[0].get_array()[:, :, :3].sum() == pytest.approx(515569833, rel=0.1)
+    assert ax.images[0].get_array()[:, :, :3].sum() == pytest.approx(613344449, rel=0.1)
     assert ax.images[0].get_array().shape == (980, 862, 4)
     assert_array_almost_equal(
-        ax.images[0].get_array()[:, :, :3].mean(), 203.4383860, decimal=0
+        ax.images[0].get_array()[:, :, :3].mean(), 242.0192121, decimal=0
     )
 
-    assert ax.images[0].get_array().sum() == pytest.approx(730014888, rel=0.1)
-    assert_array_almost_equal(ax.images[0].get_array().mean(), 216.0420971, decimal=0)
+    assert ax.images[0].get_array().sum() == pytest.approx(827789504, rel=0.1)
+    assert_array_almost_equal(ax.images[0].get_array().mean(), 244.9777167, decimal=0)
 
 
 @pytest.mark.network
