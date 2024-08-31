@@ -26,7 +26,7 @@ def add_basemap(
     crs=None,
     resampling=Resampling.bilinear,
     zoom_adjust=None,
-    **extra_imshow_args
+    **extra_imshow_args,
 ):
     """
     Add a (web/local) basemap to `ax`.
@@ -78,7 +78,7 @@ def add_basemap(
         `rasterio.enums.Resampling` method
     zoom_adjust : int or None
         [Optional. Default: None]
-        The amount to adjust a chosen zoom level if it is chosen automatically. 
+        The amount to adjust a chosen zoom level if it is chosen automatically.
         Values outside of -1 to 1 are not recommended as they can lead to slow execution.
     **extra_imshow_args :
         Other parameters to be passed to `imshow`.
@@ -132,7 +132,14 @@ def add_basemap(
             )
         # Download image
         image, extent = bounds2img(
-            left, bottom, right, top, zoom=zoom, source=source, ll=False, zoom_adjust=zoom_adjust
+            left,
+            bottom,
+            right,
+            top,
+            zoom=zoom,
+            source=source,
+            ll=False,
+            zoom_adjust=zoom_adjust,
         )
         # Warping
         if crs is not None:
@@ -190,8 +197,12 @@ def add_basemap(
     # Plotting
     if image.shape[2] == 1:
         image = image[:, :, 0]
-    img = ax.imshow(
-        image, extent=extent, interpolation=interpolation, **extra_imshow_args
+    _ = ax.imshow(
+        image,
+        extent=extent,
+        interpolation=interpolation,
+        aspect=ax.get_aspect(),  # GH251
+        **extra_imshow_args,
     )
 
     if reset_extent:

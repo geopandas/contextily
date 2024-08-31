@@ -660,3 +660,24 @@ def test_set_cache_dir(tmpdir):
     fig, ax = matplotlib.pyplot.subplots()
     ax.axis(extent)
     cx.add_basemap(ax)
+
+
+@pytest.mark.network
+def test_aspect():
+    """Test that contextily does not change set aspect"""
+    # Plot boulder bbox as in test_place
+    x1, x2, y1, y2 = [
+        -11740727.544603072,
+        -11701591.786121061,
+        4852834.0517692715,
+        4891969.810251278,
+    ]
+
+    # Test web basemap
+    fig, ax = matplotlib.pyplot.subplots(1)
+    ax.set_xlim(x1, x2)
+    ax.set_ylim(y1, y2)
+    ax.set_aspect(2)
+    cx.add_basemap(ax, zoom=10)
+
+    assert ax.get_aspect() == 2
