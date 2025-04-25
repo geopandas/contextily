@@ -567,7 +567,7 @@ def _sm2ll(x, y):
 def _calculate_zoom(w, s, e, n):
     """Automatically choose a zoom level given a desired number of tiles.
 
-    .. note:: all values are interpreted as latitude / longitutde.
+    .. note:: all values are interpreted as latitude / longitude.
 
     Parameters
     ----------
