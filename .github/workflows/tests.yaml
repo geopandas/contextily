@@ -37,7 +37,7 @@ jobs:
 
     steps:
       - name: checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: setup micromamba
         uses: mamba-org/setup-micromamba@v2
