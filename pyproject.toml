@@ -19,9 +19,13 @@ readme = "README.md"
 classifiers = [
     "License :: OSI Approved :: BSD License",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Framework :: Matplotlib",
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "geopy",
     "matplotlib",
