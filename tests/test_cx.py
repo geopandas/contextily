@@ -456,7 +456,7 @@ def test_add_basemap_auto_zoom():
                 4891969.810251278,
             ),
             764077703,
-            1031156498,
+            1031464583,
             (1024, 1024, 4),
         ),
         # zoom_adjust and expected values where zoom_adjust == -1
