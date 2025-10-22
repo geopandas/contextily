@@ -282,10 +282,16 @@ def bounds2img(
     )
     fetch_tile_fn = memory.cache(_fetch_tile) if use_cache else _fetch_tile
 
-    with tqdm_joblib(get_progress_bar()(total=len(tile_urls), desc="Downloading tiles")) as progress_bar:   
+    with get_progress_bar()(total=len(tile_urls), desc="Downloading tiles") as pbar:
+        def fetch_with_progress(tile_url):
+            result = fetch_tile_fn(tile_url, wait, max_retries)
+            pbar.update(1)
+            return result
+            
         arrays = Parallel(n_jobs=n_connections, prefer=preferred_backend)(
-            delayed(fetch_tile_fn)(tile_url, wait, max_retries) for tile_url in tile_urls
+            delayed(fetch_with_progress)(tile_url) for tile_url in tile_urls
         )
+
     # merge downloaded tiles
     merged, extent = _merge_tiles(tiles, arrays)
     # lon/lat extent --> Spheric Mercator
