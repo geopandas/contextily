@@ -19,6 +19,7 @@ from PIL import Image, UnidentifiedImageError
 from joblib import Memory as _Memory
 from joblib import Parallel, delayed
 from rasterio.transform import from_origin
+from .progress import get_progress_bar
 from rasterio.io import MemoryFile
 from rasterio.vrt import WarpedVRT
 from rasterio.enums import Resampling
@@ -280,9 +281,11 @@ def bounds2img(
         "threads" if (n_connections == 1 or not use_cache) else "processes"
     )
     fetch_tile_fn = memory.cache(_fetch_tile) if use_cache else _fetch_tile
-    arrays = Parallel(n_jobs=n_connections, prefer=preferred_backend)(
-        delayed(fetch_tile_fn)(tile_url, wait, max_retries) for tile_url in tile_urls
-    )
+
+    with tqdm_joblib(get_progress_bar()(total=len(tile_urls), desc="Downloading tiles")) as progress_bar:   
+        arrays = Parallel(n_jobs=n_connections, prefer=preferred_backend)(
+            delayed(fetch_tile_fn)(tile_url, wait, max_retries) for tile_url in tile_urls
+        )
     # merge downloaded tiles
     merged, extent = _merge_tiles(tiles, arrays)
     # lon/lat extent --> Spheric Mercator
