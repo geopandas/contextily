@@ -17,8 +17,9 @@ import numpy as np
 import rasterio as rio
 from PIL import Image, UnidentifiedImageError
 from joblib import Memory as _Memory
-from joblib import Parallel, delayed
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from rasterio.transform import from_origin
+from .progress import get_progress_bar
 from rasterio.io import MemoryFile
 from rasterio.vrt import WarpedVRT
 from rasterio.enums import Resampling
@@ -273,16 +274,28 @@ def bounds2img(
     # download tiles
     if n_connections < 1 or not isinstance(n_connections, int):
         raise ValueError(f"n_connections must be a positive integer value.")
-    # Use threads for a single connection to avoid the overhead of spawning a process. Use processes for multiple
-    # connections if caching is enabled, as threads lead to memory issues when used in combination with the joblib
-    # memory caching (used for the _fetch_tile() function).
-    preferred_backend = (
-        "threads" if (n_connections == 1 or not use_cache) else "processes"
-    )
+
     fetch_tile_fn = memory.cache(_fetch_tile) if use_cache else _fetch_tile
-    arrays = Parallel(n_jobs=n_connections, prefer=preferred_backend)(
-        delayed(fetch_tile_fn)(tile_url, wait, max_retries) for tile_url in tile_urls
-    )
+        
+    arrays = [None] * len(tile_urls)  # Pre-allocate result list
+    with get_progress_bar()(total=len(tile_urls), desc="Downloading tiles") as pbar:
+        with ThreadPoolExecutor(max_workers=n_connections) as executor:
+            # Submit all tasks and store futures with their indices
+            future_to_index = {
+                executor.submit(fetch_tile_fn, url, wait, max_retries): idx
+                for idx, url in enumerate(tile_urls)
+            }
+            
+            # Process completed futures as they finish
+            for future in as_completed(future_to_index):
+                idx = future_to_index[future]
+                try:
+                    arrays[idx] = future.result()
+                except Exception as e:
+                    # Re-raise any exceptions from the worker
+                    raise e from None
+                pbar.update(1)
+
     # merge downloaded tiles
     merged, extent = _merge_tiles(tiles, arrays)
     # lon/lat extent --> Spheric Mercator

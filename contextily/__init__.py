@@ -6,6 +6,7 @@ import xyzservices.providers as providers
 from .place import Place, plot_map
 from .tile import *
 from .plotting import add_basemap, add_attribution
+from .progress import set_progress_bar
 
 from importlib.metadata import PackageNotFoundError, version
 

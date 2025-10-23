@@ -34,7 +34,8 @@ dependencies = [
     "rasterio",
     "requests",
     "joblib",
-    "xyzservices"
+    "xyzservices",
+    "tqdm"
 ]
 
 [project.urls]
