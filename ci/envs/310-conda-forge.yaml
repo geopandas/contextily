@@ -12,6 +12,7 @@ dependencies:
   - requests
   - joblib
   - xyzservices
+  - tqdm
   # testing
   - pip
   - pytest
