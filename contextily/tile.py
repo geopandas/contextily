@@ -17,6 +17,7 @@ import numpy as np
 import rasterio as rio
 from PIL import Image, UnidentifiedImageError
 from joblib import Memory as _Memory
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from rasterio.transform import from_origin
 from .progress import get_progress_bar
 from rasterio.io import MemoryFile
@@ -275,10 +276,7 @@ def bounds2img(
         raise ValueError(f"n_connections must be a positive integer value.")
 
     fetch_tile_fn = memory.cache(_fetch_tile) if use_cache else _fetch_tile
-    
-    # Always use threads for notebook compatibility
-    from concurrent.futures import ThreadPoolExecutor, as_completed
-    
+        
     arrays = [None] * len(tile_urls)  # Pre-allocate result list
     with get_progress_bar()(total=len(tile_urls), desc="Downloading tiles") as pbar:
         with ThreadPoolExecutor(max_workers=n_connections) as executor:
