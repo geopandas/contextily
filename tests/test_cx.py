@@ -10,6 +10,9 @@ import rasterio as rio
 from contextily.tile import _calculate_zoom
 from numpy.testing import assert_array_almost_equal
 import pytest
+from unittest.mock import patch, MagicMock
+import io
+from PIL import Image
 
 TOL = 7
 SEARCH = "boulder"
@@ -115,6 +118,165 @@ def test_bounds2img(n_connections):
             img, ext = cx.bounds2img(
                 w, s, e, n, zoom=4, ll=True, n_connections=n_connections
             )
+
+
+def test_custom_headers():
+    """Test that custom headers are properly passed to tile requests."""
+    w, s, e, n = (
+        -106.6495132446289,
+        25.845197677612305,
+        -93.50721740722656,
+        36.49387741088867,
+    )
+    
+    # Create a mock image to return
+    img_array = np.random.randint(0, 255, (256, 256, 4), dtype=np.uint8)
+    img = Image.fromarray(img_array, mode='RGBA')
+    img_bytes = io.BytesIO()
+    img.save(img_bytes, format='PNG')
+    img_bytes.seek(0)
+    
+    # Create mock response
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.content = img_bytes.read()
+    
+    custom_headers = {
+        "Authorization": "Bearer test-token-123",
+        "X-Custom-Header": "test-value"
+    }
+    
+    with patch('contextily.tile.requests.get', return_value=mock_response) as mock_get:
+        mock_get.return_value.raise_for_status = MagicMock()
+        
+        # Test bounds2img with custom headers
+        # Disable cache to ensure requests.get is actually called
+        img, ext = cx.bounds2img(
+            w, s, e, n,
+            zoom=4,
+            ll=True,
+            headers=custom_headers,
+            use_cache=False,
+            source=cx.providers.CartoDB.Positron
+        )
+        
+        # Verify requests.get was called
+        assert mock_get.called, "requests.get should have been called"
+        
+        # Verify that the headers were passed correctly
+        # The actual call should merge custom headers with the default user-agent
+        call_args = mock_get.call_args
+        headers_used = call_args.kwargs.get('headers', call_args[1].get('headers'))
+        
+        # Check that custom headers are present
+        assert "Authorization" in headers_used
+        assert headers_used["Authorization"] == "Bearer test-token-123"
+        assert "X-Custom-Header" in headers_used
+        assert headers_used["X-Custom-Header"] == "test-value"
+        
+        # Check that the default user-agent is also present
+        assert "user-agent" in headers_used
+        assert headers_used["user-agent"].startswith("contextily-")
+
+
+def test_custom_headers_bounds2raster(tmpdir):
+    """Test that custom headers work with bounds2raster."""
+    w, s, e, n = (
+        -106.6495132446289,
+        25.845197677612305,
+        -93.50721740722656,
+        36.49387741088867,
+    )
+    
+    # Create a mock image to return
+    img_array = np.random.randint(0, 255, (256, 256, 4), dtype=np.uint8)
+    img = Image.fromarray(img_array, mode='RGBA')
+    img_bytes = io.BytesIO()
+    img.save(img_bytes, format='PNG')
+    img_bytes.seek(0)
+    
+    # Create mock response
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.content = img_bytes.read()
+    
+    custom_headers = {
+        "Authorization": "Bearer test-token-456",
+    }
+    
+    output_path = str(tmpdir.join("test_headers.tif"))
+    
+    with patch('contextily.tile.requests.get', return_value=mock_response) as mock_get:
+        mock_get.return_value.raise_for_status = MagicMock()
+        
+        # Test bounds2raster with custom headers
+        # Disable cache to ensure requests.get is actually called
+        _ = cx.bounds2raster(
+            w, s, e, n,
+            output_path,
+            zoom=4,
+            ll=True,
+            headers=custom_headers,
+            use_cache=False,
+            source=cx.providers.CartoDB.Positron
+        )
+        
+        # Verify requests.get was called with correct headers
+        assert mock_get.called
+        call_args = mock_get.call_args
+        headers_used = call_args.kwargs.get('headers', call_args[1].get('headers'))
+        
+        assert "Authorization" in headers_used
+        assert headers_used["Authorization"] == "Bearer test-token-456"
+        assert "user-agent" in headers_used
+
+
+def test_no_custom_headers():
+    """Test that the function works correctly when no custom headers are provided."""
+    w, s, e, n = (
+        -106.6495132446289,
+        25.845197677612305,
+        -93.50721740722656,
+        36.49387741088867,
+    )
+    
+    # Create a mock image to return
+    img_array = np.random.randint(0, 255, (256, 256, 4), dtype=np.uint8)
+    img = Image.fromarray(img_array, mode='RGBA')
+    img_bytes = io.BytesIO()
+    img.save(img_bytes, format='PNG')
+    img_bytes.seek(0)
+    
+    # Create mock response
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.content = img_bytes.read()
+    
+    with patch('contextily.tile.requests.get', return_value=mock_response) as mock_get:
+        mock_get.return_value.raise_for_status = MagicMock()
+        
+        # Test bounds2img without custom headers (default behavior)
+        # Disable cache to ensure requests.get is actually called
+        img, ext = cx.bounds2img(
+            w, s, e, n,
+            zoom=4,
+            ll=True,
+            use_cache=False,
+            source=cx.providers.CartoDB.Positron
+        )
+        
+        # Verify requests.get was called
+        assert mock_get.called
+        
+        # Verify that only the default user-agent header is present
+        call_args = mock_get.call_args
+        headers_used = call_args.kwargs.get('headers', call_args[1].get('headers'))
+        
+        # Should only have the user-agent header
+        assert "user-agent" in headers_used
+        assert headers_used["user-agent"].startswith("contextily-")
+        # Should not have any custom headers
+        assert "Authorization" not in headers_used
 
 
 @pytest.mark.network
