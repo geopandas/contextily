@@ -73,7 +73,7 @@ def bounds2raster(
     path,
     zoom="auto",
     source=None,
-    headers: dict | None = None,
+    headers: dict[str, str] | None = None,
     ll=False,
     wait=0,
     max_retries=2,
@@ -107,7 +107,7 @@ def bounds2raster(
         `rasterio` and all bands are loaded into the basemap.
         IMPORTANT: tiles are assumed to be in the Spherical Mercator
         projection (EPSG:3857), unless the `crs` keyword is specified.
-    headers : dict or None
+    headers : dict[str, str] or None
         [Optional. Default: None]
         Headers to include with requests to the tile server.
     ll : Boolean
@@ -195,7 +195,7 @@ def bounds2img(
     n,
     zoom="auto",
     source=None,
-    headers: dict | None = None,
+    headers: dict[str, str] | None = None,
     ll=False,
     wait=0,
     max_retries=2,
@@ -228,7 +228,7 @@ def bounds2img(
         `rasterio` and all bands are loaded into the basemap.
         IMPORTANT: tiles are assumed to be in the Spherical Mercator
         projection (EPSG:3857), unless the `crs` keyword is specified.
-    headers : dict or None
+    headers : dict[str, str] or None
         [Optional. Default: None]
         Headers to include with requests to the tile server.
     ll : Boolean
@@ -324,7 +324,7 @@ def _process_source(source):
     return provider
 
 
-def _fetch_tile(tile_url, wait, max_retries, headers: dict):
+def _fetch_tile(tile_url, wait, max_retries, headers: dict[str, str]):
     array = _retryer(tile_url, wait, max_retries, headers)
     return array
 
@@ -443,7 +443,7 @@ def _warper(img, transform, s_crs, t_crs, resampling):
     return img, bounds, transform
 
 
-def _retryer(tile_url, wait, max_retries, headers):
+def _retryer(tile_url, wait, max_retries, headers: dict[str, str]):
     """
     Retry a url many times in attempt to get a tile and read the image
 
@@ -458,7 +458,7 @@ def _retryer(tile_url, wait, max_retries, headers):
     max_retries : int
         total number of rejected requests allowed before contextily
         will stop trying to fetch more tiles from a rate-limited API.
-    headers: dict
+    headers: dict[str, str]
         headers to include with request.
 
     Returns
@@ -485,7 +485,7 @@ def _retryer(tile_url, wait, max_retries, headers):
             if max_retries > 0:
                 time.sleep(wait)
                 max_retries -= 1
-                request = _retryer(tile_url, wait, max_retries)
+                request = _retryer(tile_url, wait, max_retries, headers)
             else:
                 raise requests.HTTPError("Connection reset by peer too many times. "
                                          f"Last message was: {request.status_code} "

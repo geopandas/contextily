@@ -45,6 +45,9 @@ class Place(object):
         `rasterio` and all bands are loaded into the basemap.
         IMPORTANT: tiles are assumed to be in the Spherical Mercator
         projection (EPSG:3857), unless the `crs` keyword is specified.
+    headers : dict[str, str] or None
+        [Optional. Default: None]
+        Headers to include with requests to the tile server.
     geocoder : geopy.geocoders
         [Optional. Default: geopy.geocoders.Nominatim()] Geocoder method to process `search`
 
@@ -77,12 +80,14 @@ class Place(object):
         path=None,
         zoom_adjust=None,
         source=None,
+        headers: dict[str, str] | None = None,
         geocoder=gp.geocoders.Nominatim(user_agent=_default_user_agent),
     ):
         self.path = path
         if source is None:
             source = providers.OpenStreetMap.HOT
         self.source = source
+        self.headers = headers
         self.zoom_adjust = zoom_adjust
 
         # Get geocoded values
@@ -119,6 +124,8 @@ class Place(object):
         kwargs = {"ll": True}
         if self.source is not None:
             kwargs["source"] = self.source
+        if self.headers is not None:
+            kwargs["headers"] = self.headers
 
         try:
             if isinstance(self.path, str):
