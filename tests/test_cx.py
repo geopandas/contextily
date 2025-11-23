@@ -807,12 +807,14 @@ def test_attribution():
     txt = cx.add_attribution(ax, "Test")
     assert isinstance(txt, matplotlib.text.Text)
     assert txt.get_text() == "Test"
+    matplotlib.pyplot.close(fig)
 
     # test passthrough font size and kwargs
     fig, ax = matplotlib.pyplot.subplots(1)
     txt = cx.add_attribution(ax, "Test", font_size=15, fontfamily="monospace")
     assert txt.get_size() == 15
     assert txt.get_fontfamily() == ["monospace"]
+    matplotlib.pyplot.close(fig)
 
 
 @pytest.mark.network
