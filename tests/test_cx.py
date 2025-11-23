@@ -279,6 +279,154 @@ def test_no_custom_headers():
         assert "Authorization" not in headers_used
 
 
+def test_place_with_custom_headers():
+    """Test that Place class properly passes custom headers through to bounds2img."""
+    # Create a mock image to return
+    img_array = np.random.randint(0, 255, (256, 256, 4), dtype=np.uint8)
+    img = Image.fromarray(img_array, mode='RGBA')
+    img_bytes = io.BytesIO()
+    img.save(img_bytes, format='PNG')
+    img_bytes.seek(0)
+    
+    # Create mock response
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.content = img_bytes.read()
+    
+    custom_headers = {
+        "X-API-Key": "test-api-key-789",
+    }
+    
+    with patch('contextily.tile.requests.get', return_value=mock_response) as mock_get:
+        mock_get.return_value.raise_for_status = MagicMock()
+        
+        # Create a Place with custom headers
+        loc = cx.Place(
+            SEARCH,
+            zoom_adjust=ADJUST,
+            headers=custom_headers,
+        )
+        
+        # Verify requests.get was called with correct headers
+        assert mock_get.called
+        call_args = mock_get.call_args
+        headers_used = call_args.kwargs.get('headers', call_args[1].get('headers'))
+        
+        assert "X-API-Key" in headers_used
+        assert headers_used["X-API-Key"] == "test-api-key-789"
+        assert "user-agent" in headers_used
+
+
+def test_add_basemap_with_custom_headers():
+    """Test that add_basemap properly passes custom headers through to bounds2img."""
+    # Create a mock image to return
+    img_array = np.random.randint(0, 255, (256, 256, 4), dtype=np.uint8)
+    img = Image.fromarray(img_array, mode='RGBA')
+    img_bytes = io.BytesIO()
+    img.save(img_bytes, format='PNG')
+    img_bytes.seek(0)
+    
+    # Create mock response
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.content = img_bytes.read()
+    
+    custom_headers = {
+        "X-Custom-Auth": "custom-token",
+    }
+    
+    with patch('contextily.tile.requests.get', return_value=mock_response) as mock_get:
+        mock_get.return_value.raise_for_status = MagicMock()
+        
+        # Create a simple plot and add basemap with custom headers
+        x1, x2, y1, y2 = [
+            -11740727.544603072,
+            -11701591.786121061,
+            4852834.0517692715,
+            4891969.810251278,
+        ]
+        
+        fig, ax = matplotlib.pyplot.subplots(1)
+        ax.set_xlim(x1, x2)
+        ax.set_ylim(y1, y2)
+        
+        cx.add_basemap(ax, zoom=10, headers=custom_headers)
+        
+        # Verify requests.get was called with correct headers
+        assert mock_get.called
+        call_args = mock_get.call_args
+        headers_used = call_args.kwargs.get('headers', call_args[1].get('headers'))
+        
+        assert "X-Custom-Auth" in headers_used
+        assert headers_used["X-Custom-Auth"] == "custom-token"
+        assert "user-agent" in headers_used
+        
+        matplotlib.pyplot.close(fig)
+
+
+def test_retryer_error_handling():
+    """Test error handling and retry logic in _retryer function."""
+    from contextily.tile import _retryer
+    import requests
+    
+    # Test 404 error
+    mock_response = MagicMock()
+    mock_response.status_code = 404
+    mock_response.raise_for_status.side_effect = requests.HTTPError("404 Not Found")
+    
+    with patch('contextily.tile.requests.get', return_value=mock_response):
+        with pytest.raises(requests.HTTPError) as exc_info:
+            _retryer("http://example.com/tile.png", wait=0, max_retries=0, headers={})
+        
+        assert "404 error" in str(exc_info.value)
+        assert "http://example.com/tile.png" in str(exc_info.value)
+    
+    # Test retry exhaustion with non-404 error
+    mock_response = MagicMock()
+    mock_response.status_code = 503
+    mock_response.reason = "Service Unavailable"
+    mock_response.url = "http://example.com/tile.png"
+    mock_response.raise_for_status.side_effect = requests.HTTPError("503 Service Unavailable")
+    
+    with patch('contextily.tile.requests.get', return_value=mock_response):
+        with pytest.raises(requests.HTTPError) as exc_info:
+            _retryer("http://example.com/tile.png", wait=0, max_retries=0, headers={})
+        
+        assert "Connection reset by peer too many times" in str(exc_info.value)
+        assert "503" in str(exc_info.value)
+
+
+def test_retryer_with_retries():
+    """Test that _retryer actually retries when max_retries > 0 and passes headers."""
+    from contextily.tile import _retryer
+    import requests
+    
+    # Test that retry logic is executed with proper headers
+    mock_response = MagicMock()
+    mock_response.status_code = 503
+    mock_response.reason = "Service Unavailable"
+    mock_response.url = "http://example.com/tile.png"
+    mock_response.raise_for_status.side_effect = requests.HTTPError("503")
+    
+    custom_headers = {"X-API-Key": "test-key"}
+    
+    with patch('contextily.tile.requests.get', return_value=mock_response) as mock_get:
+        with patch('contextily.tile.time.sleep') as mock_sleep:
+            # Should exhaust retries and raise exception
+            with pytest.raises(requests.HTTPError) as exc_info:
+                _retryer("http://example.com/tile.png", wait=1, max_retries=2, headers=custom_headers)
+            
+            # Verify sleep was called (indicating retry logic executed)
+            assert mock_sleep.call_count == 2
+            # Verify each call to requests.get included the custom headers
+            for call in mock_get.call_args_list:
+                headers_used = call.kwargs.get('headers', call[1].get('headers'))
+                assert "X-API-Key" in headers_used
+                assert headers_used["X-API-Key"] == "test-key"
+            
+            assert "Connection reset by peer too many times" in str(exc_info.value)
+
+
 @pytest.mark.network
 def test_warp_tiles():
     w, s, e, n = (
