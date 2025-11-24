@@ -25,7 +25,7 @@ jobs:
           - ci/envs/312-latest-conda-forge.yaml
           - ci/envs/313-latest-conda-forge.yaml
         include:
-          - os: macos-13
+          - os: macos-15-intel
             environment-file: ci/envs/313-latest-conda-forge.yaml
           - os: macos-latest # apple silicon
             environment-file: ci/envs/313-latest-conda-forge.yaml
