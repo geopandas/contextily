@@ -19,6 +19,7 @@ def add_basemap(
     ax,
     zoom=ZOOM,
     source=None,
+    headers=None,
     interpolation=INTERPOLATION,
     attribution=None,
     attribution_size=ATTRIBUTION_SIZE,
@@ -50,6 +51,9 @@ def add_basemap(
         the file is read with `rasterio` and all bands are loaded into the basemap.
         IMPORTANT: tiles are assumed to be in the Spherical Mercator projection
         (EPSG:3857), unless the `crs` keyword is specified.
+    headers : dict or None
+        [Optional. Default: None]
+        Headers to include with requests to the tile server.
     interpolation : str
         [Optional. Default='bilinear'] Interpolation algorithm to be passed
         to `imshow`. See `matplotlib.pyplot.imshow` for further details.
@@ -138,6 +142,7 @@ def add_basemap(
             top,
             zoom=zoom,
             source=source,
+            headers=headers,
             ll=False,
             zoom_adjust=zoom_adjust,
         )

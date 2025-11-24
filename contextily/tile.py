@@ -73,6 +73,7 @@ def bounds2raster(
     path,
     zoom="auto",
     source=None,
+    headers: dict[str, str] | None = None,
     ll=False,
     wait=0,
     max_retries=2,
@@ -106,6 +107,9 @@ def bounds2raster(
         `rasterio` and all bands are loaded into the basemap.
         IMPORTANT: tiles are assumed to be in the Spherical Mercator
         projection (EPSG:3857), unless the `crs` keyword is specified.
+    headers : dict[str, str] or None
+        [Optional. Default: None]
+        Headers to include with requests to the tile server.
     ll : Boolean
         [Optional. Default: False] If True, `w`, `s`, `e`, `n` are
         assumed to be lon/lat as opposed to Spherical Mercator.
@@ -136,6 +140,9 @@ def bounds2raster(
     extent : tuple
         Bounding box [minX, maxX, minY, maxY] of the returned image
     """
+    if headers is None:
+        headers = {}
+
     if not ll:
         # Convert w, s, e, n into lon/lat
         w, s = _sm2ll(w, s)
@@ -148,6 +155,7 @@ def bounds2raster(
         n,
         zoom=zoom,
         source=source,
+        headers=headers,
         ll=True,
         n_connections=n_connections,
         use_cache=use_cache,
@@ -187,6 +195,7 @@ def bounds2img(
     n,
     zoom="auto",
     source=None,
+    headers: dict[str, str] | None = None,
     ll=False,
     wait=0,
     max_retries=2,
@@ -219,6 +228,9 @@ def bounds2img(
         `rasterio` and all bands are loaded into the basemap.
         IMPORTANT: tiles are assumed to be in the Spherical Mercator
         projection (EPSG:3857), unless the `crs` keyword is specified.
+    headers : dict[str, str] or None
+        [Optional. Default: None]
+        Headers to include with requests to the tile server.
     ll : Boolean
         [Optional. Default: False] If True, `w`, `s`, `e`, `n` are
         assumed to be lon/lat as opposed to Spherical Mercator.
@@ -253,6 +265,9 @@ def bounds2img(
     extent : tuple
         Bounding box [minX, maxX, minY, maxY] of the returned image
     """
+    if headers is None:
+        headers = {}
+
     if not ll:
         # Convert w, s, e, n into lon/lat
         w, s = _sm2ll(w, s)
@@ -281,7 +296,7 @@ def bounds2img(
     )
     fetch_tile_fn = memory.cache(_fetch_tile) if use_cache else _fetch_tile
     arrays = Parallel(n_jobs=n_connections, prefer=preferred_backend)(
-        delayed(fetch_tile_fn)(tile_url, wait, max_retries) for tile_url in tile_urls
+        delayed(fetch_tile_fn)(tile_url, wait, max_retries, headers) for tile_url in tile_urls
     )
     # merge downloaded tiles
     merged, extent = _merge_tiles(tiles, arrays)
@@ -309,8 +324,8 @@ def _process_source(source):
     return provider
 
 
-def _fetch_tile(tile_url, wait, max_retries):
-    array = _retryer(tile_url, wait, max_retries)
+def _fetch_tile(tile_url, wait, max_retries, headers: dict[str, str]):
+    array = _retryer(tile_url, wait, max_retries, headers)
     return array
 
 
@@ -428,7 +443,7 @@ def _warper(img, transform, s_crs, t_crs, resampling):
     return img, bounds, transform
 
 
-def _retryer(tile_url, wait, max_retries):
+def _retryer(tile_url, wait, max_retries, headers: dict[str, str]):
     """
     Retry a url many times in attempt to get a tile and read the image
 
@@ -443,13 +458,15 @@ def _retryer(tile_url, wait, max_retries):
     max_retries : int
         total number of rejected requests allowed before contextily
         will stop trying to fetch more tiles from a rate-limited API.
+    headers: dict[str, str]
+        headers to include with request.
 
     Returns
     -------
     array of the tile
     """
     try:
-        request = requests.get(tile_url, headers={"user-agent": USER_AGENT})
+        request = requests.get(tile_url, headers={"user-agent": USER_AGENT, **headers})
         request.raise_for_status()
         with io.BytesIO(request.content) as image_stream:
             image = Image.open(image_stream).convert("RGBA")
@@ -468,7 +485,7 @@ def _retryer(tile_url, wait, max_retries):
             if max_retries > 0:
                 time.sleep(wait)
                 max_retries -= 1
-                request = _retryer(tile_url, wait, max_retries)
+                request = _retryer(tile_url, wait, max_retries, headers)
             else:
                 raise requests.HTTPError("Connection reset by peer too many times. "
                                          f"Last message was: {request.status_code} "
