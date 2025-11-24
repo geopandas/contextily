@@ -279,6 +279,60 @@ def test_no_custom_headers():
         assert "Authorization" not in headers_used
 
 
+def test_custom_user_agent_override():
+    """Test that a custom user-agent header overrides the default one."""
+    w, s, e, n = (
+        -106.6495132446289,
+        25.845197677612305,
+        -93.50721740722656,
+        36.49387741088867,
+    )
+    
+    # Create a mock image to return
+    img_array = np.random.randint(0, 255, (256, 256, 4), dtype=np.uint8)
+    img = Image.fromarray(img_array, mode='RGBA')
+    img_bytes = io.BytesIO()
+    img.save(img_bytes, format='PNG')
+    img_bytes.seek(0)
+    
+    # Create mock response
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.content = img_bytes.read()
+    
+    custom_user_agent = "MyCustomAgent/1.0"
+    custom_headers = {
+        "user-agent": custom_user_agent
+    }
+    
+    with patch('contextily.tile.requests.get', return_value=mock_response) as mock_get:
+        mock_get.return_value.raise_for_status = MagicMock()
+        
+        # Test bounds2img with custom user-agent header
+        # Disable cache to ensure requests.get is actually called
+        img, ext = cx.bounds2img(
+            w, s, e, n,
+            zoom=4,
+            ll=True,
+            headers=custom_headers,
+            use_cache=False,
+            source=cx.providers.CartoDB.Positron
+        )
+        
+        # Verify requests.get was called
+        assert mock_get.called, "requests.get should have been called"
+        
+        # Verify that the custom user-agent was used, not the default
+        call_args = mock_get.call_args
+        headers_used = call_args.kwargs.get('headers', call_args[1].get('headers'))
+        
+        # Check that custom user-agent is present
+        assert "user-agent" in headers_used
+        assert headers_used["user-agent"] == custom_user_agent
+        # Verify it's NOT the default contextily user-agent
+        assert not headers_used["user-agent"].startswith("contextily-")
+
+
 def test_place_with_custom_headers():
     """Test that Place class properly passes custom headers through to bounds2img."""
     # Create a mock image to return
