@@ -639,24 +639,6 @@ def test_place():
     ax = loc.plot(ax=ax)
     assert_array_almost_equal(loc.bbox_map, ax.images[0].get_extent())
 
-
-@pytest.mark.network
-def test_plot_map():
-    # Place as a search
-    loc = cx.Place(SEARCH, zoom_adjust=ADJUST)
-    w, e, s, n = loc.bbox_map
-    ax = cx.plot_map(loc)
-
-    assert ax.get_title() == loc.place
-    ax = cx.plot_map(loc.im, loc.bbox)
-    assert_array_almost_equal(loc.bbox, ax.images[0].get_extent())
-
-    # Place as an image
-    img, ext = cx.bounds2img(w, s, e, n, zoom=10)
-    ax = cx.plot_map(img, ext)
-    assert_array_almost_equal(ext, ax.images[0].get_extent())
-
-
 # Plotting
 
 

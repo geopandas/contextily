@@ -32,5 +32,3 @@ Geocoding and plotting places
 
 .. automethod:: contextily.Place.plot
 
-.. autofunction:: contextily.plot_map
-
