@@ -3,7 +3,7 @@
 """
 
 import xyzservices.providers as providers
-from .place import Place, plot_map
+from .place import Place
 from .tile import *
 from .plotting import add_basemap, add_attribution
 
