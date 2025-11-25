@@ -333,6 +333,7 @@ def test_custom_user_agent_override():
         assert not headers_used["user-agent"].startswith("contextily-")
 
 
+@pytest.mark.network
 def test_place_with_custom_headers():
     """Test that Place class properly passes custom headers through to bounds2img."""
     # Create a mock image to return
