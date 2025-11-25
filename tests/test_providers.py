@@ -16,7 +16,7 @@ def test_providers():
         cx.providers.OpenStreetMap.Mapnik,
         cx.providers.NASAGIBS.ViirsEarthAtNight2012,
     ]:
-        cx.bounds2img(w, s, e, n, 4, source=provider, ll=True)
+        cx.bounds2img(w, s, e, n, 4, source=provider, ll=True, max_retries=20)
 
 def test_invalid_provider():
     w, s, e, n = (-106.649, 25.845, -93.507, 36.494)
