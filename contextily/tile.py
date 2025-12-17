@@ -79,6 +79,7 @@ def bounds2raster(
     max_retries=2,
     n_connections=1,
     use_cache=True,
+    timeout=None
 ):
     """
     Take bounding box and zoom, and write tiles into a raster file in
@@ -132,6 +133,10 @@ def bounds2raster(
         If False, caching of the downloaded tiles will be disabled. This can be useful in resource constrained
         environments, especially when using n_connections > 1, or when a tile provider's terms of use don't allow
         caching.
+    timeout : float or tuple
+        [Optional. Default: None] How many seconds to wait for the 
+        server to send data before giving up, as a float, or a 
+        (connect timeout, read timeout) tuple.
 
     Returns
     -------
@@ -159,6 +164,7 @@ def bounds2raster(
         ll=True,
         n_connections=n_connections,
         use_cache=use_cache,
+        timeout=timeout
     )
 
     # Write
@@ -202,6 +208,7 @@ def bounds2img(
     n_connections=1,
     use_cache=True,
     zoom_adjust=None,
+    timeout=None,
 ):
     """
     Take bounding box and zoom and return an image with all the tiles
@@ -257,6 +264,10 @@ def bounds2img(
         [Optional. Default: None]
         The amount to adjust a chosen zoom level if it is chosen automatically.
         Values outside of -1 to 1 are not recommended as they can lead to slow execution.
+    timeout : float or tuple
+        [Optional. Default: None] How many seconds to wait for the 
+        server to send data before giving up, as a float, or a 
+        (connect timeout, read timeout) tuple.
 
     Returns
     -------
@@ -296,7 +307,7 @@ def bounds2img(
     )
     fetch_tile_fn = memory.cache(_fetch_tile) if use_cache else _fetch_tile
     arrays = Parallel(n_jobs=n_connections, prefer=preferred_backend)(
-        delayed(fetch_tile_fn)(tile_url, wait, max_retries, headers) for tile_url in tile_urls
+        delayed(fetch_tile_fn)(tile_url, wait, max_retries, headers, timeout=timeout) for tile_url in tile_urls
     )
     # merge downloaded tiles
     merged, extent = _merge_tiles(tiles, arrays)
@@ -324,8 +335,8 @@ def _process_source(source):
     return provider
 
 
-def _fetch_tile(tile_url, wait, max_retries, headers: dict[str, str]):
-    array = _retryer(tile_url, wait, max_retries, headers)
+def _fetch_tile(tile_url, wait, max_retries, headers: dict[str, str], timeout=None):
+    array = _retryer(tile_url, wait, max_retries, headers, timeout=timeout)
     return array
 
 
@@ -443,7 +454,7 @@ def _warper(img, transform, s_crs, t_crs, resampling):
     return img, bounds, transform
 
 
-def _retryer(tile_url, wait, max_retries, headers: dict[str, str]):
+def _retryer(tile_url, wait, max_retries, headers: dict[str, str], timeout=None):
     """
     Retry a url many times in attempt to get a tile and read the image
 
@@ -460,13 +471,20 @@ def _retryer(tile_url, wait, max_retries, headers: dict[str, str]):
         will stop trying to fetch more tiles from a rate-limited API.
     headers: dict[str, str]
         headers to include with request.
+    timeout : float or tuple
+        [Optional. Default=None] How many seconds to wait for the 
+        server to send data before giving up, as a float, or a 
+        (connect timeout, read timeout) tuple.
 
     Returns
     -------
     array of the tile
     """
     try:
-        request = requests.get(tile_url, headers={"user-agent": USER_AGENT, **headers})
+        request = requests.get(
+            tile_url, 
+            headers={"user-agent": USER_AGENT, **headers},
+            timeout=timeout)
         request.raise_for_status()
         with io.BytesIO(request.content) as image_stream:
             image = Image.open(image_stream).convert("RGBA")
@@ -485,7 +503,7 @@ def _retryer(tile_url, wait, max_retries, headers: dict[str, str]):
             if max_retries > 0:
                 time.sleep(wait)
                 max_retries -= 1
-                request = _retryer(tile_url, wait, max_retries, headers)
+                request = _retryer(tile_url, wait, max_retries, headers, timeout=timeout)
             else:
                 raise requests.HTTPError("Connection reset by peer too many times. "
                                          f"Last message was: {request.status_code} "

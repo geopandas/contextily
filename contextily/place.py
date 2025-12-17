@@ -71,6 +71,10 @@ class Place(object):
     bbox_map : tuple
         The bounding box of the returned image, expressed in Web Mercator, with the
         following order: [minX, minY, maxX, maxY]
+    timeout : float or tuple
+        [Optional. Default: None] How many seconds to wait for the 
+        server to send data before giving up, as a float, or a 
+        (connect timeout, read timeout) tuple.
     """
 
     def __init__(
@@ -82,6 +86,7 @@ class Place(object):
         source=None,
         headers: dict[str, str] | None = None,
         geocoder=gp.geocoders.Nominatim(user_agent=_default_user_agent),
+        timeout=None
     ):
         self.path = path
         if source is None:
@@ -107,6 +112,7 @@ class Place(object):
         self.latitude = resp.latitude
         self.longitude = resp.longitude
         self.geocode = resp
+        self.timeout = timeout
 
         # Get map params
         self.zoom = (
@@ -130,16 +136,19 @@ class Place(object):
         try:
             if isinstance(self.path, str):
                 im, bbox = bounds2raster(
-                    self.w, self.s, self.e, self.n, self.path, zoom=self.zoom, **kwargs
+                    self.w, self.s, self.e, self.n, 
+                    self.path, 
+                    zoom=self.zoom, timeout=self.timeout, **kwargs
                 )
             else:
                 im, bbox = bounds2img(
-                    self.w, self.s, self.e, self.n, self.zoom, **kwargs
+                    self.w, self.s, self.e, self.n, 
+                    zoom=self.zoom, timeout=self.timeout, **kwargs
                 )
         except Exception as err:
             raise ValueError(
-                "Could not retrieve map with parameters: {}, {}, {}, {}, zoom={}\n{}\nError: {}".format(
-                    self.w, self.s, self.e, self.n, self.zoom, kwargs, err
+                "Could not retrieve map with parameters: {}, {}, {}, {}, zoom={}, timeout={}\n{}\nError: {}".format(
+                    self.w, self.s, self.e, self.n, self.zoom, self.timeout, kwargs, err
                 )
             )
 
