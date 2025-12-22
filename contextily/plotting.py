@@ -27,6 +27,7 @@ def add_basemap(
     crs=None,
     resampling=Resampling.bilinear,
     zoom_adjust=None,
+    timeout=None,
     **extra_imshow_args,
 ):
     """
@@ -84,6 +85,10 @@ def add_basemap(
         [Optional. Default: None]
         The amount to adjust a chosen zoom level if it is chosen automatically.
         Values outside of -1 to 1 are not recommended as they can lead to slow execution.
+    timeout : float or tuple
+        [Optional. Default=None] How many seconds to wait for the 
+        server to send data before giving up, as a float, or a 
+        (connect timeout, read timeout) tuple.
     **extra_imshow_args :
         Other parameters to be passed to `imshow`.
 
@@ -145,6 +150,7 @@ def add_basemap(
             headers=headers,
             ll=False,
             zoom_adjust=zoom_adjust,
+            timeout=timeout
         )
         # Warping
         if crs is not None:
