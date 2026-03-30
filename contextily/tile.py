@@ -326,7 +326,7 @@ def _process_source(source):
         provider = TileProvider(url=source, attribution="", name="url")
     elif not isinstance(source, dict):
         raise TypeError(
-            "The 'url' needs to be a xyzservices.TileProvider object or string"
+            "The 'url' needs to be an xyzservices.TileProvider object or string"
         )
     elif "url" not in source:
         raise ValueError("The 'url' dict should at least contain a 'url' key")
