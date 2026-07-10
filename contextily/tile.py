@@ -503,7 +503,7 @@ def _retryer(tile_url, wait, max_retries, headers: dict[str, str], timeout=None)
             if max_retries > 0:
                 time.sleep(wait)
                 max_retries -= 1
-                request = _retryer(tile_url, wait, max_retries, headers, timeout=timeout)
+                return _retryer(tile_url, wait, max_retries, headers, timeout=timeout)
             else:
                 raise requests.HTTPError("Connection reset by peer too many times. "
                                          f"Last message was: {request.status_code} "
@@ -712,6 +712,14 @@ def _merge_tiles(tiles, arrays):
 
     # get indices starting at zero
     indices = tile_xys - tile_xys.min(axis=0)
+
+    # guard against tiles that failed to download (see GH#252)
+    if any(arr is None for arr in arrays):
+        raise ValueError(
+            "One or more tiles could not be downloaded (the tile array is "
+            "None). Try a lower zoom level or check that the tile provider is "
+            "reachable."
+        )
 
     # the shape of individual tile images
     h, w, d = arrays[0].shape

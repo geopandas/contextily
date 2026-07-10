@@ -7,7 +7,8 @@ import numpy as np
 import mercantile as mt
 import pytest
 import rasterio as rio
-from contextily.tile import _calculate_zoom
+import requests
+from contextily.tile import _calculate_zoom, _merge_tiles, _retryer
 from numpy.testing import assert_array_almost_equal
 from unittest.mock import patch, MagicMock
 import io
@@ -1044,3 +1045,61 @@ def test_aspect():
     cx.add_basemap(ax, zoom=10)
 
     assert ax.get_aspect() == 2
+
+
+def test_merge_tiles_raises_clear_error_for_missing_tile():
+    """A tile that failed to download (None) raises a clear ValueError from
+    _merge_tiles instead of an AttributeError/TypeError (see GH#252)."""
+    tiles = [mt.Tile(0, 0, 1), mt.Tile(1, 0, 1)]
+    valid = np.zeros((256, 256, 4), dtype=np.uint8)
+    # the first tile is missing (was AttributeError on arrays[0].shape)
+    with pytest.raises(ValueError, match="could not be downloaded"):
+        _merge_tiles(tiles, [None, valid])
+    # a later tile is missing (was TypeError on the assignment)
+    with pytest.raises(ValueError, match="could not be downloaded"):
+        _merge_tiles(tiles, [valid, None])
+
+
+def test_retryer_returns_array_after_successful_retry():
+    """_retryer returns the fetched array (not None) when an initial non-404
+    failure is followed by a successful retry (see GH#252)."""
+    img_array = np.random.randint(0, 255, (256, 256, 4), dtype=np.uint8)
+    buf = io.BytesIO()
+    Image.fromarray(img_array, mode="RGBA").save(buf, format="PNG")
+
+    failed = MagicMock()
+    failed.status_code = 500
+    failed.raise_for_status.side_effect = requests.HTTPError("500 Server Error")
+
+    succeeded = MagicMock()
+    succeeded.status_code = 200
+    succeeded.content = buf.getvalue()
+    succeeded.raise_for_status = MagicMock()
+
+    with patch(
+        "contextily.tile.requests.get", side_effect=[failed, succeeded]
+    ) as mock_get:
+        result = _retryer(
+            "https://example.com/0/0/0.png", wait=0, max_retries=2, headers={}
+        )
+
+    assert mock_get.call_count == 2
+    assert isinstance(result, np.ndarray)
+    assert result.shape == (256, 256, 4)
+
+
+def test_retryer_raises_when_retries_exhausted():
+    """When retries are exhausted on a non-404 failure, _retryer raises rather
+    than returning None (guards the else-branch touched in GH#252)."""
+    failed = MagicMock()
+    failed.status_code = 500
+    failed.raise_for_status.side_effect = requests.HTTPError("500 Server Error")
+
+    with patch("contextily.tile.requests.get", return_value=failed):
+        with pytest.raises(requests.HTTPError):
+            _retryer(
+                "https://example.com/0/0/0.png",
+                wait=0,
+                max_retries=0,
+                headers={},
+            )
