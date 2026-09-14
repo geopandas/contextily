@@ -4,14 +4,10 @@ import geopy as gp
 import numpy as np
 import matplotlib.pyplot as plt
 
-from .tile import howmany, bounds2raster, bounds2img, _calculate_zoom
+from .tile import howmany, bounds2raster, bounds2img, _calculate_zoom, _get_user_agent
 from .plotting import INTERPOLATION, ZOOM, add_attribution
 from . import providers
 from xyzservices import TileProvider
-
-# Set user ID for Nominatim
-_val = np.random.randint(1000000)
-_default_user_agent = f"contextily_user_{_val}"
 
 
 class Place(object):
@@ -47,7 +43,11 @@ class Place(object):
         projection (EPSG:3857), unless the `crs` keyword is specified.
     headers : dict[str, str] or None
         [Optional. Default: None]
-        Headers to include with requests to the tile server.
+        Headers to include with requests to the tile server, like ``"Authorization"``,
+        or ``"user-agent"``. Alternatively, ``"user-agent"`` can be specified as an 
+        environment variable ``CONTEXTILY_USER_AGENT``. The user agent specified via
+        ``headers`` will override it. Note that some providers (e.g. OpenStreetMap)
+        explicitly require custom user agent to be set.
     geocoder : geopy.geocoders
         [Optional. Default: geopy.geocoders.Nominatim()] Geocoder method to process `search`
 
@@ -72,8 +72,8 @@ class Place(object):
         The bounding box of the returned image, expressed in Web Mercator, with the
         following order: [minX, minY, maxX, maxY]
     timeout : float or tuple
-        [Optional. Default: None] How many seconds to wait for the 
-        server to send data before giving up, as a float, or a 
+        [Optional. Default: None] How many seconds to wait for the
+        server to send data before giving up, as a float, or a
         (connect timeout, read timeout) tuple.
     """
 
@@ -85,8 +85,8 @@ class Place(object):
         zoom_adjust=None,
         source=None,
         headers: dict[str, str] | None = None,
-        geocoder=gp.geocoders.Nominatim(user_agent=_default_user_agent),
-        timeout=None
+        geocoder=gp.geocoders.Nominatim(user_agent=_get_user_agent()),
+        timeout=None,
     ):
         self.path = path
         if source is None:
@@ -136,14 +136,24 @@ class Place(object):
         try:
             if isinstance(self.path, str):
                 im, bbox = bounds2raster(
-                    self.w, self.s, self.e, self.n, 
-                    self.path, 
-                    zoom=self.zoom, timeout=self.timeout, **kwargs
+                    self.w,
+                    self.s,
+                    self.e,
+                    self.n,
+                    self.path,
+                    zoom=self.zoom,
+                    timeout=self.timeout,
+                    **kwargs,
                 )
             else:
                 im, bbox = bounds2img(
-                    self.w, self.s, self.e, self.n, 
-                    zoom=self.zoom, timeout=self.timeout, **kwargs
+                    self.w,
+                    self.s,
+                    self.e,
+                    self.n,
+                    zoom=self.zoom,
+                    timeout=self.timeout,
+                    **kwargs,
                 )
         except Exception as err:
             raise ValueError(

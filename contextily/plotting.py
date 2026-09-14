@@ -54,7 +54,11 @@ def add_basemap(
         (EPSG:3857), unless the `crs` keyword is specified.
     headers : dict or None
         [Optional. Default: None]
-        Headers to include with requests to the tile server.
+        Headers to include with requests to the tile server, like ``"Authorization"``,
+        or ``"user-agent"``. Alternatively, ``"user-agent"`` can be specified as an 
+        environment variable ``CONTEXTILY_USER_AGENT``. The user agent specified via
+        ``headers`` will override it. Note that some providers (e.g. OpenStreetMap)
+        explicitly require custom user agent to be set.
     interpolation : str
         [Optional. Default='bilinear'] Interpolation algorithm to be passed
         to `imshow`. See `matplotlib.pyplot.imshow` for further details.

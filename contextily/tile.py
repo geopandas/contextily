@@ -2,16 +2,16 @@
 
 from __future__ import absolute_import, division, print_function
 
-import uuid
-
 import mercantile as mt
 import requests
 import atexit
 import io
 import time
+import os
 import shutil
 import tempfile
 import warnings
+from importlib.metadata import PackageNotFoundError, version
 
 import numpy as np
 import rasterio as rio
@@ -35,7 +35,17 @@ __all__ = [
 ]
 
 
-USER_AGENT = "contextily-" + uuid.uuid4().hex
+def _get_user_agent():
+    try:
+        contextily_version = version("contextily")
+    except PackageNotFoundError:
+        contextily_version = "unknown"
+    user_agent = os.environ.get(
+        "CONTEXTILY_USER_AGENT",
+        f"contextily/{contextily_version} (+https://github.com/geopandas/contextily)",
+    )
+    return user_agent
+
 
 tmpdir = tempfile.mkdtemp()
 memory = _Memory(tmpdir, verbose=0)
@@ -79,7 +89,7 @@ def bounds2raster(
     max_retries=2,
     n_connections=1,
     use_cache=True,
-    timeout=None
+    timeout=None,
 ):
     """
     Take bounding box and zoom, and write tiles into a raster file in
@@ -110,7 +120,11 @@ def bounds2raster(
         projection (EPSG:3857), unless the `crs` keyword is specified.
     headers : dict[str, str] or None
         [Optional. Default: None]
-        Headers to include with requests to the tile server.
+        Headers to include with requests to the tile server, like ``"Authorization"``,
+        or ``"user-agent"``. Alternatively, ``"user-agent"`` can be specified as an 
+        environment variable ``CONTEXTILY_USER_AGENT``. The user agent specified via
+        ``headers`` will override it. Note that some providers (e.g. OpenStreetMap)
+        explicitly require custom user agent to be set.
     ll : Boolean
         [Optional. Default: False] If True, `w`, `s`, `e`, `n` are
         assumed to be lon/lat as opposed to Spherical Mercator.
@@ -134,8 +148,8 @@ def bounds2raster(
         environments, especially when using n_connections > 1, or when a tile provider's terms of use don't allow
         caching.
     timeout : float or tuple
-        [Optional. Default: None] How many seconds to wait for the 
-        server to send data before giving up, as a float, or a 
+        [Optional. Default: None] How many seconds to wait for the
+        server to send data before giving up, as a float, or a
         (connect timeout, read timeout) tuple.
 
     Returns
@@ -164,7 +178,7 @@ def bounds2raster(
         ll=True,
         n_connections=n_connections,
         use_cache=use_cache,
-        timeout=timeout
+        timeout=timeout,
     )
 
     # Write
@@ -237,7 +251,11 @@ def bounds2img(
         projection (EPSG:3857), unless the `crs` keyword is specified.
     headers : dict[str, str] or None
         [Optional. Default: None]
-        Headers to include with requests to the tile server.
+        Headers to include with requests to the tile server, like ``"Authorization"``,
+        or ``"user-agent"``. Alternatively, ``"user-agent"`` can be specified as an 
+        environment variable ``CONTEXTILY_USER_AGENT``. The user agent specified via
+        ``headers`` will override it. Note that some providers (e.g. OpenStreetMap)
+        explicitly require custom user agent to be set.
     ll : Boolean
         [Optional. Default: False] If True, `w`, `s`, `e`, `n` are
         assumed to be lon/lat as opposed to Spherical Mercator.
@@ -265,8 +283,8 @@ def bounds2img(
         The amount to adjust a chosen zoom level if it is chosen automatically.
         Values outside of -1 to 1 are not recommended as they can lead to slow execution.
     timeout : float or tuple
-        [Optional. Default: None] How many seconds to wait for the 
-        server to send data before giving up, as a float, or a 
+        [Optional. Default: None] How many seconds to wait for the
+        server to send data before giving up, as a float, or a
         (connect timeout, read timeout) tuple.
 
     Returns
@@ -307,7 +325,8 @@ def bounds2img(
     )
     fetch_tile_fn = memory.cache(_fetch_tile) if use_cache else _fetch_tile
     arrays = Parallel(n_jobs=n_connections, prefer=preferred_backend)(
-        delayed(fetch_tile_fn)(tile_url, wait, max_retries, headers, timeout=timeout) for tile_url in tile_urls
+        delayed(fetch_tile_fn)(tile_url, wait, max_retries, headers, timeout=timeout)
+        for tile_url in tile_urls
     )
     # merge downloaded tiles
     merged, extent = _merge_tiles(tiles, arrays)
@@ -472,8 +491,8 @@ def _retryer(tile_url, wait, max_retries, headers: dict[str, str], timeout=None)
     headers: dict[str, str]
         headers to include with request.
     timeout : float or tuple
-        [Optional. Default=None] How many seconds to wait for the 
-        server to send data before giving up, as a float, or a 
+        [Optional. Default=None] How many seconds to wait for the
+        server to send data before giving up, as a float, or a
         (connect timeout, read timeout) tuple.
 
     Returns
@@ -482,9 +501,8 @@ def _retryer(tile_url, wait, max_retries, headers: dict[str, str], timeout=None)
     """
     try:
         request = requests.get(
-            tile_url, 
-            headers={"user-agent": USER_AGENT, **headers},
-            timeout=timeout)
+            tile_url, headers={"user-agent": _get_user_agent(), **headers}, timeout=timeout
+        )
         request.raise_for_status()
         with io.BytesIO(request.content) as image_stream:
             image = Image.open(image_stream).convert("RGBA")
@@ -505,9 +523,12 @@ def _retryer(tile_url, wait, max_retries, headers: dict[str, str], timeout=None)
                 max_retries -= 1
                 return _retryer(tile_url, wait, max_retries, headers, timeout=timeout)
             else:
-                raise requests.HTTPError("Connection reset by peer too many times. "
-                                         f"Last message was: {request.status_code} "
-                                         f"Error: {request.reason} for url: {request.url}")
+                raise requests.HTTPError(
+                    "Connection reset by peer too many times. "
+                    f"Last message was: {request.status_code} "
+                    f"Error: {request.reason} for url: {request.url}"
+                )
+
 
 def howmany(w, s, e, n, zoom, verbose=True, ll=False):
     """

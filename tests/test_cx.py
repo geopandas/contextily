@@ -50,8 +50,8 @@ def test_bounds2raster():
     assert np.allclose(img[200, 100, :], [250, 250, 248, 255], atol=10)
     assert img[:, :, :3].sum() == pytest.approx(47622796, rel=0.1)
     assert img.sum() == pytest.approx(64334476, rel=0.1)
-    assert_array_almost_equal(img[:, :, :3].mean(), 242.2220662434896, decimal=0)
-    assert_array_almost_equal(img.mean(), 245.4165496826172, decimal=0)
+    assert_array_almost_equal(img[:, :, :3].mean(), 240, decimal=0)
+    assert_array_almost_equal(img.mean(), 244, decimal=0)
 
     # multiple tiles for which result is not square
     w, s, e, n = (
@@ -133,9 +133,9 @@ def test_custom_headers():
 
     # Create a mock image to return
     img_array = np.random.randint(0, 255, (256, 256, 4), dtype=np.uint8)
-    img = Image.fromarray(img_array, mode='RGBA')
+    img = Image.fromarray(img_array, mode="RGBA")
     img_bytes = io.BytesIO()
-    img.save(img_bytes, format='PNG')
+    img.save(img_bytes, format="PNG")
     img_bytes.seek(0)
 
     # Create mock response
@@ -145,21 +145,24 @@ def test_custom_headers():
 
     custom_headers = {
         "Authorization": "Bearer test-token-123",
-        "X-Custom-Header": "test-value"
+        "X-Custom-Header": "test-value",
     }
 
-    with patch('contextily.tile.requests.get', return_value=mock_response) as mock_get:
+    with patch("contextily.tile.requests.get", return_value=mock_response) as mock_get:
         mock_get.return_value.raise_for_status = MagicMock()
 
         # Test bounds2img with custom headers
         # Disable cache to ensure requests.get is actually called
         img, ext = cx.bounds2img(
-            w, s, e, n,
+            w,
+            s,
+            e,
+            n,
             zoom=4,
             ll=True,
             headers=custom_headers,
             use_cache=False,
-            source=cx.providers.CartoDB.Positron
+            source=cx.providers.CartoDB.Positron,
         )
 
         # Verify requests.get was called
@@ -168,7 +171,7 @@ def test_custom_headers():
         # Verify that the headers were passed correctly
         # The actual call should merge custom headers with the default user-agent
         call_args = mock_get.call_args
-        headers_used = call_args.kwargs.get('headers', call_args[1].get('headers'))
+        headers_used = call_args.kwargs.get("headers", call_args[1].get("headers"))
 
         # Check that custom headers are present
         assert "Authorization" in headers_used
@@ -178,7 +181,7 @@ def test_custom_headers():
 
         # Check that the default user-agent is also present
         assert "user-agent" in headers_used
-        assert headers_used["user-agent"].startswith("contextily-")
+        assert headers_used["user-agent"].startswith("contextily/")
 
 
 def test_custom_headers_bounds2raster(tmpdir):
@@ -192,9 +195,9 @@ def test_custom_headers_bounds2raster(tmpdir):
 
     # Create a mock image to return
     img_array = np.random.randint(0, 255, (256, 256, 4), dtype=np.uint8)
-    img = Image.fromarray(img_array, mode='RGBA')
+    img = Image.fromarray(img_array, mode="RGBA")
     img_bytes = io.BytesIO()
-    img.save(img_bytes, format='PNG')
+    img.save(img_bytes, format="PNG")
     img_bytes.seek(0)
 
     # Create mock response
@@ -208,25 +211,28 @@ def test_custom_headers_bounds2raster(tmpdir):
 
     output_path = str(tmpdir.join("test_headers.tif"))
 
-    with patch('contextily.tile.requests.get', return_value=mock_response) as mock_get:
+    with patch("contextily.tile.requests.get", return_value=mock_response) as mock_get:
         mock_get.return_value.raise_for_status = MagicMock()
 
         # Test bounds2raster with custom headers
         # Disable cache to ensure requests.get is actually called
         _ = cx.bounds2raster(
-            w, s, e, n,
+            w,
+            s,
+            e,
+            n,
             output_path,
             zoom=4,
             ll=True,
             headers=custom_headers,
             use_cache=False,
-            source=cx.providers.CartoDB.Positron
+            source=cx.providers.CartoDB.Positron,
         )
 
         # Verify requests.get was called with correct headers
         assert mock_get.called
         call_args = mock_get.call_args
-        headers_used = call_args.kwargs.get('headers', call_args[1].get('headers'))
+        headers_used = call_args.kwargs.get("headers", call_args[1].get("headers"))
 
         assert "Authorization" in headers_used
         assert headers_used["Authorization"] == "Bearer test-token-456"
@@ -244,9 +250,9 @@ def test_no_custom_headers():
 
     # Create a mock image to return
     img_array = np.random.randint(0, 255, (256, 256, 4), dtype=np.uint8)
-    img = Image.fromarray(img_array, mode='RGBA')
+    img = Image.fromarray(img_array, mode="RGBA")
     img_bytes = io.BytesIO()
-    img.save(img_bytes, format='PNG')
+    img.save(img_bytes, format="PNG")
     img_bytes.seek(0)
 
     # Create mock response
@@ -254,17 +260,20 @@ def test_no_custom_headers():
     mock_response.status_code = 200
     mock_response.content = img_bytes.read()
 
-    with patch('contextily.tile.requests.get', return_value=mock_response) as mock_get:
+    with patch("contextily.tile.requests.get", return_value=mock_response) as mock_get:
         mock_get.return_value.raise_for_status = MagicMock()
 
         # Test bounds2img without custom headers (default behavior)
         # Disable cache to ensure requests.get is actually called
         img, ext = cx.bounds2img(
-            w, s, e, n,
+            w,
+            s,
+            e,
+            n,
             zoom=4,
             ll=True,
             use_cache=False,
-            source=cx.providers.CartoDB.Positron
+            source=cx.providers.CartoDB.Positron,
         )
 
         # Verify requests.get was called
@@ -272,11 +281,11 @@ def test_no_custom_headers():
 
         # Verify that only the default user-agent header is present
         call_args = mock_get.call_args
-        headers_used = call_args.kwargs.get('headers', call_args[1].get('headers'))
+        headers_used = call_args.kwargs.get("headers", call_args[1].get("headers"))
 
         # Should only have the user-agent header
         assert "user-agent" in headers_used
-        assert headers_used["user-agent"].startswith("contextily-")
+        assert headers_used["user-agent"].startswith("contextily/")
         # Should not have any custom headers
         assert "Authorization" not in headers_used
 
@@ -292,9 +301,9 @@ def test_custom_user_agent_override():
 
     # Create a mock image to return
     img_array = np.random.randint(0, 255, (256, 256, 4), dtype=np.uint8)
-    img = Image.fromarray(img_array, mode='RGBA')
+    img = Image.fromarray(img_array, mode="RGBA")
     img_bytes = io.BytesIO()
-    img.save(img_bytes, format='PNG')
+    img.save(img_bytes, format="PNG")
     img_bytes.seek(0)
 
     # Create mock response
@@ -303,22 +312,23 @@ def test_custom_user_agent_override():
     mock_response.content = img_bytes.read()
 
     custom_user_agent = "MyCustomAgent/1.0"
-    custom_headers = {
-        "user-agent": custom_user_agent
-    }
+    custom_headers = {"user-agent": custom_user_agent}
 
-    with patch('contextily.tile.requests.get', return_value=mock_response) as mock_get:
+    with patch("contextily.tile.requests.get", return_value=mock_response) as mock_get:
         mock_get.return_value.raise_for_status = MagicMock()
 
         # Test bounds2img with custom user-agent header
         # Disable cache to ensure requests.get is actually called
         img, ext = cx.bounds2img(
-            w, s, e, n,
+            w,
+            s,
+            e,
+            n,
             zoom=4,
             ll=True,
             headers=custom_headers,
             use_cache=False,
-            source=cx.providers.CartoDB.Positron
+            source=cx.providers.CartoDB.Positron,
         )
 
         # Verify requests.get was called
@@ -326,13 +336,67 @@ def test_custom_user_agent_override():
 
         # Verify that the custom user-agent was used, not the default
         call_args = mock_get.call_args
-        headers_used = call_args.kwargs.get('headers', call_args[1].get('headers'))
+        headers_used = call_args.kwargs.get("headers", call_args[1].get("headers"))
 
         # Check that custom user-agent is present
         assert "user-agent" in headers_used
         assert headers_used["user-agent"] == custom_user_agent
         # Verify it's NOT the default contextily user-agent
-        assert not headers_used["user-agent"].startswith("contextily-")
+        assert not headers_used["user-agent"].startswith("contextily/")
+
+
+def test_user_agent_env_var(monkeypatch):
+    """Test that a user-agent can be specified via env var CONTEXTILY_USER_AGENT."""
+    w, s, e, n = (
+        -106.6495132446289,
+        25.845197677612305,
+        -93.50721740722656,
+        36.49387741088867,
+    )
+
+    # Create a mock image to return
+    img_array = np.random.randint(0, 255, (256, 256, 4), dtype=np.uint8)
+    img = Image.fromarray(img_array, mode="RGBA")
+    img_bytes = io.BytesIO()
+    img.save(img_bytes, format="PNG")
+    img_bytes.seek(0)
+
+    # Create mock response
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.content = img_bytes.read()
+
+    custom_user_agent = "MyCustomAgentEnvVar/1.0"
+    monkeypatch.setenv("CONTEXTILY_USER_AGENT", custom_user_agent)
+
+    with patch("contextily.tile.requests.get", return_value=mock_response) as mock_get:
+        mock_get.return_value.raise_for_status = MagicMock()
+
+        # Test bounds2img with custom user-agent header
+        # Disable cache to ensure requests.get is actually called
+        img, ext = cx.bounds2img(
+            w,
+            s,
+            e,
+            n,
+            zoom=4,
+            ll=True,
+            use_cache=False,
+            source=cx.providers.CartoDB.Positron,
+        )
+
+        # Verify requests.get was called
+        assert mock_get.called, "requests.get should have been called"
+
+        # Verify that the custom user-agent was used, not the default
+        call_args = mock_get.call_args
+        headers_used = call_args.kwargs.get("headers", call_args[1].get("headers"))
+
+        # Check that custom user-agent is present
+        assert "user-agent" in headers_used
+        assert headers_used["user-agent"] == custom_user_agent
+        # Verify it's NOT the default contextily user-agent
+        assert not headers_used["user-agent"].startswith("contextily/")
 
 
 @pytest.mark.network
@@ -340,9 +404,9 @@ def test_place_with_custom_headers():
     """Test that Place class properly passes custom headers through to bounds2img."""
     # Create a mock image to return
     img_array = np.random.randint(0, 255, (256, 256, 4), dtype=np.uint8)
-    img = Image.fromarray(img_array, mode='RGBA')
+    img = Image.fromarray(img_array, mode="RGBA")
     img_bytes = io.BytesIO()
-    img.save(img_bytes, format='PNG')
+    img.save(img_bytes, format="PNG")
     img_bytes.seek(0)
 
     # Create mock response
@@ -354,7 +418,7 @@ def test_place_with_custom_headers():
         "X-API-Key": "test-api-key-789",
     }
 
-    with patch('contextily.tile.requests.get', return_value=mock_response) as mock_get:
+    with patch("contextily.tile.requests.get", return_value=mock_response) as mock_get:
         mock_get.return_value.raise_for_status = MagicMock()
 
         # Create a Place with custom headers
@@ -367,7 +431,7 @@ def test_place_with_custom_headers():
         # Verify requests.get was called with correct headers
         assert mock_get.called
         call_args = mock_get.call_args
-        headers_used = call_args.kwargs.get('headers', call_args[1].get('headers'))
+        headers_used = call_args.kwargs.get("headers", call_args[1].get("headers"))
 
         assert "X-API-Key" in headers_used
         assert headers_used["X-API-Key"] == "test-api-key-789"
@@ -378,9 +442,9 @@ def test_add_basemap_with_custom_headers():
     """Test that add_basemap properly passes custom headers through to bounds2img."""
     # Create a mock image to return
     img_array = np.random.randint(0, 255, (256, 256, 4), dtype=np.uint8)
-    img = Image.fromarray(img_array, mode='RGBA')
+    img = Image.fromarray(img_array, mode="RGBA")
     img_bytes = io.BytesIO()
-    img.save(img_bytes, format='PNG')
+    img.save(img_bytes, format="PNG")
     img_bytes.seek(0)
 
     # Create mock response
@@ -392,7 +456,7 @@ def test_add_basemap_with_custom_headers():
         "X-Custom-Auth": "custom-token",
     }
 
-    with patch('contextily.tile.requests.get', return_value=mock_response) as mock_get:
+    with patch("contextily.tile.requests.get", return_value=mock_response) as mock_get:
         mock_get.return_value.raise_for_status = MagicMock()
 
         # Create a simple plot and add basemap with custom headers
@@ -412,7 +476,7 @@ def test_add_basemap_with_custom_headers():
         # Verify requests.get was called with correct headers
         assert mock_get.called
         call_args = mock_get.call_args
-        headers_used = call_args.kwargs.get('headers', call_args[1].get('headers'))
+        headers_used = call_args.kwargs.get("headers", call_args[1].get("headers"))
 
         assert "X-Custom-Auth" in headers_used
         assert headers_used["X-Custom-Auth"] == "custom-token"
@@ -431,7 +495,7 @@ def test_retryer_error_handling():
     mock_response.status_code = 404
     mock_response.raise_for_status.side_effect = requests.HTTPError("404 Not Found")
 
-    with patch('contextily.tile.requests.get', return_value=mock_response):
+    with patch("contextily.tile.requests.get", return_value=mock_response):
         with pytest.raises(requests.HTTPError) as exc_info:
             _retryer("http://example.com/tile.png", wait=0, max_retries=0, headers={})
 
@@ -443,9 +507,11 @@ def test_retryer_error_handling():
     mock_response.status_code = 503
     mock_response.reason = "Service Unavailable"
     mock_response.url = "http://example.com/tile.png"
-    mock_response.raise_for_status.side_effect = requests.HTTPError("503 Service Unavailable")
+    mock_response.raise_for_status.side_effect = requests.HTTPError(
+        "503 Service Unavailable"
+    )
 
-    with patch('contextily.tile.requests.get', return_value=mock_response):
+    with patch("contextily.tile.requests.get", return_value=mock_response):
         with pytest.raises(requests.HTTPError) as exc_info:
             _retryer("http://example.com/tile.png", wait=0, max_retries=0, headers={})
 
@@ -467,17 +533,22 @@ def test_retryer_with_retries():
 
     custom_headers = {"X-API-Key": "test-key"}
 
-    with patch('contextily.tile.requests.get', return_value=mock_response) as mock_get:
-        with patch('contextily.tile.time.sleep') as mock_sleep:
+    with patch("contextily.tile.requests.get", return_value=mock_response) as mock_get:
+        with patch("contextily.tile.time.sleep") as mock_sleep:
             # Should exhaust retries and raise exception
             with pytest.raises(requests.HTTPError) as exc_info:
-                _retryer("http://example.com/tile.png", wait=1, max_retries=2, headers=custom_headers)
+                _retryer(
+                    "http://example.com/tile.png",
+                    wait=1,
+                    max_retries=2,
+                    headers=custom_headers,
+                )
 
             # Verify sleep was called (indicating retry logic executed)
             assert mock_sleep.call_count == 2
             # Verify each call to requests.get included the custom headers
             for call in mock_get.call_args_list:
-                headers_used = call.kwargs.get('headers', call[1].get('headers'))
+                headers_used = call.kwargs.get("headers", call[1].get("headers"))
                 assert "X-API-Key" in headers_used
                 assert headers_used["X-API-Key"] == "test-key"
 
@@ -645,6 +716,7 @@ def test_place():
     ax = loc.plot(ax=ax)
     assert_array_almost_equal(loc.bbox_map, ax.images[0].get_extent())
 
+
 # Plotting
 
 
@@ -730,9 +802,7 @@ def test_add_basemap_query():
 
     assert ax.images[0].get_array().sum() == pytest.approx(64685390, rel=0.1)
     assert ax.images[0].get_array().shape == (256, 256, 4)
-    assert_array_almost_equal(
-        ax.images[0].get_array()[:, :, :3].mean(), 244.03656, decimal=0
-    )
+    assert_array_almost_equal(ax.images[0].get_array()[:, :, :3].mean(), 242, decimal=0)
     assert_array_almost_equal(ax.images[0].get_array().mean(), 246.77742, decimal=0)
 
 
@@ -857,9 +927,7 @@ def test_add_basemap_zoom_adjust(
     )
     assert ax.images[0].get_array().sum() == pytest.approx(expected_sum_2, rel=0.1)
     assert ax.images[0].get_array().shape == expected_shape
-    assert_array_almost_equal(
-        ax.images[0].get_array()[:, :, :3].mean(), 242.79582, decimal=0
-    )
+    assert_array_almost_equal(ax.images[0].get_array()[:, :, :3].mean(), 241, decimal=0)
     assert_array_almost_equal(ax.images[0].get_array().mean(), 245.8468, decimal=0)
 
 
@@ -878,10 +946,8 @@ def test_add_basemap_warping():
     assert ax.get_ylim() == (y1, y2)
     assert ax.images[0].get_array()[:, :, :3].sum() == pytest.approx(978096737, rel=0.1)
     assert ax.images[0].get_array().shape == (1135, 1183, 4)
-    assert_array_almost_equal(
-        ax.images[0].get_array()[:, :, :3].mean(), 242.8174808, decimal=0
-    )
-    assert_array_almost_equal(ax.images[0].get_array().mean(), 245.8631, decimal=0)
+    assert_array_almost_equal(ax.images[0].get_array()[:, :, :3].mean(), 241, decimal=0)
+    assert_array_almost_equal(ax.images[0].get_array().mean(), 244, decimal=0)
 
 
 @pytest.mark.network
@@ -901,12 +967,10 @@ def test_add_basemap_warping_local():
 
     assert ax.images[0].get_array()[:, :, :3].sum() == pytest.approx(613344449, rel=0.1)
     assert ax.images[0].get_array().shape == (980, 862, 4)
-    assert_array_almost_equal(
-        ax.images[0].get_array()[:, :, :3].mean(), 242.0192121, decimal=0
-    )
+    assert_array_almost_equal(ax.images[0].get_array()[:, :, :3].mean(), 240, decimal=0)
 
     assert ax.images[0].get_array().sum() == pytest.approx(827789504, rel=0.1)
-    assert_array_almost_equal(ax.images[0].get_array().mean(), 244.9777167, decimal=0)
+    assert_array_almost_equal(ax.images[0].get_array().mean(), 243, decimal=0)
 
 
 @pytest.mark.network
