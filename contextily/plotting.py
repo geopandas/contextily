@@ -190,6 +190,10 @@ def add_basemap(
                     }
                 ]
                 image, img_transform = riomask(raster, window, crop=True)
+                height, width = image.shape[1:]
+                left, bottom, right, top = rio.transform.array_bounds(
+                    height, width, img_transform
+                )
                 extent = left, right, bottom, top
             else:
                 # Read full
