@@ -698,7 +698,14 @@ def test_add_basemap_local_source():
     _ = cx.Place(SEARCH, path="./test2.tif", zoom_adjust=ADJUST, geocoder=geocoder)
     cx.add_basemap(ax, source="./test2.tif", reset_extent=True)
 
-    assert_array_almost_equal(subset, ax.images[0].get_extent())
+    assert_array_almost_equal(subset, ax.axis())
+    image = ax.images[0]
+    height, width = image.get_array().shape[:2]
+    with rio.open("./test2.tif") as raster:
+        row, col = raster.index(subset[0], subset[3])
+        left, top = raster.xy(row, col, offset="ul")
+        right, bottom = raster.xy(row + height - 1, col + width - 1, offset="lr")
+    assert_array_almost_equal((left, right, bottom, top), image.get_extent())
     assert ax.images[0].get_array().sum() == pytest.approx(13758065, rel=0.1)
     assert ax.images[0].get_array()[:, :, :3].sum() == pytest.approx(9709685, rel=0.1)
     assert ax.images[0].get_array().shape == (126, 126, 4)
@@ -706,6 +713,39 @@ def test_add_basemap_local_source():
         ax.images[0].get_array()[:, :, :3].mean(), 203.865058, decimal=0
     )
     assert_array_almost_equal(ax.images[0].get_array().mean(), 216.64879377, decimal=0)
+
+
+@pytest.mark.parametrize(
+    "view, extent, shape",
+    [
+        ((0, 30, 20, 50), (10, 18, 31, 40), (3, 4)),
+        ((12.2, 16.8, 33, 38), (12, 18, 31, 40), (3, 3)),
+    ],
+)
+def test_local_raster_pixel_extent(tmp_path, view, extent, shape):
+    path = tmp_path / "local.tif"
+    with rio.open(
+        path,
+        "w",
+        driver="GTiff",
+        width=4,
+        height=3,
+        count=1,
+        dtype="uint8",
+        crs="EPSG:3857",
+        transform=rio.transform.from_origin(10, 40, 2, 3),
+    ) as raster:
+        raster.write(np.arange(12, dtype="uint8").reshape(3, 4), 1)
+
+    fig, ax = matplotlib.pyplot.subplots()
+    try:
+        ax.axis(view)
+        cx.add_basemap(ax, source=str(path), reset_extent=True)
+        assert tuple(ax.axis()) == view
+        assert tuple(ax.images[0].get_extent()) == extent
+        assert ax.images[0].get_array().shape == shape
+    finally:
+        matplotlib.pyplot.close(fig)
 
 
 @pytest.mark.network
