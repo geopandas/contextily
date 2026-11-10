@@ -699,6 +699,13 @@ def test_add_basemap_local_source():
     cx.add_basemap(ax, source="./test2.tif", reset_extent=True)
 
     assert_array_almost_equal(subset, ax.axis())
+    image = ax.images[0]
+    height, width = image.get_array().shape[:2]
+    with rio.open("./test2.tif") as raster:
+        row, col = raster.index(subset[0], subset[3])
+        left, top = raster.xy(row, col, offset="ul")
+        right, bottom = raster.xy(row + height - 1, col + width - 1, offset="lr")
+    assert_array_almost_equal((left, right, bottom, top), image.get_extent())
     assert ax.images[0].get_array().sum() == pytest.approx(13758065, rel=0.1)
     assert ax.images[0].get_array()[:, :, :3].sum() == pytest.approx(9709685, rel=0.1)
     assert ax.images[0].get_array().shape == (126, 126, 4)
