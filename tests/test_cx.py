@@ -2,6 +2,8 @@ import matplotlib
 
 matplotlib.use("agg")  # To prevent plots from using display
 import contextily as cx
+from matplotlib.backends.backend_agg import FigureCanvasAgg
+from matplotlib.figure import Figure
 import os
 import numpy as np
 import mercantile as mt
@@ -1011,6 +1013,16 @@ def test_attribution():
     assert txt.get_size() == 15
     assert txt.get_fontfamily() == ["monospace"]
     matplotlib.pyplot.close(fig)
+
+
+def test_attribution_draws_axes_figure():
+    # A figure made outside pyplot must not cause a pyplot figure to be created or drawn
+    matplotlib.pyplot.close("all")
+    fig = Figure()
+    FigureCanvasAgg(fig)
+    ax = fig.subplots()
+    cx.add_attribution(ax, "Test")
+    assert matplotlib.pyplot.get_fignums() == []
 
 
 @pytest.mark.network
