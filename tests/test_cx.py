@@ -1012,6 +1012,31 @@ def test_attribution():
     assert txt.get_fontfamily() == ["monospace"]
     matplotlib.pyplot.close(fig)
 
+    # GH#289: non-pyplot Figure must not create an unrelated pyplot figure
+    matplotlib.pyplot.close("all")
+    oo_fig = matplotlib.figure.Figure(figsize=(4, 3), dpi=100)
+    matplotlib.backends.backend_agg.FigureCanvasAgg(oo_fig)
+    oo_ax = oo_fig.subplots()
+    txt = cx.add_attribution(oo_ax, "OO Figure Test")
+    assert matplotlib.pyplot.get_fignums() == []
+    assert txt._get_wrap_line_width() == pytest.approx(
+        oo_ax.get_window_extent().width * 0.99
+    )
+
+    # GH#289: with multiple open figures, ax.figure.canvas (not plt.gcf()) is drawn
+    fig1, ax1 = matplotlib.pyplot.subplots(1)
+    fig2, _ax2 = matplotlib.pyplot.subplots(1)
+    drawn = []
+    orig1, orig2 = fig1.canvas.draw, fig2.canvas.draw
+    fig1.canvas.draw = lambda *a, **kw: (drawn.append("fig1"), orig1(*a, **kw))[1]
+    fig2.canvas.draw = lambda *a, **kw: (drawn.append("fig2"), orig2(*a, **kw))[1]
+    try:
+        cx.add_attribution(ax1, "Target Fig1")
+        assert drawn == ["fig1"]
+    finally:
+        matplotlib.pyplot.close(fig1)
+        matplotlib.pyplot.close(fig2)
+
 
 @pytest.mark.network
 def test_set_cache_dir(tmpdir):
