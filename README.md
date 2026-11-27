@@ -3,8 +3,9 @@
 `contextily` is a small Python 3 (3.10 and above) package to retrieve tile maps from the
 internet. It can add those tiles as basemap to matplotlib figures or write tile
 maps to disk into geospatial raster files. Bounding boxes can be passed in both
-WGS84 (`EPSG:4326`) and Spheric Mercator (`EPSG:3857`). See the notebook
-`contextily_guide.ipynb` for usage.
+WGS84 (`EPSG:4326`) and Spheric Mercator (`EPSG:3857`). See the
+[introduction guide](https://contextily.readthedocs.io/en/stable/intro_guide.html)
+for usage examples.
 
 [![Tests](https://github.com/geopandas/contextily/actions/workflows/tests.yaml/badge.svg)](https://github.com/geopandas/contextily/actions/workflows/tests.yaml)
 [![codecov](https://codecov.io/gh/geopandas/contextily/branch/main/graph/badge.svg?token=5Eu3L1peBb)](https://codecov.io/gh/geopandas/contextily)
